@@ -5,34 +5,35 @@ import 'package:bannet_movil_t/profileScreen.dart';
 import 'package:flutter/material.dart';
 
 class MiReciboScreen extends StatelessWidget {
-  final Color verdeLima = Color(0xFFA5CD39); // Verde lima
-  final Color grisFondo = Color(0xFFF5F5F5); // Fondo gris claro
-  final Color grisOscuro = Color(0xFF333333); // Gris oscuro para detalles
+  final Color verdeLima = Color(0xFFA5CD39);
+  final Color grisFondo = Color(0xFFF5F5F5);
+  final Color grisOscuro = Color(0xFF333333);
+  final Color negro = Color(0xFF000000);
+
+  MiReciboScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: grisFondo,
       appBar: AppBar(
-        backgroundColor: verdeLima, // Color azul principal
-        iconTheme:
-            IconThemeData(color: Colors.white), // Ícono del Drawer en negro
-
+        backgroundColor: negro,
+        iconTheme: IconThemeData(color: verdeLima),
         title: Center(
           child: Image.asset(
-            'assets/images/logo_bannet_2.png', // Ruta de tu imagen en la carpeta assets
-            height: 30, // Ajusta el tamaño según sea necesario
+            'assets/images/logo_bannet_1.png',
+            height: 30,
           ),
         ),
-        toolbarHeight: 60, // Ajusta la altura del AppBar si es necesario
+        toolbarHeight: 60,
         actions: [
           IconButton(
             onPressed: () {},
-            icon: Icon(Icons.refresh, color: Colors.white),
+            icon: Icon(Icons.refresh, color: verdeLima),
           ),
         ],
         bottom: PreferredSize(
-          preferredSize: Size.fromHeight(70), // Altura del contenedor
+          preferredSize: Size.fromHeight(70),
           child: _buildCardNumeroAppBar(),
         ),
       ),
@@ -63,11 +64,11 @@ class MiReciboScreen extends StatelessWidget {
           BottomNavigationBarItem(
               icon: Icon(Icons.receipt_long_outlined), label: 'Recibo'),
           BottomNavigationBarItem(
-              icon: Icon(Icons.support_agent_outlined), label: 'Soporte'),
+              icon: Icon(Icons.history_edu), label: 'Comprobantes'),
           // BottomNavigationBarItem(
           //     icon: Icon(Icons.store_mall_directory), label: 'Tienda'),
           BottomNavigationBarItem(
-              icon: Icon(Icons.card_giftcard_outlined), label: 'Beneficios'),
+              icon: Icon(Icons.sports_esports), label: 'Gamer'),
         ],
       ),
     );
@@ -130,61 +131,60 @@ class MiReciboScreen extends StatelessWidget {
         color: verdeLima,
         borderRadius: BorderRadius.circular(8),
         image: DecorationImage(
-          image:
-              AssetImage('assets/images/img2.jpg'), // Reemplazar con tu imagen
+          image: AssetImage('assets/images/img2.jpg'),
           fit: BoxFit.cover,
         ),
       ),
     );
   }
 
-  // Mis consumos
-  Widget _buildMisConsumos() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
-          child: Text('Mis consumos',
-              style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: grisOscuro)),
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            _buildConsumoCard('Datos Libres', '100 GB', verdeLima),
-            _buildConsumoCard('Datos en Alta Velocidad', '82.6 GB', verdeLima),
-            _buildConsumoCard('Datos en Alta Velocidad', '82.6 GB', verdeLima),
-          ],
-        ),
-      ],
-    );
-  }
+  // // Mis consumos
+  // Widget _buildMisConsumos() {
+  //   return Column(
+  //     crossAxisAlignment: CrossAxisAlignment.start,
+  //     children: [
+  //       Padding(
+  //         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
+  //         child: Text('Mis consumos',
+  //             style: TextStyle(
+  //                 fontSize: 16,
+  //                 fontWeight: FontWeight.bold,
+  //                 color: grisOscuro)),
+  //       ),
+  //       Row(
+  //         mainAxisAlignment: MainAxisAlignment.spaceAround,
+  //         children: [
+  //           _buildConsumoCard('Datos Libres', '100 GB', verdeLima),
+  //           _buildConsumoCard('Datos en Alta Velocidad', '82.6 GB', verdeLima),
+  //           _buildConsumoCard('Datos en Alta Velocidad', '82.6 GB', verdeLima),
+  //         ],
+  //       ),
+  //     ],
+  //   );
+  // }
 
-  Widget _buildConsumoCard(String titulo, String cantidad, Color color) {
-    return Card(
-      elevation: 2,
-      child: Container(
-        width: 150,
-        padding: EdgeInsets.all(12),
-        child: Column(
-          children: [
-            Text(titulo, style: TextStyle(fontSize: 14, color: Colors.black54)),
-            SizedBox(height: 10),
-            CircularProgressIndicator(
-              value: 0.8, // Cambiar el progreso según corresponda
-              color: color,
-              backgroundColor: Colors.grey.shade300,
-            ),
-            SizedBox(height: 8),
-            Text(cantidad, style: TextStyle(fontWeight: FontWeight.bold)),
-          ],
-        ),
-      ),
-    );
-  }
+  // Widget _buildConsumoCard(String titulo, String cantidad, Color color) {
+  //   return Card(
+  //     elevation: 2,
+  //     child: Container(
+  //       width: 150,
+  //       padding: EdgeInsets.all(12),
+  //       child: Column(
+  //         children: [
+  //           Text(titulo, style: TextStyle(fontSize: 14, color: Colors.black54)),
+  //           SizedBox(height: 10),
+  //           CircularProgressIndicator(
+  //             value: 0.8, // Cambiar el progreso según corresponda
+  //             color: color,
+  //             backgroundColor: Colors.grey.shade300,
+  //           ),
+  //           SizedBox(height: 8),
+  //           Text(cantidad, style: TextStyle(fontWeight: FontWeight.bold)),
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
 
   Widget _buildMiRecibo() {
     return Card(
@@ -276,7 +276,7 @@ class MiReciboScreen extends StatelessWidget {
               'Solicitud de Baja', Icons.cancel), // Solicitud de baja
           _buildAccesoCard(
               'Servicios PostVenta', Icons.headset_mic), // Soporte técnico
-          _buildAccesoCard('Zona Gamer', Icons.videogame_asset), // Zona Gamer
+          _buildAccesoCard('Zona Gamer', Icons.sports_esports), // Zona Gamer
           _buildAccesoCard('Libro de Reclamaciones', Icons.book),
         ],
       ),
@@ -306,91 +306,107 @@ class MiReciboScreen extends StatelessWidget {
 }
 
 class CustomDrawer extends StatelessWidget {
+  const CustomDrawer({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      child: ListView(
-        padding: EdgeInsets.zero,
-        children: [
-          // Encabezado del Drawer
-          DrawerHeader(
-            decoration: BoxDecoration(color: Color(0xFFA5CD39)),
-            child: Align(
-              alignment: Alignment.bottomLeft,
-              child: Text(
-                '¿Qué quieres hacer hoy?',
-                style: TextStyle(color: Colors.white, fontSize: 20),
+      child: Container(
+        color: Colors.black,
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            // Encabezado del Drawer
+            DrawerHeader(
+              decoration: BoxDecoration(
+                color: Color(0xFFFFFFFF),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset(
+                    'assets/images/logo_bannet_2.png',
+                    width: 150,
+                    height: 40,
+                    fit: BoxFit.contain,
+                  ),
+                  SizedBox(height: 10),
+                  Text(
+                    '¿Qué quieres hacer hoy?',
+                    style: TextStyle(color: Colors.black, fontSize: 20),
+                  ),
+                ],
               ),
             ),
-          ),
 
-          // Sección de opciones principales
-          _buildDrawerSection([
-            _buildDrawerItem(Icons.receipt_long, 'Recibos de Servicios', () {}),
-            _buildDrawerItem(Icons.local_shipping, 'Comprobantes', () {}),
-            _buildDrawerItem(Icons.cancel, 'Solicitud de Baja', () {}),
-            _buildDrawerItem(Icons.headset_mic, 'Servicios PostVenta', () {}),
-            _buildDrawerItem(Icons.videogame_asset, 'Zona Gamer', () {}),
-            _buildDrawerItem(Icons.book, 'Libro de Reclamaciones', () {}),
-          ]),
+            // Sección de opciones principales
+            _buildDrawerSection([
+              _buildDrawerItem(
+                  Icons.receipt_long, 'Recibos de Servicios', () {}),
+              _buildDrawerItem(Icons.local_shipping, 'Comprobantes', () {}),
+              _buildDrawerItem(Icons.cancel, 'Solicitud de Baja', () {}),
+              _buildDrawerItem(Icons.headset_mic, 'Servicios PostVenta', () {}),
+              _buildDrawerItem(Icons.sports_esports, 'Zona Gamer', () {}),
+              _buildDrawerItem(Icons.book, 'Libro de Reclamaciones', () {}),
+            ]),
 
-          _buildSectionTitle('MI CUENTA'),
-          _buildDrawerItem(Icons.receipt, 'Detalles de mi plan', () {}),
+            _buildSectionTitle('MI CUENTA'),
+            _buildDrawerItem(Icons.receipt, 'Detalles de mi plan', () {}),
 
-          // Aquí hacemos que "Mi Perfil" abra ProfileScreen
-          _buildDrawerItem(Icons.account_circle, 'Mi Perfil', () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => ProfileScreen()),
-            );
-          }),
+            // Aquí hacemos que "Mi Perfil" abra ProfileScreen
+            _buildDrawerItem(Icons.account_circle, 'Mi Perfil', () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ProfileScreen()),
+              );
+            }),
 
-          // ListTile(
-          //   leading: Icon(Icons.fingerprint),
-          //   title: Text('Contraseña única'),
-          //   subtitle: Text('Aprueba transacciones de manera segura'),
-          //   trailing: Container(
-          //     padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-          //     decoration: BoxDecoration(
-          //       color: Colors.pink,
-          //       borderRadius: BorderRadius.circular(8),
-          //     ),
-          //     child: Text(
-          //       'Nuevo',
-          //       style: TextStyle(color: Colors.white, fontSize: 12),
-          //     ),
-          //   ),
-          //   onTap: () {
-          //     // Acción del ítem
-          //   },
-          // ),
+            // ListTile(
+            //   leading: Icon(Icons.fingerprint),
+            //   title: Text('Contraseña única'),
+            //   subtitle: Text('Aprueba transacciones de manera segura'),
+            //   trailing: Container(
+            //     padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+            //     decoration: BoxDecoration(
+            //       color: Colors.pink,
+            //       borderRadius: BorderRadius.circular(8),
+            //     ),
+            //     child: Text(
+            //       'Nuevo',
+            //       style: TextStyle(color: Colors.white, fontSize: 12),
+            //     ),
+            //   ),
+            //   onTap: () {
+            //     // Acción del ítem
+            //   },
+            // ),
 
-          // _buildSectionTitle('SERVICIOS'),
-          // _buildDrawerItem(Icons.shopping_cart, 'Tienda'),
-          // _buildDrawerItem(Icons.shopping_bag, 'Comprar paquetes'),
-          // _buildDrawerItem(Icons.airplanemode_active, 'Comprar roaming'),
+            // _buildSectionTitle('SERVICIOS'),
+            // _buildDrawerItem(Icons.shopping_cart, 'Tienda'),
+            // _buildDrawerItem(Icons.shopping_bag, 'Comprar paquetes'),
+            // _buildDrawerItem(Icons.airplanemode_active, 'Comprar roaming'),
 
-          // _buildSectionTitle('SOPORTE'),
-          // _buildDrawerItem(Icons.build, 'Autogestión de averías'),
-          // _buildDrawerItem(Icons.note, 'Solicitudes de mi línea'),
-          SizedBox(height: 25),
-          Divider(),
-          SizedBox(height: 25),
-          // Botón de cerrar sesión
-          ListTile(
-            leading:
-                Icon(Icons.logout, color: Colors.red), // Icono de cerrar sesión
-            title: Center(
-              child: Text(
-                'Cerrar sesión',
-                style: TextStyle(color: Colors.red),
+            // _buildSectionTitle('SOPORTE'),
+            // _buildDrawerItem(Icons.build, 'Autogestión de averías'),
+            // _buildDrawerItem(Icons.note, 'Solicitudes de mi línea'),
+            SizedBox(height: 25),
+            Divider(),
+            SizedBox(height: 25),
+            // Botón de cerrar sesión
+            ListTile(
+              leading: Icon(Icons.logout,
+                  color: Colors.red), // Icono de cerrar sesión
+              title: Center(
+                child: Text(
+                  'Cerrar sesión',
+                  style:
+                      TextStyle(color: Colors.red, fontWeight: FontWeight.w600),
+                ),
               ),
+              onTap: () {},
             ),
-            onTap: () {
-              // Acción para cerrar sesión
-            },
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -404,8 +420,14 @@ class CustomDrawer extends StatelessWidget {
   // Widget para construir un ítem del Drawer con una función onTap
   Widget _buildDrawerItem(IconData icon, String title, VoidCallback onTap) {
     return ListTile(
-      leading: Icon(icon),
-      title: Text(title),
+      leading: Icon(
+        icon,
+        color: Color(0xFFA5CD39),
+      ),
+      title: Text(
+        title,
+        style: TextStyle(color: Color(0xFFFFFFFF)),
+      ),
       onTap: onTap,
     );
   }
