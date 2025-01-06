@@ -60,27 +60,24 @@ class Indexscreen extends StatelessWidget {
               child: ListView(
                 children: [
                   _buildTaskCard(
-                      title:
+                      titulo:
                           'Plan : INTERNET 400 MBPS + 3 STREAMING PLAN FULL PRIME',
-                      price: 'Monto : S/. 65.00',
-                      date:
-                          'Inicio de facturación : miércoles, 21 de agosto de 2024',
+                      precio: 'Monto : S/. 35.00',
+                      fecha: 'Inicio de facturación : 21/08/2024',
                       color: verdeLima,
                       isCompleted: false),
                   _buildTaskCard(
-                      title:
+                      titulo:
                           'Plan : INTERNET 400 MBPS + 3 STREAMING PLAN FULL PRIME',
-                      price: 'Monto : S/. 65.00',
-                      date:
-                          'Inicio de facturación : miércoles, 21 de agosto de 2024',
+                      precio: 'Monto : S/. 55.00',
+                      fecha: 'Inicio de facturación : 21/08/2024',
                       color: verdeLima,
                       isCompleted: false),
                   _buildTaskCard(
-                      title:
+                      titulo:
                           'Plan : INTERNET 400 MBPS + 3 STREAMING PLAN FULL PRIME',
-                      price: 'Monto : S/. 65.00',
-                      date:
-                          'Inicio de facturación : miércoles, 21 de agosto de 2024',
+                      precio: 'Monto : S/. 65.00',
+                      fecha: 'Inicio de facturación : 21/08/2024',
                       color: verdeLima,
                       isCompleted: false),
                 ],
@@ -325,13 +322,15 @@ class Indexscreen extends StatelessWidget {
   }
 
   Widget _buildTaskCard({
-    required String title,
-    required String date,
-    required String price,
+    required String titulo,
+    required String fecha,
+    required String precio,
     required Color color,
     required bool isCompleted,
   }) {
     return Container(
+      width: double.infinity, // Asegura que use el espacio disponible
+
       margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
         color: Colors.grey[900],
@@ -358,7 +357,7 @@ class Indexscreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  title,
+                  titulo,
                   style: TextStyle(
                       color: Colors.white,
                       fontSize: 16,
@@ -370,7 +369,7 @@ class Indexscreen extends StatelessWidget {
                     Icon(Icons.calendar_today, size: 14, color: Colors.white54),
                     SizedBox(width: 4),
                     Text(
-                      price,
+                      precio,
                       style: TextStyle(color: Colors.white54),
                     ),
                   ],
@@ -381,7 +380,7 @@ class Indexscreen extends StatelessWidget {
                     Icon(Icons.calendar_today, size: 14, color: Colors.white54),
                     SizedBox(width: 4),
                     Text(
-                      date,
+                      fecha,
                       style: TextStyle(color: Colors.white54),
                     ),
                   ],
