@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 class ReciboScreen extends StatelessWidget {
   final Color verdeLima = Color(0xFFA5CD39);
   final Color blanco = Color(0xFFFFFFFF);
+  final Color negro = Color(0xFF000000);
 
   ReciboScreen({super.key});
 
@@ -12,31 +13,43 @@ class ReciboScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: blanco, // Fondo blanco
       appBar: AppBar(
-        title: Text('Mi recibo Bantel',
-            style: TextStyle(color: Colors.black87)),
-        backgroundColor: verdeLima, // Verde lima
+        title: Text('Mis recibos Bantel', style: TextStyle(color: verdeLima)),
+        backgroundColor: negro, // Verde lima
         centerTitle: true,
-        iconTheme: IconThemeData(color: Colors.black87),
+        iconTheme: IconThemeData(color: verdeLima),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildResumenCuenta(),
-            SizedBox(height: 20),
-            _buildPlanAdicionales(),
-            SizedBox(height: 20),
-            _buildMontosDescontados(),
-            SizedBox(height: 20),
-            _buildEvolutivoMensual(),
-          ],
+      body: Container(
+        constraints:
+            BoxConstraints.expand(), // Ocupa todo el espacio disponible
+
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage(
+                'assets/images/Bannet_Fond.jpg'), // Reemplaza con tu imagen
+            fit: BoxFit.cover,
+          ),
+          color: Color(0xFF000000),
+        ),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildResumenCuenta(),
+              SizedBox(height: 20),
+              _buildPlanAdicionales(),
+              SizedBox(height: 20),
+              _buildMontosDescontados(),
+              SizedBox(height: 20),
+              _buildEvolutivoMensual(),
+            ],
+          ),
         ),
       ),
-     bottomNavigationBar: Theme(
+      bottomNavigationBar: Theme(
         data: ThemeData(
           // Forzamos el color negro de fondo para el BottomNavigationBar
-          canvasColor:
-              Colors.black, // Específicamente el fondo de la barra de navegación
+          canvasColor: Colors
+              .black, // Específicamente el fondo de la barra de navegación
         ),
         child: BottomNavigationBar(
           selectedItemColor: Colors.white, // Elementos seleccionados en blanco
@@ -118,15 +131,17 @@ class ReciboScreen extends StatelessWidget {
       child: ListTile(
         leading: Icon(Icons.phone_android, color: verdeLima),
         title: Text('Plan Ilimitado Bantel',
-            style: TextStyle(
-                fontWeight: FontWeight.bold, color: Colors.black87)),
+            style:
+                TextStyle(fontWeight: FontWeight.bold, color: Colors.black87)),
         subtitle: Text(
           '¡Bienvenido a Bantel! Este es tu nuevo plan',
           style: TextStyle(color: Colors.black54),
         ),
         trailing: Text('S/ 69.90',
             style: TextStyle(
-                fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black87)),
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87)),
       ),
     );
   }
@@ -141,16 +156,15 @@ class ReciboScreen extends StatelessWidget {
         children: [
           ListTile(
             leading: Icon(Icons.percent, color: verdeLima),
-            title: Text('Descuento',
-                style: TextStyle(color: Colors.black87)),
+            title: Text('Descuento', style: TextStyle(color: Colors.black87)),
             trailing: Text('S/ -3.50',
                 style: TextStyle(fontSize: 16, color: Colors.redAccent)),
           ),
           Divider(),
           ListTile(
             leading: Icon(Icons.money_off, color: verdeLima),
-            title: Text('Devoluciones',
-                style: TextStyle(color: Colors.black87)),
+            title:
+                Text('Devoluciones', style: TextStyle(color: Colors.black87)),
             trailing: Text('S/ -63.00',
                 style: TextStyle(fontSize: 16, color: Colors.redAccent)),
           ),
@@ -195,8 +209,7 @@ class ReciboScreen extends StatelessWidget {
                         reservedSize: 40,
                         getTitlesWidget: (value, meta) => Text(
                           'S/ ${value.toInt()}',
-                          style:
-                              TextStyle(fontSize: 12, color: Colors.black54),
+                          style: TextStyle(fontSize: 12, color: Colors.black54),
                         ),
                       ),
                     ),
@@ -207,8 +220,8 @@ class ReciboScreen extends StatelessWidget {
                           const months = ['Ago', 'Sep', 'Oct'];
                           return Text(
                             months[value.toInt()],
-                            style: TextStyle(
-                                fontSize: 14, color: Colors.black54),
+                            style:
+                                TextStyle(fontSize: 14, color: Colors.black54),
                           );
                         },
                       ),

@@ -12,7 +12,6 @@ class Indexscreen extends StatelessWidget {
 
   Indexscreen({super.key});
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -50,11 +49,11 @@ class Indexscreen extends StatelessWidget {
             // _buildBannerPromo(),
             //Banner Usuario
             _buildBannerUsuario(),
-                        SizedBox(height: 15),
+            SizedBox(height: 15),
 
             // Mi recibo
             _buildMiRecibo(),
-                        SizedBox(height: 20),
+            SizedBox(height: 20),
 
             //
             Expanded(
@@ -233,7 +232,7 @@ class Indexscreen extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                _buildBoton('Ver recibo', Colors.white, grisOscuro, true),
+                _buildBoton('Ver recibos', Colors.white, grisOscuro, true),
                 SizedBox(width: 20),
                 _buildBoton('Pagar', verdeLima, Colors.white, true),
               ],
@@ -261,7 +260,7 @@ class Indexscreen extends StatelessWidget {
             ),
           ),
           onPressed: () {
-            if (texto == 'Ver recibo') {
+            if (texto == 'Ver recibos') {
               // Navegar a la pantalla del recibo
               Navigator.push(
                 context,
