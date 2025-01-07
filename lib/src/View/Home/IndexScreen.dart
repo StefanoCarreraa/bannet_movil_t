@@ -1,7 +1,9 @@
 import 'dart:ui';
 
+import 'package:bannet_movil_t/src/View/Profile/profileScreen.dart';
 import 'package:bannet_movil_t/src/View/Recibo/ReciboScreen.dart';
 import 'package:bannet_movil_t/src/widget/DrawerSectionCustom.dart';
+import 'package:bannet_movil_t/src/widget/TaskCardWidget.dart';
 import 'package:flutter/material.dart';
 
 class Indexscreen extends StatelessWidget {
@@ -11,6 +13,33 @@ class Indexscreen extends StatelessWidget {
   final Color negro = Color(0xFF000000);
 
   Indexscreen({super.key});
+  void _mostrarConfirmacionCerrarSesion(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Confirmar cierre de sesión'),
+          content: Text('¿Está seguro de que desea cerrar sesión?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Cierra el diálogo
+              },
+              child: Text('Cancelar'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Cierra el diálogo
+                // Lógica para cerrar sesión
+                print('Sesión cerrada');
+              },
+              child: Text('Cerrar sesión', style: TextStyle(color: Colors.red)),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,12 +56,85 @@ class Indexscreen extends StatelessWidget {
         ),
         toolbarHeight: 60,
         actions: [
-          IconButton(
-            onPressed: () {},
-            icon: Icon(Icons.refresh, color: verdeLima),
+          Builder(
+            builder: (context) {
+              return IconButton(
+                icon: Icon(Icons.account_circle, color: verdeLima),
+                onPressed: () {
+                  final RenderBox appBarBox =
+                      context.findRenderObject() as RenderBox;
+                  final Offset position = appBarBox
+                      .localToGlobal(Offset.zero); // Posición global del AppBar
+
+                  showMenu(
+                    context: context,
+                    position: RelativeRect.fromLTRB(
+                      position.dx +
+                          appBarBox.size.width -
+                          60, // Ajusta la posición horizontal
+                      position.dy +
+                          appBarBox.size.height +
+                          5, // Ajusta la posición vertical
+                      0,
+                      0,
+                    ),
+                    items: [
+                      PopupMenuItem(
+                        value: 'Perfil',
+                        child: Row(
+                          children: [
+                            Icon(Icons.person, color: verdeLima),
+                            SizedBox(width: 8),
+                            Text('Perfil'),
+                          ],
+                        ),
+                      ),
+                      PopupMenuItem(
+                        value: 'Cerrar sesión',
+                        child: Row(
+                          children: [
+                            Icon(Icons.logout, color: Colors.red),
+                            SizedBox(width: 8),
+                            Text(
+                              'Cerrar sesión',
+                              style: TextStyle(color: Colors.red),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                    elevation: 8.0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(12),
+                        topRight: Radius.circular(0), // Sin borde redondeado
+                        bottomLeft: Radius.circular(12),
+                        bottomRight: Radius.circular(12),
+                      ),
+                    ),
+                  ).then((value) {
+                    if (value != null) {
+                      switch (value) {
+                        case 'Perfil':
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ProfileScreen()),
+                          );
+                          break;
+                        case 'Cerrar sesión':
+                          _mostrarConfirmacionCerrarSesion(context);
+                          break;
+                      }
+                    }
+                  });
+                },
+              );
+            },
           ),
         ],
       ),
+
       drawer: CustomDrawer(),
       body: Container(
         decoration: BoxDecoration(
@@ -49,31 +151,41 @@ class Indexscreen extends StatelessWidget {
             // _buildBannerPromo(),
             //Banner Usuario
             _buildBannerUsuario(),
-            SizedBox(height: 15),
+            // SizedBox(height: 15),
 
-            // Mi recibo
-            _buildMiRecibo(),
+            // // Mi recibo
+            // _buildMiRecibo(),
             SizedBox(height: 20),
 
             //
             Expanded(
               child: ListView(
                 children: [
-                  _buildTaskCard(
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                    child: Text(
+                      "Planes",
+                      style: TextStyle(
+                          color: verdeLima,
+                          fontSize: 30,
+                          fontWeight: FontWeight.w700),
+                    ),
+                  ),
+                  TaskCardWidget(
                       titulo:
                           'Plan : INTERNET 400 MBPS + 3 STREAMING PLAN FULL PRIME',
                       precio: 'Monto : S/. 35.00',
                       fecha: 'Inicio de facturación : 21/08/2024',
                       color: verdeLima,
                       isCompleted: false),
-                  _buildTaskCard(
+                  TaskCardWidget(
                       titulo:
                           'Plan : INTERNET 400 MBPS + 3 STREAMING PLAN FULL PRIME',
                       precio: 'Monto : S/. 55.00',
                       fecha: 'Inicio de facturación : 21/08/2024',
                       color: verdeLima,
                       isCompleted: false),
-                  _buildTaskCard(
+                  TaskCardWidget(
                       titulo:
                           'Plan : INTERNET 400 MBPS + 3 STREAMING PLAN FULL PRIME',
                       precio: 'Monto : S/. 65.00',
@@ -203,78 +315,78 @@ class Indexscreen extends StatelessWidget {
     );
   }
 
-  Widget _buildMiRecibo() {
-    return Card(
-      margin: EdgeInsets.all(12),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Icon(Icons.receipt_long_outlined, color: grisOscuro),
-                SizedBox(width: 8),
-                Text(
-                  '¿Qué quieres hacer hoy?',
-                  style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      color: grisOscuro),
-                ),
-              ],
-            ),
-            SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _buildBoton('Ver recibos', Colors.white, grisOscuro, true),
-                SizedBox(width: 20),
-                _buildBoton('Pagar', verdeLima, Colors.white, true),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+  // Widget _buildMiRecibo() {
+  //   return Card(
+  //     margin: EdgeInsets.all(12),
+  //     child: Padding(
+  //       padding: const EdgeInsets.all(16.0),
+  //       child: Column(
+  //         crossAxisAlignment: CrossAxisAlignment.center,
+  //         children: [
+  //           Row(
+  //             mainAxisAlignment: MainAxisAlignment.start,
+  //             children: [
+  //               Icon(Icons.receipt_long_outlined, color: grisOscuro),
+  //               SizedBox(width: 8),
+  //               Text(
+  //                 '¿Qué quieres hacer hoy?',
+  //                 style: TextStyle(
+  //                     fontSize: 16,
+  //                     fontWeight: FontWeight.w500,
+  //                     color: grisOscuro),
+  //               ),
+  //             ],
+  //           ),
+  //           SizedBox(height: 20),
+  //           Row(
+  //             mainAxisAlignment: MainAxisAlignment.center,
+  //             children: [
+  //               _buildBoton('Ver recibos', Colors.white, grisOscuro, true),
+  //               SizedBox(width: 20),
+  //               _buildBoton('Pagar', verdeLima, Colors.white, true),
+  //             ],
+  //           ),
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
 
-  Widget _buildBoton(
-      String texto, Color colorFondo, Color colorTexto, bool conBorde) {
-    return Builder(
-      builder: (BuildContext context) {
-        return TextButton(
-          style: TextButton.styleFrom(
-            backgroundColor: colorFondo,
-            foregroundColor: colorTexto,
-            padding: EdgeInsets.symmetric(vertical: 18, horizontal: 40),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
-              side: conBorde
-                  ? BorderSide(color: grisOscuro, width: 2)
-                  : BorderSide.none,
-            ),
-          ),
-          onPressed: () {
-            if (texto == 'Ver recibos') {
-              // Navegar a la pantalla del recibo
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => ReciboScreen()),
-              );
-            } else {
-              print("Botón presionado: $texto");
-            }
-          },
-          child: Text(
-            texto,
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-          ),
-        );
-      },
-    );
-  }
+  // Widget _buildBoton(
+  //     String texto, Color colorFondo, Color colorTexto, bool conBorde) {
+  //   return Builder(
+  //     builder: (BuildContext context) {
+  //       return TextButton(
+  //         style: TextButton.styleFrom(
+  //           backgroundColor: colorFondo,
+  //           foregroundColor: colorTexto,
+  //           padding: EdgeInsets.symmetric(vertical: 18, horizontal: 40),
+  //           shape: RoundedRectangleBorder(
+  //             borderRadius: BorderRadius.circular(8),
+  //             side: conBorde
+  //                 ? BorderSide(color: grisOscuro, width: 2)
+  //                 : BorderSide.none,
+  //           ),
+  //         ),
+  //         onPressed: () {
+  //           if (texto == 'Ver recibos') {
+  //             // Navegar a la pantalla del recibo
+  //             Navigator.push(
+  //               context,
+  //               MaterialPageRoute(builder: (context) => ReciboScreen()),
+  //             );
+  //           } else {
+  //             print("Botón presionado: $texto");
+  //           }
+  //         },
+  //         child: Text(
+  //           texto,
+  //           style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+  //         ),
+  //       );
+  //     },
+  //   );
+  // }
 
   // Accesos directos
   Widget _buildAccesosDirectos() {
@@ -321,85 +433,85 @@ class Indexscreen extends StatelessWidget {
     );
   }
 
-  Widget _buildTaskCard({
-    required String titulo,
-    required String fecha,
-    required String precio,
-    required Color color,
-    required bool isCompleted,
-  }) {
-    return Container(
-      width: double.infinity, // Asegura que use el espacio disponible
+  // Widget _buildTaskCard({
+  //   required String titulo,
+  //   required String fecha,
+  //   required String precio,
+  //   required Color color,
+  //   required bool isCompleted,
+  // }) {
+  //   return Container(
+  //     width: double.infinity, // Asegura que use el espacio disponible
 
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      decoration: BoxDecoration(
-        color: Colors.grey[900],
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Row(
-        children: [
-          // Borde de color a la izquierda
-          Container(
-            width: 8,
-            height: 130,
-            decoration: BoxDecoration(
-              color: color,
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(12),
-                bottomLeft: Radius.circular(12),
-              ),
-            ),
-          ),
-          SizedBox(width: 16),
-          // Información de la tarea
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  titulo,
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold),
-                ),
-                SizedBox(height: 4),
-                Row(
-                  children: [
-                    Icon(Icons.calendar_today, size: 14, color: Colors.white54),
-                    SizedBox(width: 4),
-                    Text(
-                      precio,
-                      style: TextStyle(color: Colors.white54),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 4),
-                Row(
-                  children: [
-                    Icon(Icons.calendar_today, size: 14, color: Colors.white54),
-                    SizedBox(width: 4),
-                    Text(
-                      fecha,
-                      style: TextStyle(color: Colors.white54),
-                    ),
-                  ],
-                )
-              ],
-            ),
-          ),
-          // Icono de estado
-          Padding(
-            padding: const EdgeInsets.only(right: 16.0),
-            child: Icon(
-              isCompleted
-                  ? Icons.check_circle_rounded
-                  : Icons.radio_button_unchecked,
-              color: isCompleted ? Colors.purpleAccent : Colors.white54,
-            ),
-          )
-        ],
-      ),
-    );
-  }
+  //     margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+  //     decoration: BoxDecoration(
+  //       color: Colors.grey[900],
+  //       borderRadius: BorderRadius.circular(12),
+  //     ),
+  //     child: Row(
+  //       children: [
+  //         // Borde de color a la izquierda
+  //         Container(
+  //           width: 8,
+  //           height: 130,
+  //           decoration: BoxDecoration(
+  //             color: color,
+  //             borderRadius: BorderRadius.only(
+  //               topLeft: Radius.circular(12),
+  //               bottomLeft: Radius.circular(12),
+  //             ),
+  //           ),
+  //         ),
+  //         SizedBox(width: 16),
+  //         // Información de la tarea
+  //         Expanded(
+  //           child: Column(
+  //             crossAxisAlignment: CrossAxisAlignment.start,
+  //             children: [
+  //               Text(
+  //                 titulo,
+  //                 style: TextStyle(
+  //                     color: Colors.white,
+  //                     fontSize: 16,
+  //                     fontWeight: FontWeight.bold),
+  //               ),
+  //               SizedBox(height: 4),
+  //               Row(
+  //                 children: [
+  //                   Icon(Icons.calendar_today, size: 14, color: Colors.white54),
+  //                   SizedBox(width: 4),
+  //                   Text(
+  //                     precio,
+  //                     style: TextStyle(color: Colors.white54),
+  //                   ),
+  //                 ],
+  //               ),
+  //               SizedBox(height: 4),
+  //               Row(
+  //                 children: [
+  //                   Icon(Icons.calendar_today, size: 14, color: Colors.white54),
+  //                   SizedBox(width: 4),
+  //                   Text(
+  //                     fecha,
+  //                     style: TextStyle(color: Colors.white54),
+  //                   ),
+  //                 ],
+  //               )
+  //             ],
+  //           ),
+  //         ),
+  //         // Icono de estado
+  //         Padding(
+  //           padding: const EdgeInsets.only(right: 16.0),
+  //           child: Icon(
+  //             isCompleted
+  //                 ? Icons.check_circle_rounded
+  //                 : Icons.radio_button_unchecked,
+  //             color: isCompleted ? Colors.purpleAccent : Colors.white54,
+  //           ),
+  //         )
+  //       ],
+  //     ),
+  //   );
+  // }
 }

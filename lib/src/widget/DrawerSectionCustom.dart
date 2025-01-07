@@ -3,6 +3,7 @@ import 'package:bannet_movil_t/src/View/Home/IndexScreen.dart';
 import 'package:bannet_movil_t/src/View/LibroReclamaciones/LibroReclamacionesScreen.dart';
 import 'package:bannet_movil_t/src/View/PostVenta/PostVentaScreen.dart';
 import 'package:bannet_movil_t/src/View/Profile/profileScreen.dart';
+import 'package:bannet_movil_t/src/View/Recibo/ListRecibosScreen.dart';
 import 'package:bannet_movil_t/src/View/Recibo/ReciboScreen.dart';
 import 'package:bannet_movil_t/src/View/SolicitudBaja/SolicitudBajaScreen.dart';
 import 'package:bannet_movil_t/src/View/ZonaGamer/ZonaGamerScreen.dart';
@@ -23,21 +24,22 @@ class CustomDrawer extends StatelessWidget {
             DrawerHeader(
               decoration: BoxDecoration(
                 color: Colors.black,
+               
               ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Image.asset(
                     'assets/images/logo_bannet_1.png',
-                    width: 150,
-                    height: 40,
+                    width: 230,
+                    height: 45,
                     fit: BoxFit.contain,
                   ),
-                  SizedBox(height: 10),
-                  Text(
-                    '¿Qué quieres hacer hoy?',
-                    style: TextStyle(color: Color(0xFFA5CD39), fontSize: 20),
-                  ),
+                  // SizedBox(height: 10),
+                  // Text(
+                  //   '¿Qué quieres hacer hoy?',
+                  //   style: TextStyle(color: Color(0xFFA5CD39), fontSize: 20),
+                  // ),
                 ],
               ),
             ),
@@ -50,7 +52,7 @@ class CustomDrawer extends StatelessWidget {
               }),
               _buildDrawerItem(Icons.receipt, 'Recibos de Servicios', () {
                 Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => ReciboScreen()));
+                    MaterialPageRoute(builder: (context) => Listrecibosscreen()));
               }),
               _buildDrawerItem(Icons.assignment, 'Comprobantes', () {
                 Navigator.push(
@@ -81,7 +83,7 @@ class CustomDrawer extends StatelessWidget {
             ]),
 
             _buildSectionTitle('MI CUENTA'),
-            _buildDrawerItem(Icons.receipt, 'Detalles de mi plan', () {}),
+            // _buildDrawerItem(Icons.receipt, 'Detalles de mi plan', () {}),
 
             // Aquí hacemos que "Mi Perfil" abra ProfileScreen
             _buildDrawerItem(Icons.account_circle, 'Mi Perfil', () {
@@ -91,31 +93,31 @@ class CustomDrawer extends StatelessWidget {
               );
             }),
 
-            ListTile(
-              leading: Icon(Icons.fingerprint),
-              title: Text(
-                'Contraseña única',
-                style: TextStyle(color: Colors.white),
-              ),
-              subtitle: Text(
-                'Aprueba transacciones de manera segura',
-                style: TextStyle(color: Colors.white, fontSize: 12),
-              ),
-              trailing: Container(
-                padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                decoration: BoxDecoration(
-                  color: Colors.pink,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  'Nuevo',
-                  style: TextStyle(color: Colors.white, fontSize: 12),
-                ),
-              ),
-              onTap: () {
-                // Acción del ítem
-              },
-            ),
+            // ListTile(
+            //   leading: Icon(Icons.fingerprint),
+            //   title: Text(
+            //     'Contraseña única',
+            //     style: TextStyle(color: Colors.white),
+            //   ),
+            //   subtitle: Text(
+            //     'Aprueba transacciones de manera segura',
+            //     style: TextStyle(color: Colors.white, fontSize: 12),
+            //   ),
+            //   trailing: Container(
+            //     padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+            //     decoration: BoxDecoration(
+            //       color: Colors.pink,
+            //       borderRadius: BorderRadius.circular(8),
+            //     ),
+            //     child: Text(
+            //       'Nuevo',
+            //       style: TextStyle(color: Colors.white, fontSize: 12),
+            //     ),
+            //   ),
+            //   onTap: () {
+            //     // Acción del ítem
+            //   },
+            // ),
 
             // _buildSectionTitle('SERVICIOS'),
             // _buildDrawerItem(Icons.shopping_cart, 'Tienda'),
@@ -129,18 +131,18 @@ class CustomDrawer extends StatelessWidget {
             Divider(),
             SizedBox(height: 25),
             // Botón de cerrar sesión
-            ListTile(
-              leading: Icon(Icons.logout,
-                  color: Colors.red), // Icono de cerrar sesión
-              title: Center(
-                child: Text(
-                  'Cerrar sesión',
-                  style:
-                      TextStyle(color: Colors.red, fontWeight: FontWeight.w600),
-                ),
-              ),
-              onTap: () {},
-            ),
+            // ListTile(
+            //   leading: Icon(Icons.logout,
+            //       color: Colors.red), // Icono de cerrar sesión
+            //   title: Center(
+            //     child: Text(
+            //       'Cerrar sesión',
+            //       style:
+            //           TextStyle(color: Colors.red, fontWeight: FontWeight.w600),
+            //     ),
+            //   ),
+            //   onTap: () {},
+            // ),
           ],
         ),
       ),

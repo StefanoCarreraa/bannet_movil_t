@@ -13,8 +13,20 @@ class ReciboScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: blanco, // Fondo blanco
       appBar: AppBar(
-        title: Text('Mis recibos Bantel', style: TextStyle(color: verdeLima)),
-        backgroundColor: negro, // Verde lima
+        title: Center(
+          child: Image.asset(
+            'assets/images/logo_bannet_1.png',
+            height: 30,
+          ),
+        ),
+        toolbarHeight: 60,
+        actions: [
+          IconButton(
+            onPressed: () {},
+            icon: Icon(Icons.refresh, color: negro),
+          ),
+        ],
+        backgroundColor: negro,
         centerTitle: true,
         iconTheme: IconThemeData(color: verdeLima),
       ),
@@ -34,6 +46,23 @@ class ReciboScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              SizedBox(height: 20),
+
+              // Padding(
+              //   padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+              // child:
+              Center(
+                child: Text(
+                  "Mi recibo Bantel",
+                  style: TextStyle(
+                      color: verdeLima,
+                      fontSize: 30,
+                      fontWeight: FontWeight.w700),
+                ),
+              ),
+              // ),
+              SizedBox(height: 20),
+
               _buildResumenCuenta(),
               SizedBox(height: 20),
               _buildPlanAdicionales(),
@@ -43,37 +72,6 @@ class ReciboScreen extends StatelessWidget {
               _buildEvolutivoMensual(),
             ],
           ),
-        ),
-      ),
-      bottomNavigationBar: Theme(
-        data: ThemeData(
-          // Forzamos el color negro de fondo para el BottomNavigationBar
-          canvasColor: Colors
-              .black, // Específicamente el fondo de la barra de navegación
-        ),
-        child: BottomNavigationBar(
-          selectedItemColor: Colors.white, // Elementos seleccionados en blanco
-          unselectedItemColor:
-              Colors.grey, // Elementos no seleccionados en gris
-          showUnselectedLabels: true,
-          items: const [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home_outlined),
-              label: 'Inicio',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.receipt_long_outlined),
-              label: 'Recibo',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.history_edu),
-              label: 'Comprobantes',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.sports_esports),
-              label: 'Gamer',
-            ),
-          ],
         ),
       ),
     );

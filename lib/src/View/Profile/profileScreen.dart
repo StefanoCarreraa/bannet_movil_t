@@ -1,39 +1,39 @@
 import 'dart:ui';
-
 import 'package:flutter/material.dart';
 
 class ProfileScreen extends StatelessWidget {
   final Color verdeLima = Color(0xFFA5CD39); // Verde lima
   final Color grisFondo = Color(0xFFF5F5F5); // Gris claro
   final Color grisOscuro = Color(0xFF333333); // Gris oscuro para detalles
-  final Color blanco = Colors.white;
+  final Color blanco = Colors.white; // Blanco puro
+  final Color negro = Colors.black; // Blanco puro
 
-  ProfileScreen({super.key}); // Blanco puro
+  ProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: blanco,
+      backgroundColor: negro,
       appBar: AppBar(
-        backgroundColor: blanco,
+        backgroundColor: negro,
         elevation: 0,
         centerTitle: true,
         title: Text(
           'Perfil',
           style: TextStyle(
-            color: grisOscuro,
+            color: blanco,
             fontSize: 20,
             fontWeight: FontWeight.bold,
           ),
         ),
-        iconTheme: IconThemeData(color: grisOscuro),
+        iconTheme: IconThemeData(color: verdeLima),
       ),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             _construirEncabezadoPerfil(),
-            Divider(color: Colors.grey.shade300, thickness: 1),
+            Divider(color: verdeLima, thickness: 1),
             _construirTituloSeccion('Configuración'),
             _construirElementoLista(Icons.settings, 'Configuración de la app',
                 () async {
@@ -62,6 +62,7 @@ class ProfileScreen extends StatelessWidget {
   }
 
   void _mostrarInformacion(BuildContext context) {
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -71,7 +72,7 @@ class ProfileScreen extends StatelessWidget {
             width: MediaQuery.of(context).size.width * 0.9,
             padding: const EdgeInsets.all(24.0),
             decoration: BoxDecoration(
-              color: Color(0xFFFFFFFF),
+              color: grisOscuro,
               borderRadius: BorderRadius.circular(12),
             ),
             child: Column(
@@ -80,7 +81,7 @@ class ProfileScreen extends StatelessWidget {
                 const Text(
                   'Cambiar color de app',
                   style: TextStyle(
-                    color: Colors.black,
+                    color: Colors.white,
                     fontWeight: FontWeight.w900,
                     fontSize: 20,
                   ),
@@ -93,7 +94,9 @@ class ProfileScreen extends StatelessWidget {
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
-                  appcolor: Colors.white,
+                  appcolor: verdeLima,
+                  textColor: blanco,
+                  iconColor: blanco,
                 ),
                 const SizedBox(height: 20),
                 CustomButton(
@@ -102,7 +105,9 @@ class ProfileScreen extends StatelessWidget {
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
-                  appcolor: Colors.white,
+                  appcolor: verdeLima,
+                  textColor: blanco,
+                  iconColor: blanco,
                 ),
                 const SizedBox(height: 20),
                 Align(
@@ -113,7 +118,7 @@ class ProfileScreen extends StatelessWidget {
                     },
                     child: const Text(
                       'Cerrar',
-                      style: TextStyle(color: Color(0xFFFFFFFF)),
+                      style: TextStyle(color: Color(0xFFA5CD39)),
                     ),
                   ),
                 ),
@@ -140,7 +145,7 @@ class ProfileScreen extends StatelessWidget {
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
-            color: grisOscuro,
+            color: blanco,
           ),
         ),
         SizedBox(height: 20),
@@ -158,7 +163,7 @@ class ProfileScreen extends StatelessWidget {
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,
-            color: grisOscuro,
+            color: verdeLima,
           ),
         ),
       ),
@@ -168,12 +173,12 @@ class ProfileScreen extends StatelessWidget {
   Widget _construirElementoLista(
       IconData icono, String titulo, VoidCallback onTap) {
     return ListTile(
-        leading: Icon(icono, color: grisOscuro),
+        leading: Icon(icono, color: verdeLima),
         title: Text(
           titulo,
-          style: TextStyle(fontSize: 16, color: grisOscuro),
+          style: TextStyle(fontSize: 16, color: blanco),
         ),
-        trailing: Icon(Icons.arrow_forward_ios, size: 16, color: grisOscuro),
+        trailing: Icon(Icons.arrow_forward_ios, size: 16, color: verdeLima),
         onTap: onTap);
   }
 
@@ -190,6 +195,7 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 }
+
 class CustomButton extends StatelessWidget {
   final IconData icon;
   final String text;
@@ -210,6 +216,8 @@ class CustomButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final Color verdeLima = Color(0xFFA5CD39); // Verde lima
+
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
         backgroundColor: appcolor,
@@ -222,12 +230,12 @@ class CustomButton extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Icon(icon, color: iconColor ?? Colors.black),
+          Icon(icon, color: iconColor ?? verdeLima),
           Text(
             text,
-            style: TextStyle(color: textColor ?? Colors.black),
+            style: TextStyle(color: textColor ?? Colors.white),
           ),
-          Icon(Icons.keyboard_arrow_right, color: iconColor ?? Colors.black),
+          Icon(Icons.keyboard_arrow_right, color: iconColor ?? verdeLima),
         ],
       ),
     );

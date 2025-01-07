@@ -1,0 +1,190 @@
+import 'package:bannet_movil_t/src/View/Recibo/ReciboScreen.dart';
+import 'package:flutter/material.dart';
+
+class TaskCardWidget extends StatefulWidget {
+  final String titulo;
+  final String fecha;
+  final String precio;
+  final Color color;
+  final bool isCompleted;
+
+  const TaskCardWidget({
+    super.key,
+    required this.titulo,
+    required this.fecha,
+    required this.precio,
+    required this.color,
+    required this.isCompleted,
+  });
+
+  @override
+  _TaskCardWidgetState createState() => _TaskCardWidgetState();
+}
+
+class _TaskCardWidgetState extends State<TaskCardWidget> {
+  bool _isExpanded = false; // Controla si el panel está expandido o no
+  final Color verdeLima = Color(0xFFA5CD39);
+  final Color grisFondo = Color(0xFFF5F5F5);
+  final Color grisOscuro = Color(0xFF333333);
+  final Color negro = Color(0xFF000000);
+
+  // Función para construir el Recibo expandido
+  Widget _buildMiRecibo() {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Icon(Icons.receipt_long_outlined, color: Colors.grey),
+              SizedBox(width: 8),
+              Text(
+                '¿Qué quieres hacer hoy?',
+                style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.grey),
+              ),
+            ],
+          ),
+          SizedBox(height: 20),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _buildBoton('Ver recibo', Colors.white, negro, true),
+              SizedBox(width: 20),
+              _buildBoton('Pagar', verdeLima, Colors.white, true),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Botón de acción
+  Widget _buildBoton(
+      String texto, Color colorFondo, Color colorTexto, bool conBorde) {
+    return Builder(
+      builder: (BuildContext context) {
+        return TextButton(
+          style: TextButton.styleFrom(
+            backgroundColor: colorFondo,
+            foregroundColor: colorTexto,
+            padding: EdgeInsets.symmetric(vertical: 18, horizontal: 40),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+              side: conBorde
+                  ? BorderSide(color: Colors.black12, width: 2)
+                  : BorderSide.none,
+            ),
+          ),
+          onPressed: () {
+            if (texto == 'Ver recibo') {
+              // Navegar a la pantalla del recibo
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ReciboScreen()),
+              );
+            } else {
+              print("Botón presionado: $texto");
+            }
+          },
+          child: Text(
+            texto,
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          ),
+        );
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _isExpanded = !_isExpanded; // Cambiar estado de expansión
+        });
+      },
+      child: Container(
+        width: double.infinity,
+        margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: Colors.grey[900],
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Column(
+          children: [
+            // Contenedor de la tarea
+            Row(
+              children: [
+                Container(
+                  width: 8,
+                  height: 130,
+                  decoration: BoxDecoration(
+                    color: widget.color,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(12),
+                      bottomLeft: Radius.circular(12),
+                    ),
+                  ),
+                ),
+                SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        widget.titulo,
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold),
+                      ),
+                      SizedBox(height: 4),
+                      Row(
+                        children: [
+                          Icon(Icons.calendar_today,
+                              size: 14, color: Colors.white54),
+                          SizedBox(width: 4),
+                          Text(
+                            widget.precio,
+                            style: TextStyle(color: Colors.white54),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 4),
+                      Row(
+                        children: [
+                          Icon(Icons.calendar_today,
+                              size: 14, color: Colors.white54),
+                          SizedBox(width: 4),
+                          Text(
+                            widget.fecha,
+                            style: TextStyle(color: Colors.white54),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(right: 16.0),
+                  child: Icon(
+                    _isExpanded ? Icons.expand_less : Icons.expand_more,
+                    color: Colors.white54,
+                  ),
+                ),
+              ],
+            ),
+
+            // Mostrar contenido expandido
+            if (_isExpanded) _buildMiRecibo(),
+          ],
+        ),
+      ),
+    );
+  }
+}
