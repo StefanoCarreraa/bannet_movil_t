@@ -2,19 +2,24 @@ import 'package:bannet_movil_t/src/View/Recibo/ReciboScreen.dart';
 import 'package:flutter/material.dart';
 
 class TaskCardWidget extends StatefulWidget {
-  final String titulo;
-  final String fecha;
-  final String precio;
-  final Color color;
+  final String? titulo;
+  final String? subtitulo;
+  final String? periodo;
+
+  final String? fecha;
+  final String? precio;
+  final Color? color;
   final bool isCompleted;
 
   const TaskCardWidget({
     super.key,
-    required this.titulo,
-    required this.fecha,
-    required this.precio,
-    required this.color,
+    this.titulo,
+    this.fecha,
+    this.precio,
+    this.color,
     required this.isCompleted,
+    this.subtitulo,
+    this.periodo,
   });
 
   @override
@@ -137,36 +142,62 @@ class _TaskCardWidgetState extends State<TaskCardWidget> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        widget.titulo,
+                        widget.titulo!,
                         style: TextStyle(
                             color: Colors.white,
                             fontSize: 16,
                             fontWeight: FontWeight.bold),
                       ),
-                      SizedBox(height: 4),
-                      Row(
-                        children: [
-                          Icon(Icons.calendar_today,
-                              size: 14, color: Colors.white54),
-                          SizedBox(width: 4),
-                          Text(
-                            widget.precio,
-                            style: TextStyle(color: Colors.white54),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 4),
-                      Row(
-                        children: [
-                          Icon(Icons.calendar_today,
-                              size: 14, color: Colors.white54),
-                          SizedBox(width: 4),
-                          Text(
-                            widget.fecha,
-                            style: TextStyle(color: Colors.white54),
-                          ),
-                        ],
-                      ),
+                      if (widget.subtitulo != null) ...[
+                        SizedBox(
+                            height: 4), // Espaciado entre el título y subtítulo
+                        Text(
+                          widget.subtitulo!,
+                          style: TextStyle(
+                              color: Colors.white70,
+                              fontSize: 14,
+                              fontStyle: FontStyle.italic),
+                        ),
+                      ],
+                      if (widget.periodo != null) ...[
+                        SizedBox(
+                            height: 4), // Espaciado entre el título y subtítulo
+                        Text(
+                          widget.periodo!,
+                          style: TextStyle(
+                              color: Colors.white70,
+                              fontSize: 14,
+                              fontStyle: FontStyle.italic),
+                        ),
+                      ],
+                      if (widget.precio != null) ...[
+                        SizedBox(height: 4),
+                        Row(
+                          children: [
+                            Icon(Icons.calendar_today,
+                                size: 14, color: Colors.white54),
+                            SizedBox(width: 4),
+                            Text(
+                              widget.precio!,
+                              style: TextStyle(color: Colors.white54),
+                            ),
+                          ],
+                        ),
+                      ],
+                      if (widget.fecha != null) ...[
+                        SizedBox(height: 4),
+                        Row(
+                          children: [
+                            Icon(Icons.calendar_today,
+                                size: 14, color: Colors.white54),
+                            SizedBox(width: 4),
+                            Text(
+                              widget.fecha!,
+                              style: TextStyle(color: Colors.white54),
+                            ),
+                          ],
+                        ),
+                      ],
                     ],
                   ),
                 ),

@@ -1,6 +1,4 @@
-import 'package:bannet_movil_t/src/View/Home/IndexScreen.dart';
 import 'package:bannet_movil_t/src/widget/TaskCardWidget.dart';
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
 class Listrecibosscreen extends StatelessWidget {
@@ -64,24 +62,27 @@ class Listrecibosscreen extends StatelessWidget {
                 height: 20,
               ),
               TaskCardWidget(
-                  titulo:
+                  titulo: 'Nro. Recibo : 000000000598866',
+                  subtitulo:
                       'Plan : INTERNET 400 MBPS + 3 STREAMING PLAN FULL PRIME',
+                  periodo: 'Periodo: 2025-ENERO',
                   precio: 'Monto : S/. 35.00',
-                  fecha: 'Inicio de facturación : 21/08/2024',
                   color: verdeLima,
                   isCompleted: false),
               TaskCardWidget(
-                  titulo:
+                  titulo: 'Nro. Recibo : 000000000598866',
+                  subtitulo:
                       'Plan : INTERNET 400 MBPS + 3 STREAMING PLAN FULL PRIME',
+                  periodo: 'Periodo: 2025-ENERO',
                   precio: 'Monto : S/. 55.00',
-                  fecha: 'Inicio de facturación : 21/08/2024',
                   color: verdeLima,
                   isCompleted: false),
               TaskCardWidget(
-                  titulo:
+                  titulo: 'Nro. Recibo : 000000000598866',
+                  subtitulo:
                       'Plan : INTERNET 400 MBPS + 3 STREAMING PLAN FULL PRIME',
+                  periodo: 'Periodo: 2025-ENERO',
                   precio: 'Monto : S/. 65.00',
-                  fecha: 'Inicio de facturación : 21/08/2024',
                   color: verdeLima,
                   isCompleted: false),
               SizedBox(height: 30),
@@ -101,8 +102,7 @@ class Listrecibosscreen extends StatelessWidget {
     );
   }
 
-  Widget _buildMontoPagarCard(
-      {required String titulo, required String monto}) {
+  Widget _buildMontoPagarCard({required String titulo, required String monto}) {
     return Card(
       margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       elevation: 4,
