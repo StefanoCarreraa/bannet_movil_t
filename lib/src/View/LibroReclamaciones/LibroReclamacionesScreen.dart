@@ -1,23 +1,284 @@
+import 'package:bannet_movil_t/src/widget/dropdown_custom_form_widget.dart';
+import 'package:bannet_movil_t/src/widget/terminos_Section_widget.dart';
+import 'package:bannet_movil_t/src/widget/textfield_custom_form_widget.dart';
 import 'package:flutter/material.dart';
 
-class LibroReclamacionesScreen extends StatelessWidget {
+class LibroReclamacionesScreen extends StatefulWidget {
+
+  @override
+  State<LibroReclamacionesScreen> createState() => _LibroReclamacionesScreen();
+}
+
+class _LibroReclamacionesScreen extends State<LibroReclamacionesScreen> {
   final Color verdeLima = Color(0xFFA5CD39);
   final Color grisFondo = Color(0xFFF5F5F5);
   final Color grisOscuro = Color(0xFF333333);
   final Color negro = Color(0xFF000000);
 
-  LibroReclamacionesScreen({super.key});
+  final GlobalKey<FormFieldState> _contratoDropdownKey =
+      GlobalKey<FormFieldState>();
+  final GlobalKey<FormFieldState> _tipoDropdownKey =
+      GlobalKey<FormFieldState>();
+  late TextEditingController _textsolicitudController;
+  late TextEditingController _textnombreController;
+  late TextEditingController _textdocController;  
+
+  bool _aceptaTerminos = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _textsolicitudController = TextEditingController();
+    _textnombreController = TextEditingController();
+    _textdocController = TextEditingController();      
+  }
+
+  void _mostrarTerminosYCondiciones() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return TerminosYCondicionesDialog(
+          onAccept: () {
+            Navigator.of(context).pop();
+            _validarYEnviarFormulario();
+          },
+          acceptButtonColor: verdeLima,
+        );
+      },
+    );
+  }
+
+  void _validarYEnviarFormulario() {
+    final istiposervicioValid =
+        _tipoDropdownKey.currentState?.validate() ?? false;
+    final iscontratoValid =
+        _contratoDropdownKey.currentState?.validate() ?? false;
+    final isFormValid = _formKey.currentState?.validate() ?? false;
+
+    if (!isFormValid || !istiposervicioValid || !iscontratoValid) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Por favor completa correctamente todos los campos.',
+          ),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          '¡Solicitud enviada correctamente!',
+        ),
+        backgroundColor: verdeLima,
+      ),
+    );
+
+    // Procesar la solicitud aquí
+    // _limpiarFormulario();
+  }
+
+  final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
+    String? selectedValue;
+    String? selectedValue2;
+
+    final List<String> dropdownItems = [
+      'Contrato 1',
+      'Contrato 2',
+      'Contrato 3',
+      'Contrato 4',
+      'Contrato 5',
+      'Contrato 6'
+    ];
+    final List<String> dropdownItems2 = [
+      'Reclamo',
+      'Queja',
+    ];
+
     return Scaffold(
-      backgroundColor: Color(0xFFFFFFFF), // Fondo blanco
+      backgroundColor: negro,
       appBar: AppBar(
-        title:
-            Text('Zona Gamer', style: TextStyle(color: Colors.black87)),
-        backgroundColor: verdeLima, // Verde lima
+        title: Center(
+          child: Image.asset(
+            'assets/images/logo_bannet_1.png',
+            height: 30,
+          ),
+        ),
+        toolbarHeight: 60,
+        actions: [
+          IconButton(
+            onPressed: () {},
+            icon: Icon(Icons.refresh, color: verdeLima),
+          ),
+        ],
+        backgroundColor: negro,
         centerTitle: true,
-        iconTheme: IconThemeData(color: Colors.black87),
+        iconTheme: IconThemeData(color: verdeLima),
+      ),
+      body: Container(
+        constraints: BoxConstraints.expand(),
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/images/Bannet_Fond.jpg'),
+            fit: BoxFit.cover,
+          ),
+          color: Color(0xFF000000),
+        ),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Text(
+                    "Libro de Reclamaciones",
+                    style: TextStyle(
+                        color: verdeLima,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w600),
+                  ),
+                ),
+                SizedBox(height: 30),
+                TextfieldcustomFormWidget(
+                  label: 'Nombre del titular',
+                  controller: _textnombreController,
+                  hintText: 'Ingrese nombre del titular',
+                  min: 1,
+                  max: 2,                  
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return '**Este campo es obligatorio**';
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(height: 30),
+                TextfieldcustomFormWidget(
+                  label: 'DNI/CE del titular',
+                  controller: _textdocController,
+                  hintText: 'Ingrese DNI/CE del titular',
+                  min: 1,
+                  max: 2,                   
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return '**Este campo es obligatorio**';
+                    }
+                    return null;
+                  },
+                ),
+
+                SizedBox(height: 30),
+                DropdowncustomFormWidget<String>(
+                  fondoColor: Color(0xFFA5CD39),
+                  borderColor: Colors.white,
+                  labelColor: Colors.black,
+                  textColor: Colors.black,
+                  label: 'Contrato',
+                  hint: 'Selecciona un contrato',
+                  value: selectedValue,
+                  items: dropdownItems,
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      selectedValue = newValue;
+                    });
+                  },
+                  itemLabel: (String? item) => item ?? '',
+                  validator: (String? value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Por favor selecciona un contrato';
+                    }
+                    return null;
+                  },
+                  formFieldKey: _contratoDropdownKey,
+                ),
+                SizedBox(height: 30),
+                DropdowncustomFormWidget<String>(
+                  label: 'Tipo',
+                  hint: 'Selecciona un tipo',
+                  value: selectedValue2,
+                  items: dropdownItems2,
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      selectedValue2 = newValue;
+                    });
+                  },
+                  itemLabel: (String item) => item,
+                  validator: (String? value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Por favor selecciona un tipo';
+                    }
+                    return null;
+                  },
+                  formFieldKey: _tipoDropdownKey,
+                ),
+                SizedBox(height: 30),
+                TextfieldcustomFormWidget(
+                  label: 'Detalle de Solicitud',
+                  controller: _textsolicitudController,
+                  hintText: 'Ingrese detalle',
+                  min: 6,
+                  max: 8,
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return '**Este campo es obligatorio**';
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(height: 30),
+                Row(
+                  children: [
+                    GestureDetector(
+                      child: Icon(
+                        _aceptaTerminos
+                            ? Icons.check_circle
+                            : Icons.radio_button_unchecked,
+                        color: _aceptaTerminos ? verdeLima : grisFondo,
+                        size: 28,
+                      ),
+                    ),
+                    SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        'Al hacer click en el botón “SOLICITAR”, aceptas nuestras Políticas de Privacidad y Términos y Condiciones.',
+                        style: TextStyle(
+                          color: grisFondo,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 30),
+                Center(
+                  child: ElevatedButton(
+                    onPressed: _mostrarTerminosYCondiciones,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: verdeLima,
+                      foregroundColor: Colors.white,
+                      minimumSize: Size(double.infinity, 50),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(5.0),
+                      ),
+                    ),
+                    child: Text(
+                      'SOLICITAR',
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }

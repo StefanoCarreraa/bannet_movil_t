@@ -4,7 +4,6 @@ import 'package:bannet_movil_t/src/View/LibroReclamaciones/LibroReclamacionesScr
 import 'package:bannet_movil_t/src/View/PostVenta/PostVentaScreen.dart';
 import 'package:bannet_movil_t/src/View/Profile/profileScreen.dart';
 import 'package:bannet_movil_t/src/View/Recibo/ListRecibosScreen.dart';
-import 'package:bannet_movil_t/src/View/Recibo/ReciboScreen.dart';
 import 'package:bannet_movil_t/src/View/SolicitudBaja/SolicitudBajaScreen.dart';
 import 'package:bannet_movil_t/src/View/ZonaGamer/ZonaGamerScreen.dart';
 import 'package:flutter/material.dart';

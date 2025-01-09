@@ -9,6 +9,11 @@ class TextfieldcustomFormWidget extends StatelessWidget {
   final int? min;
   final int? max;
   final String? Function(String?)? validator;
+  final Color? borderColor;
+  final Color? fondoColor;
+  final Color? labelColor;
+  final Color? textColor;
+  final FontWeight? labelFontWeight;
 
   const TextfieldcustomFormWidget({
     super.key,
@@ -20,6 +25,11 @@ class TextfieldcustomFormWidget extends StatelessWidget {
     this.min,
     this.max,
     this.validator,
+    this.borderColor,
+    this.fondoColor,
+    this.labelColor,
+    this.textColor,
+    this.labelFontWeight,
   });
 
   @override
@@ -31,9 +41,9 @@ class TextfieldcustomFormWidget extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: fondoColor ?? Colors.white,
         border: Border.all(
-          color: verdeLima,
+          color: borderColor ?? verdeLima,
           width: 2,
         ),
         borderRadius: BorderRadius.circular(6.0),
@@ -57,25 +67,30 @@ class TextfieldcustomFormWidget extends StatelessWidget {
                 },
                 decoration: InputDecoration(
                   labelText: label,
-                  labelStyle: const TextStyle(
-                    color: Color(0xFFA5CD39),
+                  labelStyle: TextStyle(
+                    color: labelColor ?? verdeLima,
                     fontSize: 18,
+                    fontWeight: labelFontWeight ?? FontWeight.w600,
                   ),
                   floatingLabelBehavior: FloatingLabelBehavior.always,
                   hintText: hintText,
-                  hintStyle: TextStyle(color: Colors.black.withOpacity(0.7)),
+                  hintStyle: TextStyle(
+                    color: Colors.black.withOpacity(0.7),
+                    fontWeight: labelFontWeight ?? FontWeight.w600,
+                  ),
                   border: InputBorder.none,
                   contentPadding: const EdgeInsets.all(10),
                   errorText: state.errorText,
-                  errorStyle: const TextStyle(
+                  errorStyle: TextStyle(
                     color: Colors.red,
                     fontSize: 14,
-                    fontWeight: FontWeight.bold, // Negrita
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-                style: const TextStyle(
+                style: TextStyle(
                   color: Colors.black,
                   fontSize: 18,
+                  fontWeight: labelFontWeight ?? FontWeight.w600,
                 ),
               ),
             ],

@@ -1,4 +1,5 @@
 import 'package:bannet_movil_t/src/widget/dropdown_custom_form_widget.dart';
+import 'package:bannet_movil_t/src/widget/terminos_Section_widget.dart';
 import 'package:bannet_movil_t/src/widget/textfield_custom_form_widget.dart';
 import 'package:flutter/material.dart';
 
@@ -33,69 +34,53 @@ class _PostVentaScreenState extends State<PostVentaScreen> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Términos y Condiciones'),
-          content: Container(
-            height: 300, // Altura fija para el contenido con scroll
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '1. **Aceptación de Términos:**\nAl utilizar esta aplicación, aceptas cumplir con estos términos y condiciones.',
-                  ),
-                  SizedBox(height: 10),
-                  Text(
-                    '2. **Uso Adecuado:**\nNo debes utilizar la aplicación para fines ilícitos o no autorizados.',
-                  ),
-                  SizedBox(height: 10),
-                  Text(
-                    '3. **Protección de Datos:**\nTus datos serán protegidos según las leyes de privacidad vigentes.',
-                  ),
-                  SizedBox(height: 10),
-                  Text(
-                    '4. **Actualizaciones:**\nNos reservamos el derecho de modificar estos términos en cualquier momento.',
-                  ),
-                  SizedBox(height: 10),
-                  Text(
-                    '5. **Responsabilidad Limitada:**\nNo nos hacemos responsables por daños derivados del uso incorrecto de la aplicación.',
-                  ),
-                  SizedBox(height: 10),
-                  Text(
-                    '6. **Contacto:**\nPara cualquier consulta, puedes contactarnos a soporte@example.com.',
-                  ),
-                ],
-              ),
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // Cerrar el diálogo
-              },
-              child: Text('Cancelar'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  _aceptaTerminos = true;
-                });
-                Navigator.of(context).pop(); // Cerrar el diálogo
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: verdeLima,
-              ),
-              child: Text('Aceptar'),
-            ),
-          ],
+        return TerminosYCondicionesDialog(
+          onAccept: () {
+            Navigator.of(context).pop();
+            _validarYEnviarFormulario();
+          },
+          acceptButtonColor: verdeLima,
         );
       },
     );
   }
 
+  void _validarYEnviarFormulario() {
+    final istiposervicioValid =
+        _tiposervicioDropdownKey.currentState?.validate() ?? false;
+    final iscontratoValid =
+        _contratoDropdownKey.currentState?.validate() ?? false;
+    final isFormValid = _formKey.currentState?.validate() ?? false;
+
+    if (!isFormValid || !istiposervicioValid || !iscontratoValid) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Por favor completa correctamente todos los campos.',
+          ),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          '¡Solicitud enviada correctamente!',
+        ),
+        backgroundColor: verdeLima,
+      ),
+    );
+
+    // Procesar la solicitud aquí
+    // _limpiarFormulario();
+  }
+
+  final _formKey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
-    final _formKey = GlobalKey<FormState>();
     String? selectedValue;
     String? selectedValue2;
 
@@ -163,6 +148,10 @@ class _PostVentaScreenState extends State<PostVentaScreen> {
                 ),
                 SizedBox(height: 30),
                 DropdowncustomFormWidget<String>(
+                  fondoColor: Color(0xFFA5CD39),
+                  borderColor: Colors.white,
+                  labelColor: Colors.black,
+                  textColor: Colors.black,
                   label: 'Contrato',
                   hint: 'Selecciona un contrato',
                   value: selectedValue,
@@ -218,26 +207,16 @@ class _PostVentaScreenState extends State<PostVentaScreen> {
                 SizedBox(height: 30),
                 Row(
                   children: [
-                    Checkbox(
-                      value: _aceptaTerminos,
-                      onChanged: (bool? value) {
-                        if (value == true) {
-                          _mostrarTerminosYCondiciones();
-                        } else {
-                          setState(() {
-                            _aceptaTerminos = false;
-                          });
-                        }
-                      },
-                      fillColor: WidgetStateProperty.resolveWith<Color>(
-                        (Set<WidgetState> states) {
-                          if (states.contains(WidgetState.selected)) {
-                            return verdeLima; // Color cuando está activado
-                          }
-                          return grisFondo; // Color cuando está desactivado
-                        },
+                    GestureDetector(
+                      child: Icon(
+                        _aceptaTerminos
+                            ? Icons.check_circle
+                            : Icons.radio_button_unchecked,
+                        color: _aceptaTerminos ? verdeLima : grisFondo,
+                        size: 28,
                       ),
                     ),
+                    SizedBox(width: 10),
                     Expanded(
                       child: Text(
                         'Al hacer click en el botón “SOLICITAR”, aceptas nuestras Políticas de Privacidad y Términos y Condiciones.',
@@ -252,49 +231,7 @@ class _PostVentaScreenState extends State<PostVentaScreen> {
                 SizedBox(height: 30),
                 Center(
                   child: ElevatedButton(
-                    onPressed: () {
-                      final istiposervicioValid =
-                          _tiposervicioDropdownKey.currentState?.validate() ??
-                              false;
-                      final iscontratoValid =
-                          _contratoDropdownKey.currentState?.validate() ??
-                              false;
-                      final isFormValid =
-                          _formKey.currentState?.validate() ?? false;
-                      if (!_aceptaTerminos) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              'Debes aceptar las Políticas de Privacidad y Términos y Condiciones.',
-                            ),
-                            backgroundColor: Colors.red,
-                          ),
-                        );
-                        return;
-                      }
-
-                      if (_formKey.currentState?.validate() ?? false) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              '¡Solicitud enviada correctamente!',
-                            ),
-                            backgroundColor: verdeLima,
-                          ),
-                        );
-
-                        // Procesar la solicitud aquí
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              'Por favor completa correctamente todos los campos.',
-                            ),
-                            backgroundColor: Colors.red,
-                          ),
-                        );
-                      }
-                    },
+                    onPressed: _mostrarTerminosYCondiciones,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: verdeLima,
                       foregroundColor: Colors.white,
