@@ -54,14 +54,17 @@ class TerminosYCondicionesDialog extends StatelessWidget {
           ),
         ),
         actions: [
-          ElevatedButton(
-            onPressed: () {
-              onAccept();
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: acceptButtonColor,
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: () {
+                onAccept();
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: acceptButtonColor,
+              ),
+              child: Text('Aceptar'),
             ),
-            child: Text('Aceptar'),
           ),
         ],
       ),

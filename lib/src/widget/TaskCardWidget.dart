@@ -5,11 +5,11 @@ class TaskCardWidget extends StatefulWidget {
   final String? titulo;
   final String? subtitulo;
   final String? periodo;
-
   final String? fecha;
   final String? precio;
   final Color? color;
   final bool isCompleted;
+  final Widget? expandedContent; // Nuevo parámetro para contenido expandido
 
   const TaskCardWidget({
     super.key,
@@ -20,6 +20,7 @@ class TaskCardWidget extends StatefulWidget {
     required this.isCompleted,
     this.subtitulo,
     this.periodo,
+    this.expandedContent, // Inicialización del nuevo parámetro
   });
 
   @override
@@ -59,8 +60,8 @@ class _TaskCardWidgetState extends State<TaskCardWidget> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               _buildBoton('Ver recibo', Colors.white, negro, true),
-              SizedBox(width: 20),
-              _buildBoton('Pagar', verdeLima, Colors.white, true),
+              // SizedBox(width: 20),
+              // _buildBoton('Pagar', verdeLima, Colors.white, true),
             ],
           ),
         ],
@@ -212,7 +213,9 @@ class _TaskCardWidgetState extends State<TaskCardWidget> {
             ),
 
             // Mostrar contenido expandido
-            if (_isExpanded) _buildMiRecibo(),
+            if (_isExpanded)
+              widget.expandedContent ??
+                  _buildMiRecibo(), // Usa el contenido proporcionado o el predeterminado
           ],
         ),
       ),

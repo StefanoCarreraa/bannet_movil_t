@@ -1,7 +1,10 @@
 import 'dart:ui';
 
+import 'package:bannet_movil_t/src/View/Comprobante/ComprobanteScreen.dart';
 import 'package:bannet_movil_t/src/View/Profile/profileScreen.dart';
+import 'package:bannet_movil_t/src/View/Recibo/ListRecibosScreen.dart';
 import 'package:bannet_movil_t/src/View/Recibo/ReciboScreen.dart';
+import 'package:bannet_movil_t/src/View/ZonaGamer/ZonaGamerScreen.dart';
 import 'package:bannet_movil_t/src/widget/DrawerSectionCustom.dart';
 import 'package:bannet_movil_t/src/widget/TaskCardWidget.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +14,8 @@ class Indexscreen extends StatelessWidget {
   final Color grisFondo = Color(0xFFF5F5F5);
   final Color grisOscuro = Color(0xFF333333);
   final Color negro = Color(0xFF000000);
+
+  int _selectedIndex = 0;
 
   Indexscreen({super.key});
   void _mostrarConfirmacionCerrarSesion(BuildContext context) {
@@ -43,6 +48,32 @@ class Indexscreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    void _onItemTapped(int index) {
+      _selectedIndex = index;
+
+      if (index == 1) {
+        // Cuando se selecciona el ítem "Recibo"
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => Listrecibosscreen()),
+        );
+      }
+      if (index == 2) {
+        // Cuando se selecciona el ítem "Recibo"
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => ComprobanteScreen()),
+        );
+      }
+      if (index == 3) {
+        // Cuando se selecciona el ítem "Recibo"
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => ZonaGamerScreen()),
+        );
+      }
+    }
+
     return Scaffold(
       backgroundColor: grisFondo,
       appBar: AppBar(
@@ -204,15 +235,17 @@ class Indexscreen extends StatelessWidget {
       // Navegación inferior
       bottomNavigationBar: Theme(
         data: ThemeData(
-          // Forzamos el color negro de fondo para el BottomNavigationBar
-          canvasColor:
-              negro, // Específicamente el fondo de la barra de navegación
+          canvasColor: negro, // Fondo negro de la barra de navegación
         ),
         child: BottomNavigationBar(
+          currentIndex: _selectedIndex,
           selectedItemColor: Colors.white, // Elementos seleccionados en blanco
           unselectedItemColor:
               Colors.grey, // Elementos no seleccionados en gris
           showUnselectedLabels: true,
+          onTap: (index) {
+            _onItemTapped(index); // Solo pasa el índice, no context
+          },
           items: const [
             BottomNavigationBarItem(
               icon: Icon(Icons.home_outlined),

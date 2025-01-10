@@ -47,13 +47,13 @@ class ProfileScreen extends StatelessWidget {
             _construirElementoLista(
                 Icons.lock_outline, 'Cambiar contraseña de cuenta', () {}),
             _construirTituloSeccion('App'),
-            _construirElementoLista(
-                Icons.info_outline, 'Acerca de nosotros', () {}),
-            _construirElementoLista(
-                Icons.help_outline, 'Preguntas frecuentes (FAQ)', () {}),
-            _construirElementoLista(
-                Icons.feedback_outlined, 'Ayuda y comentarios', () {}),
-            _construirElementoLista(Icons.support_agent, 'Soporte', () {}),
+            // _construirElementoLista(
+            //     Icons.info_outline, 'Acerca de nosotros', () {}),
+            // _construirElementoLista(
+            //     Icons.help_outline, 'Preguntas frecuentes (FAQ)', () {}),
+            // _construirElementoLista(
+            //     Icons.feedback_outlined, 'Ayuda y comentarios', () {}),
+            // _construirElementoLista(Icons.support_agent, 'Soporte', () {}),
             _construirBotonCerrarSesion(),
           ],
         ),

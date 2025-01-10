@@ -13,21 +13,13 @@ class Listrecibosscreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: blanco, // Fondo blanco
       appBar: AppBar(
-        title: Center(
-          child: Image.asset(
-            'assets/images/logo_bannet_1.png',
-            height: 30,
-          ),
+        title: Image.asset(
+          'assets/images/logo_bannet_1.png',
+          height: 30,
         ),
         toolbarHeight: 60,
-        actions: [
-          IconButton(
-            onPressed: () {},
-            icon: Icon(Icons.refresh, color: negro),
-          ),
-        ],
         backgroundColor: negro,
-        centerTitle: true,
+        centerTitle: true, // Garantiza que el título esté centrado
         iconTheme: IconThemeData(color: verdeLima),
       ),
       body: Container(
@@ -51,7 +43,7 @@ class Listrecibosscreen extends StatelessWidget {
               ),
               Center(
                 child: Text(
-                  "Mis recibos Bantel",
+                  "Mis recibos",
                   style: TextStyle(
                       color: verdeLima,
                       fontSize: 30,

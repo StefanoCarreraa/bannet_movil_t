@@ -1,6 +1,7 @@
 import 'package:bannet_movil_t/src/widget/dropdown_custom_form_widget.dart';
 import 'package:bannet_movil_t/src/widget/terminos_Section_widget.dart';
 import 'package:bannet_movil_t/src/widget/textfield_custom_form_widget.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 class PostVentaScreen extends StatefulWidget {
@@ -30,16 +31,14 @@ class _PostVentaScreenState extends State<PostVentaScreen> {
     _textsolicitudController = TextEditingController();
   }
 
-  void _mostrarTerminosYCondiciones() {
-    showDialog(
+  Future<bool?> _mostrarTerminosYCondiciones() async {
+    return await showDialog<bool>(
       context: context,
-      builder: (BuildContext context) {
+      builder: (context) {
         return TerminosYCondicionesDialog(
           onAccept: () {
-            Navigator.of(context).pop();
-            _validarYEnviarFormulario();
+            Navigator.of(context).pop(true); // Devuelve "true" si acepta
           },
-          acceptButtonColor: verdeLima,
         );
       },
     );
@@ -51,6 +50,18 @@ class _PostVentaScreenState extends State<PostVentaScreen> {
     final iscontratoValid =
         _contratoDropdownKey.currentState?.validate() ?? false;
     final isFormValid = _formKey.currentState?.validate() ?? false;
+
+    if (!_aceptaTerminos) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Debes aceptar las Políticas de Privacidad y Términos y Condiciones.',
+          ),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
 
     if (!isFormValid || !istiposervicioValid || !iscontratoValid) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -104,21 +115,13 @@ class _PostVentaScreenState extends State<PostVentaScreen> {
     return Scaffold(
       backgroundColor: negro,
       appBar: AppBar(
-        title: Center(
-          child: Image.asset(
-            'assets/images/logo_bannet_1.png',
-            height: 30,
-          ),
+        title: Image.asset(
+          'assets/images/logo_bannet_1.png',
+          height: 30,
         ),
         toolbarHeight: 60,
-        actions: [
-          IconButton(
-            onPressed: () {},
-            icon: Icon(Icons.refresh, color: verdeLima),
-          ),
-        ],
         backgroundColor: negro,
-        centerTitle: true,
+        centerTitle: true, // Garantiza que el título esté centrado
         iconTheme: IconThemeData(color: verdeLima),
       ),
       body: Container(
@@ -215,14 +218,66 @@ class _PostVentaScreenState extends State<PostVentaScreen> {
                         color: _aceptaTerminos ? verdeLima : grisFondo,
                         size: 28,
                       ),
+                      onTap: () async {
+                        if (_aceptaTerminos) {
+                          // Si ya está seleccionado, deseleccionar al hacer clic
+                          setState(() {
+                            _aceptaTerminos = false;
+                          });
+                        } else {
+                          // Mostrar el diálogo de términos y condiciones
+                          final acepto = await _mostrarTerminosYCondiciones();
+                          if (acepto != null && acepto) {
+                            setState(() {
+                              _aceptaTerminos = true;
+                            });
+                          }
+                        }
+                      },
                     ),
                     SizedBox(width: 10),
                     Expanded(
-                      child: Text(
-                        'Al hacer click en el botón “SOLICITAR”, aceptas nuestras Políticas de Privacidad y Términos y Condiciones.',
-                        style: TextStyle(
-                          color: grisFondo,
-                          fontSize: 14,
+                      child: RichText(
+                        text: TextSpan(
+                          text:
+                              'Al hacer click en el botón “SOLICITAR”, aceptas nuestras ',
+                          style: TextStyle(
+                            color: grisFondo,
+                            fontSize: 14,
+                          ),
+                          children: [
+                            TextSpan(
+                              text: 'Políticas de Privacidad',
+                              style: TextStyle(
+                                color: verdeLima,
+                                fontWeight: FontWeight.bold,
+                                decoration: TextDecoration.underline,
+                              ),
+                              recognizer: TapGestureRecognizer()
+                                ..onTap = () {
+                                  // Lógica para mostrar las políticas de privacidad
+                                  _mostrarPoliticasDePrivacidad();
+                                },
+                            ),
+                            TextSpan(
+                              text: ' y ',
+                              style: TextStyle(
+                                color: grisFondo,
+                              ),
+                            ),
+                            TextSpan(
+                              text: 'Términos y Condiciones.',
+                              style: TextStyle(
+                                color: verdeLima,
+                                fontWeight: FontWeight.bold,
+                                decoration: TextDecoration.underline,
+                              ),
+                              recognizer: TapGestureRecognizer()
+                                ..onTap = () {
+                                  _mostrarTerminosYCondiciones();
+                                },
+                            ),
+                          ],
                         ),
                       ),
                     ),
@@ -231,7 +286,7 @@ class _PostVentaScreenState extends State<PostVentaScreen> {
                 SizedBox(height: 30),
                 Center(
                   child: ElevatedButton(
-                    onPressed: _mostrarTerminosYCondiciones,
+                    onPressed: _validarYEnviarFormulario,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: verdeLima,
                       foregroundColor: Colors.white,
@@ -252,6 +307,26 @@ class _PostVentaScreenState extends State<PostVentaScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  void _mostrarPoliticasDePrivacidad() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Políticas de Privacidad'),
+          content: Text('Aquí van las políticas de privacidad.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Cerrar'),
+            ),
+          ],
+        );
+      },
     );
   }
 }
