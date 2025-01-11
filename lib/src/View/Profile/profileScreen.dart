@@ -1,4 +1,6 @@
 import 'dart:ui';
+import 'package:bannet_movil_t/src/widget/AlertshowModalBottomSheet.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -37,15 +39,26 @@ class ProfileScreen extends StatelessWidget {
             _construirTituloSeccion('Configuración'),
             _construirElementoLista(Icons.settings, 'Configuración de la app',
                 () async {
-              _mostrarInformacion(context);
+              _mostrarConfiCustomActionSheet(context);
             }),
             _construirTituloSeccion('Cuenta'),
+            _construirElementoLista(Icons.email, 'Cambiar correo electrónico',
+                () {
+              _mostrarCorreoCustomActionSheet(context);
+            }),
+            _construirElementoLista(Icons.phone, 'Cambiar número de teléfono',
+                () {
+              mostrarNotificacion(
+                context: context,
+                titulo: 'Titulo Notificacion',
+                mensaje: "Prueba de Notificacion",
+              );
+            }),
+
             _construirElementoLista(
-                Icons.email, 'Cambiar correo electrónico', () {}),
-            _construirElementoLista(
-                Icons.phone, 'Cambiar número de teléfono', () {}),
-            _construirElementoLista(
-                Icons.lock_outline, 'Cambiar contraseña de cuenta', () {}),
+                Icons.lock_outline, 'Cambiar contraseña de cuenta', () {
+              _mostrarContrasCustomActionSheet(context);
+            }),
             _construirTituloSeccion('App'),
             // _construirElementoLista(
             //     Icons.info_outline, 'Acerca de nosotros', () {}),
@@ -61,69 +74,449 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  void _mostrarInformacion(BuildContext context) {
-
-    showDialog(
+  void _mostrarConfiCustomActionSheet(BuildContext context) {
+    showModalBottomSheet(
       context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      isDismissible: false,
       builder: (BuildContext context) {
-        return Dialog(
-          backgroundColor: Colors.transparent,
-          child: Container(
-            width: MediaQuery.of(context).size.width * 0.9,
-            padding: const EdgeInsets.all(24.0),
-            decoration: BoxDecoration(
-              color: grisOscuro,
-              borderRadius: BorderRadius.circular(12),
+        return Container(
+          decoration: BoxDecoration(
+            color: grisOscuro,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(16),
+              topRight: Radius.circular(16),
             ),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                height: 5,
+                width: 50,
+                margin: EdgeInsets.symmetric(vertical: 10),
+                decoration: BoxDecoration(
+                  color: Colors.grey[700],
+                  borderRadius: BorderRadius.circular(2.5),
+                ),
+              ),
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+                child: Column(
+                  children: [
+                    Text(
+                      'Cambiar color de app',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                    CustomButton(
+                      icon: Icons.color_lens,
+                      text: 'Tema Claro',
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      appcolor: verdeLima,
+                      textColor: blanco,
+                      iconColor: blanco,
+                    ),
+                    SizedBox(
+                      height: 16,
+                    ),
+                    CustomButton(
+                      icon: Icons.color_lens,
+                      text: 'Tema Claro',
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      appcolor: verdeLima,
+                      textColor: blanco,
+                      iconColor: blanco,
+                    ),
+                    SizedBox(height: 20),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: blanco,
+                              padding: EdgeInsets.symmetric(vertical: 25),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                side: BorderSide(color: Colors.white, width: 2),
+                              ),
+                            ),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: Text(
+                              'Cancelar',
+                              style: TextStyle(color: Colors.black),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _mostrarCorreoCustomActionSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      isDismissible: false,
+      builder: (BuildContext context) {
+        return Container(
+          decoration: BoxDecoration(
+            color: grisOscuro,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(16),
+              topRight: Radius.circular(16),
+            ),
+          ),
+          child: SingleChildScrollView(
+            // Hacemos el contenido desplazable
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text(
-                  'Cambiar color de app',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w900,
-                    fontSize: 20,
+                Container(
+                  height: 5,
+                  width: 50,
+                  margin: EdgeInsets.symmetric(vertical: 10),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[700],
+                    borderRadius: BorderRadius.circular(2.5),
                   ),
-                  textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 20),
-                CustomButton(
-                  icon: Icons.color_lens,
-                  text: 'Tema Claro',
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  appcolor: verdeLima,
-                  textColor: blanco,
-                  iconColor: blanco,
-                ),
-                const SizedBox(height: 20),
-                CustomButton(
-                  icon: Icons.color_lens_outlined,
-                  text: 'Tema Oscuro',
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  appcolor: verdeLima,
-                  textColor: blanco,
-                  iconColor: blanco,
-                ),
-                const SizedBox(height: 20),
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: TextButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: const Text(
-                      'Cerrar',
-                      style: TextStyle(color: Color(0xFFA5CD39)),
-                    ),
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+                  child: Column(
+                    children: [
+                      Text(
+                        'Cambiar correo electrónico',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                        ),
+                      ),
+                      SizedBox(height: 20),
+                      TextField(
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Colors.grey[800],
+                          hintText: 'Ingrese su nuevo correo',
+                          hintStyle: TextStyle(color: Colors.grey[400]),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide.none,
+                          ),
+                          contentPadding: EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 12),
+                        ),
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      SizedBox(height: 20),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: blanco,
+                                padding: EdgeInsets.symmetric(vertical: 25),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                  side:
+                                      BorderSide(color: Colors.white, width: 2),
+                                ),
+                              ),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: Text(
+                                'Cancelar',
+                                style: TextStyle(color: Colors.black),
+                              ),
+                            ),
+                          ),
+                          SizedBox(width: 16),
+                          Expanded(
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: verdeLima,
+                                padding: EdgeInsets.symmetric(vertical: 25),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                  side:
+                                      BorderSide(color: Colors.white, width: 2),
+                                ),
+                              ),
+                              onPressed: () {
+                                print('Correo actualizado');
+                                Navigator.of(context).pop();
+                              },
+                              child: Text(
+                                'Actualizar',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
               ],
             ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _mostrarTelefonoCustomActionSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      isDismissible: false,
+      builder: (BuildContext context) {
+        return Container(
+          decoration: BoxDecoration(
+            color: grisOscuro,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(16),
+              topRight: Radius.circular(16),
+            ),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                height: 5,
+                width: 50,
+                margin: EdgeInsets.symmetric(vertical: 10),
+                decoration: BoxDecoration(
+                  color: Colors.grey[700],
+                  borderRadius: BorderRadius.circular(2.5),
+                ),
+              ),
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+                child: Column(
+                  children: [
+                    Text(
+                      'Cambiar número de Teléfono',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                    TextField(
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: Colors.grey[800],
+                        hintText: 'Ingrese su nuevo numero de Teléfono',
+                        hintStyle: TextStyle(color: Colors.grey[400]),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide.none,
+                        ),
+                        contentPadding:
+                            EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      ),
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    SizedBox(height: 20),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: blanco,
+                              padding: EdgeInsets.symmetric(vertical: 25),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                side: BorderSide(color: Colors.white, width: 2),
+                              ),
+                            ),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: Text(
+                              'Cancelar',
+                              style: TextStyle(color: Colors.black),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 16),
+                        Expanded(
+                            child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: verdeLima,
+                            padding: EdgeInsets.symmetric(vertical: 25),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              side: BorderSide(color: Colors.white, width: 2),
+                            ),
+                          ),
+                          onPressed: () {
+                            print('Correo actualizado');
+                            Navigator.of(context).pop();
+                          },
+                          child: Text(
+                            'Actualizar',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        )),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _mostrarContrasCustomActionSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (BuildContext context) {
+        return Container(
+          decoration: BoxDecoration(
+            color: grisOscuro,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(16),
+              topRight: Radius.circular(16),
+            ),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                height: 5,
+                width: 50,
+                margin: EdgeInsets.symmetric(vertical: 10),
+                decoration: BoxDecoration(
+                  color: Colors.grey[700],
+                  borderRadius: BorderRadius.circular(2.5),
+                ),
+              ),
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+                child: Column(
+                  children: [
+                    Text(
+                      'Cambiar Contraseña',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                    TextField(
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: Colors.grey[800],
+                        hintText: 'Ingrese su nueva Contraseña',
+                        hintStyle: TextStyle(color: Colors.grey[400]),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide.none,
+                        ),
+                        contentPadding:
+                            EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      ),
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    SizedBox(height: 16),
+                    TextField(
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: Colors.grey[800],
+                        hintText: 'Confirmar su nueva Contraseña',
+                        hintStyle: TextStyle(color: Colors.grey[400]),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide.none,
+                        ),
+                        contentPadding:
+                            EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      ),
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    SizedBox(height: 20),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: blanco,
+                              padding: EdgeInsets.symmetric(vertical: 25),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                side: BorderSide(color: Colors.white, width: 2),
+                              ),
+                            ),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: Text(
+                              'Cancelar',
+                              style: TextStyle(color: Colors.black),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 16),
+                        Expanded(
+                            child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: verdeLima,
+                            padding: EdgeInsets.symmetric(vertical: 25),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              side: BorderSide(color: Colors.white, width: 2),
+                            ),
+                          ),
+                          onPressed: () {
+                            print('Correo actualizado');
+                            Navigator.of(context).pop();
+                          },
+                          child: Text(
+                            'Actualizar',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        )),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
         );
       },
@@ -222,9 +615,10 @@ class CustomButton extends StatelessWidget {
       style: ElevatedButton.styleFrom(
         backgroundColor: appcolor,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(0),
+          borderRadius: BorderRadius.circular(12),
+          side: BorderSide(color: Colors.white, width: 2),
         ),
-        padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 25),
+        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 25),
       ),
       onPressed: onPressed,
       child: Row(

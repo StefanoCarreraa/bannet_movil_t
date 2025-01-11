@@ -84,9 +84,14 @@ class Listrecibosscreen extends StatelessWidget {
               ),
               SizedBox(height: 20),
               _buildMontoPagarCard(
-                titulo: "Monto a pagar",
+                titulo: "Monto facturado",
                 monto: "S/. 155.00",
               ),
+              _buildMontoPagarCard(
+                titulo: "Monto a pagar",
+                monto: "S/. 0.00",
+              ),
+              _buildGeneral(),
             ],
           ),
         ),
@@ -102,11 +107,14 @@ class Listrecibosscreen extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
       ),
       child: ListTile(
-        leading: Icon(Icons.attach_money, color: verdeLima, size: 36),
+        leading: Icon(Icons.payment_outlined, color: verdeLima, size: 36),
         title: Text(
           titulo,
           style: TextStyle(
-              fontSize: 16, fontWeight: FontWeight.bold, color: negro),
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: negro,
+          ),
         ),
         trailing: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -114,10 +122,70 @@ class Listrecibosscreen extends StatelessWidget {
             Text(
               monto,
               style: TextStyle(
-                  fontSize: 16, fontWeight: FontWeight.bold, color: verdeLima),
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: verdeLima,
+              ),
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildGeneral() {
+    return Container(
+      width: double.infinity,
+      height: 170,
+      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      decoration: BoxDecoration(
+        color: Colors.grey.withOpacity(0.4),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Center(
+                        child: Text(
+                          "¡Felicidades, Bantelino!",
+                          style: TextStyle(
+                              color: verdeLima,
+                              fontSize: 30,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      SizedBox(height: 14),
+                      Center(
+                        child: Column(
+                          children: [
+                            Text(
+                              "No tienes deudas.",
+                              style: TextStyle(color: Colors.white, fontSize: 25,
+                              fontWeight: FontWeight.bold),
+                            ),
+                             Text(
+                              "Pagaste tu último recibo",
+                              style: TextStyle(color: Colors.white,  fontSize: 25,
+                              fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+               
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
