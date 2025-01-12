@@ -2,13 +2,20 @@ import 'package:bannet_movil_t/src/View/Home/IndexScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-class Loginscreen extends StatelessWidget {
-  final Color verdeLima = Color(0xFFA5CD39); // Verde lima
-  final Color grisFondo = Color(0xFFF5F5F5); // Fondo gris claro
+class Loginscreen extends StatefulWidget {
+  Loginscreen({super.key});
+  @override
+  State<Loginscreen> createState() => _LoginscreenState();
+}
+
+class _LoginscreenState extends State<Loginscreen> {
+  final Color verdeLima = Color(0xFFA5CD39);
+  // Verde lima
+  final Color grisFondo = Color(0xFFF5F5F5);
+  // Fondo gris claro
   final Color grisOscuro = Color(0xFF333333);
 
-  Loginscreen({super.key}); // Gris oscuro para detalles
-
+  // Gris oscuro para detalles
   @override
   Widget build(BuildContext context) {
     return Scaffold(
