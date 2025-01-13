@@ -48,11 +48,12 @@ class ProfileScreen extends StatelessWidget {
             }),
             _construirElementoLista(Icons.phone, 'Cambiar número de teléfono',
                 () {
-              mostrarNotificacion(
-                context: context,
-                titulo: 'Titulo Notificacion',
-                mensaje: "Prueba de Notificacion",
-              );
+                  _mostrarTelefonoCustomActionSheet(context);
+              // mostrarNotificacion(
+              //   context: context,
+              //   titulo: 'Titulo Notificacion',
+              //   mensaje: "Prueba de Notificacion",
+              // );
             }),
 
             _construirElementoLista(

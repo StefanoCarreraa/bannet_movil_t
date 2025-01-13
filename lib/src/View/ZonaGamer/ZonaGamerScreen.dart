@@ -5,7 +5,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 class ZonaGamerScreen extends StatefulWidget {
-  ZonaGamerScreen({super.key});
+  const ZonaGamerScreen({super.key});
 
   @override
   State<ZonaGamerScreen> createState() => _ZonaGamerScreenState();

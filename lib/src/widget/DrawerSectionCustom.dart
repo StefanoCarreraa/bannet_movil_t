@@ -1,4 +1,4 @@
-import 'package:bannet_movil_t/src/View/Comprobante/ComprobanteScreen.dart';
+import 'package:bannet_movil_t/src/View/Comprobante/ListComprobantesScreen.dart';
 import 'package:bannet_movil_t/src/View/Home/IndexScreen.dart';
 import 'package:bannet_movil_t/src/View/LibroReclamaciones/LibroReclamacionesScreen.dart';
 import 'package:bannet_movil_t/src/View/PostVenta/PostVentaScreen.dart';
@@ -57,7 +57,7 @@ class CustomDrawer extends StatelessWidget {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => ComprobanteScreen()));
+                        builder: (context) => Listcomprobantesscreen()));
               }),
               _buildDrawerItem(Icons.cancel_outlined, 'Solicitud de Baja', () {
                 Navigator.push(

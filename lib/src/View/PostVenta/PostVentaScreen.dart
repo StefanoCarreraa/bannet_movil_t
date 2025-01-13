@@ -5,7 +5,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 class PostVentaScreen extends StatefulWidget {
-  PostVentaScreen({super.key});
+  const PostVentaScreen({super.key});
 
   @override
   State<PostVentaScreen> createState() => _PostVentaScreenState();

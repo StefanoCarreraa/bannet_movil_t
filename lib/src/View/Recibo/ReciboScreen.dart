@@ -1,8 +1,8 @@
 import 'dart:io';
 
+import 'package:bannet_movil_t/src/widget/AlertshowModalBottomSheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -74,9 +74,10 @@ class ReciboScreen extends StatelessWidget {
                           ),
                         ),
                         IconButton(
-                          onPressed:
-                              _downloadRecibo, // Llama a la función de descarga
-                          icon: Icon(Icons.download), // Ícono de descarga
+                          onPressed: () async {
+                            _downloadRecibo(context);
+                          },
+                          icon: Icon(Icons.download),
                           color: Colors.white,
                         ),
                       ],
@@ -119,10 +120,11 @@ class ReciboScreen extends StatelessWidget {
   }
 
   /// Función para descargar el recibo en la carpeta pública Descargas
-  Future<void> _downloadRecibo() async {
+  Future<void> _downloadRecibo(BuildContext context) async {
     try {
-// Solicitar permiso de almacenamiento
-      PermissionStatus status = await Permission.manageExternalStorage.request();
+      // Solicitar permiso de almacenamiento
+      PermissionStatus status =
+          await Permission.manageExternalStorage.request();
 
       if (status.isGranted) {
         // El permiso fue concedido
@@ -152,9 +154,18 @@ class ReciboScreen extends StatelessWidget {
       await file.writeAsBytes(byteData.buffer.asUint8List());
 
       // Mostrar notificación al usuario
-      print('Archivo descargado en: $filePath');
+      mostrarNotificacion(
+        context: context,
+        titulo: 'Descarga Completa',
+        mensaje: "Archivo descargado en: $filePath",
+      );
     } catch (e) {
-      print('Error al descargar el archivo: $e');
+      // Mostrar notificación al usuario
+      mostrarNotificacion(
+        context: context,
+        titulo: 'Error de Descarga',
+        mensaje: "Error al descargar el archivo: $e",
+      );
     }
   }
 }

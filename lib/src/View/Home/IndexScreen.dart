@@ -1,6 +1,6 @@
 import 'dart:ui';
 
-import 'package:bannet_movil_t/src/View/Comprobante/ComprobanteScreen.dart';
+import 'package:bannet_movil_t/src/View/Comprobante/ListComprobantesScreen.dart';
 import 'package:bannet_movil_t/src/View/Profile/profileScreen.dart';
 import 'package:bannet_movil_t/src/View/Recibo/ListRecibosScreen.dart';
 import 'package:bannet_movil_t/src/View/Recibo/ReciboScreen.dart';
@@ -62,7 +62,7 @@ class Indexscreen extends StatelessWidget {
         // Cuando se selecciona el ítem "Recibo"
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => ComprobanteScreen()),
+          MaterialPageRoute(builder: (context) => Listcomprobantesscreen()),
         );
       }
       if (index == 3) {

@@ -1,168 +1,171 @@
-import 'package:bannet_movil_t/src/View/Recibo/ReciboScreen.dart';
-import 'package:bannet_movil_t/src/widget/TaskCardWidget.dart';
-import 'package:flutter/material.dart';
+import 'dart:io';
 
-class ComprobanteScreen extends StatelessWidget {
+import 'package:bannet_movil_t/src/widget/AlertshowModalBottomSheet.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
+import 'package:permission_handler/permission_handler.dart';
+
+class Comprobantescreen extends StatelessWidget {
   final Color verdeLima = Color(0xFFA5CD39);
   final Color blanco = Color(0xFFFFFFFF);
   final Color negro = Color(0xFF000000);
 
-  Widget _buildMiRecibo() {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Icon(Icons.receipt_long_outlined, color: Colors.grey),
-              SizedBox(width: 8),
-              Text(
-                '¿Qué quieres hacer hoy?',
-                style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.grey),
-              ),
-            ],
-          ),
-          SizedBox(height: 20),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              _buildBoton('Descargar Comprobante', Colors.white, negro, true),
-              // SizedBox(width: 20),
-              // _buildBoton('Pagar', verdeLima, Colors.white, true),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildBoton(
-      String texto, Color colorFondo, Color colorTexto, bool conBorde) {
-    return Builder(
-      builder: (BuildContext context) {
-        return TextButton(
-          style: TextButton.styleFrom(
-            backgroundColor: colorFondo,
-            foregroundColor: colorTexto,
-            padding: EdgeInsets.symmetric(vertical: 18, horizontal: 40),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
-              side: conBorde
-                  ? BorderSide(color: Colors.black12, width: 2)
-                  : BorderSide.none,
-            ),
-          ),
-          onPressed: () {
-            if (texto == 'Ver recibo') {
-              // Navegar a la pantalla del recibo
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => ReciboScreen()),
-              );
-            } else {
-              print("Botón presionado: $texto");
-            }
-          },
-          child: Text(
-            texto,
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-          ),
-        );
-      },
-    );
-  }
-
-  ComprobanteScreen({super.key});
+  Comprobantescreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: blanco, // Fondo blanco
-         appBar: AppBar(
-        title: Image.asset(
-          'assets/images/logo_bannet_1.png',
-          height: 30,
+      backgroundColor: blanco,
+      appBar: AppBar(
+        title: Center(
+          child: Image.asset(
+            'assets/images/logo_bannet_1.png',
+            height: 30,
+          ),
         ),
         toolbarHeight: 60,
+        actions: [
+          IconButton(
+            onPressed: () {},
+            icon: Icon(Icons.refresh, color: negro),
+          ),
+        ],
         backgroundColor: negro,
-        centerTitle: true, // Garantiza que el título esté centrado
+        centerTitle: true,
         iconTheme: IconThemeData(color: verdeLima),
       ),
       body: Container(
-        constraints:
-            BoxConstraints.expand(), // Ocupa todo el espacio disponible
-
+        constraints: BoxConstraints.expand(),
         decoration: BoxDecoration(
           image: DecorationImage(
-            image: AssetImage(
-                'assets/images/Bannet_Fond.jpg'), // Reemplaza con tu imagen
+            image: AssetImage('assets/images/Bannet_Fond.jpg'),
             fit: BoxFit.cover,
           ),
-          color: Color(0xFF000000),
         ),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(
-                height: 20,
-              ),
+              SizedBox(height: 20),
               Center(
                 child: Text(
-                  "Comprobantes",
+                  "Mi Comprobante Bantel",
                   style: TextStyle(
-                      color: verdeLima,
-                      fontSize: 30,
-                      fontWeight: FontWeight.w700),
+                    color: verdeLima,
+                    fontSize: 30,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ),
-              SizedBox(
-                height: 20,
-              ),
-              TaskCardWidget(
-                titulo: 'Nro. Comprobante : 000000000598866',
-                subtitulo: 'Tipo Comprobante: BOLETA DE VENTA ELECTRONICA',
-                // periodo: 'Periodo: 2025-ENERO',
-                fecha: 'Fecha: 21/09/2024',
-                precio: 'Monto : S/. 35.00',
-                color: verdeLima,
-                isCompleted: false,
-                expandedContent: _buildMiRecibo(),
-              ),
-              TaskCardWidget(
-                titulo: 'Nro. Comprobante : 000000000598866',
-                subtitulo: 'Tipo Comprobante: BOLETA DE VENTA ELECTRONICA',
-                // periodo: 'Periodo: 2025-ENERO',
-                fecha: 'Fecha: 21/09/2024',
-                precio: 'Monto : S/. 35.00',
-                color: verdeLima,
-                isCompleted: false,
-                expandedContent: _buildMiRecibo(),
-              ),
-              TaskCardWidget(
-                titulo: 'Nro. Comprobante : 000000000598866',
-                subtitulo: 'Tipo Comprobante: BOLETA DE VENTA ELECTRONICA',
-                // periodo: 'Periodo: 2025-ENERO',
-                fecha: 'Fecha: 21/09/2024',
-                precio: 'Monto : S/. 35.00',
-                color: verdeLima,
-                isCompleted: false,
-                expandedContent: _buildMiRecibo(),
-              ),
-              SizedBox(height: 30),
-              Divider(
-                color: verdeLima,
-                thickness: 1,
+              Padding(
+                padding: const EdgeInsets.all(25.0),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Comprobante.pdf', // Título del Comprobante
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                        IconButton(
+                          onPressed: () async {
+                            _downloadComprobante(context);
+                          },
+                          icon: Icon(Icons.download), // Ícono de descarga
+                          color: Colors.white,
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                        height: 8), // Espaciado entre el título y el contenedor
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white, // Fondo del contenedor
+                        borderRadius:
+                            BorderRadius.circular(16), // Esquinas redondeadas
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.white.withOpacity(
+                                0.5), // Sombra blanca semi-transparente
+                            blurRadius: 10, // Desenfoque de la sombra
+                            offset: Offset(0, 4), // Desplazamiento de la sombra
+                          ),
+                        ],
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(
+                            16), // Asegura que el contenido respete las esquinas
+                        child: SizedBox(
+                          height: 500, // Ajusta la altura según tus necesidades
+                          child: SfPdfViewer.asset(
+                            'assets/pdfs/Comprobante.pdf', // Reemplaza con tu archivo
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
         ),
       ),
     );
+  }
+
+  /// Función para descargar el comprobante en la carpeta pública Descargas
+  Future<void> _downloadComprobante(BuildContext context) async {
+    try {
+      // Solicitar permiso de almacenamiento
+      PermissionStatus status =
+          await Permission.manageExternalStorage.request();
+
+      if (status.isGranted) {
+        // El permiso fue concedido
+      } else if (status.isDenied) {
+        print("Permiso denegado");
+        return;
+      } else if (status.isPermanentlyDenied) {
+        print("Permiso denegado");
+        return;
+      }
+
+      // Cargar el archivo desde los assets
+      final byteData = await rootBundle.load('assets/pdfs/Comprobante.pdf');
+
+      // Obtener la ruta de la carpeta pública de Descargas
+      final downloadsDir = Directory('/storage/emulated/0/Download');
+
+      // Crear la carpeta si no existe
+      if (!downloadsDir.existsSync()) {
+        await downloadsDir.create(recursive: true);
+      }
+
+      final filePath = '${downloadsDir.path}/Comprobante.pdf';
+
+      // Escribir el archivo
+      final file = File(filePath);
+      await file.writeAsBytes(byteData.buffer.asUint8List());
+
+      // Mostrar notificación al usuario
+      mostrarNotificacion(
+        context: context,
+        titulo: 'Descarga Completa',
+        mensaje: "Archivo descargado en: $filePath",
+      );
+    } catch (e) {
+      // Mostrar notificación al usuario
+      mostrarNotificacion(
+        context: context,
+        titulo: 'Error de Descarga',
+        mensaje: "Error al descargar el archivo: $e",
+      );
+    }
   }
 }

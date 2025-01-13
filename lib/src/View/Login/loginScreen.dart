@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class Loginscreen extends StatefulWidget {
-  Loginscreen({super.key});
+  const Loginscreen({super.key});
   @override
   State<Loginscreen> createState() => _LoginscreenState();
 }
