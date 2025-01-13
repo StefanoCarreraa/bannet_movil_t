@@ -9,7 +9,7 @@ class Loginscreen extends StatefulWidget {
 }
 
 class _LoginscreenState extends State<Loginscreen> {
-  final Color verdeLima = Color(0xFFA5CD39);
+  final Color verdeLima = Color(0xFFA8C329);
   // Verde lima
   final Color grisFondo = Color(0xFFF5F5F5);
   // Fondo gris claro
@@ -33,11 +33,10 @@ class _LoginscreenState extends State<Loginscreen> {
           children: [
             Spacer(),
             Image.asset(
-              'assets/images/logo_bannet_1.png',
-              height: 50,
+              'assets/images/logo_miportal.png',
+              height: 100,
             ),
-            Spacer(),
-            SizedBox(height: 30),
+            SizedBox(height: 50),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 30),
               child: Column(
@@ -64,7 +63,7 @@ class _LoginscreenState extends State<Loginscreen> {
                       ),
                     ),
                   ),
-                  SizedBox(height: 20),
+                  SizedBox(height: 50),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
@@ -117,7 +116,7 @@ class _LoginscreenState extends State<Loginscreen> {
                 ],
               ),
             ),
-            SizedBox(height: 20),
+            SizedBox(height: 50),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 70),
               child: Text(
@@ -133,34 +132,45 @@ class _LoginscreenState extends State<Loginscreen> {
               indent: 30,
               endIndent: 30,
             ),
-            Spacer(),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Text(
                 '¡Bienvenidos al Portal de Clientes Bantel!',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize: 30,
+                  fontSize: 25,
                   fontWeight: FontWeight.bold,
                   color: verdeLima,
                 ),
               ),
             ),
-            SizedBox(height: 20),
+            SizedBox(height: 10),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 IconButton(
                   icon: FaIcon(FontAwesomeIcons.facebook, color: Colors.white),
-                  onPressed: () {},
+                  onPressed: () {
+                    // Acción para Facebook
+                  },
                 ),
                 IconButton(
                   icon: FaIcon(FontAwesomeIcons.instagram, color: Colors.white),
-                  onPressed: () {},
+                  onPressed: () {
+                    // Acción para Instagram
+                  },
                 ),
                 IconButton(
                   icon: FaIcon(FontAwesomeIcons.tiktok, color: Colors.white),
-                  onPressed: () {},
+                  onPressed: () {
+                    // Acción para TikTok
+                  },
+                ),
+                IconButton(
+                  icon: FaIcon(FontAwesomeIcons.linkedin, color: Colors.white),
+                  onPressed: () {
+                    // Acción para LinkedIn
+                  },
                 ),
               ],
             ),

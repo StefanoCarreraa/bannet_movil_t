@@ -116,8 +116,8 @@ class _ZonaGamerScreenState extends State<ZonaGamerScreen> {
       backgroundColor: negro,
       appBar: AppBar(
         title: Image.asset(
-          'assets/images/logo_bannet_1.png',
-          height: 30,
+          'assets/images/logo_miportal.png',
+          height: 55,
         ),
         toolbarHeight: 60,
         backgroundColor: negro,

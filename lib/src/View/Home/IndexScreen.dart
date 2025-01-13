@@ -5,19 +5,30 @@ import 'package:bannet_movil_t/src/View/Profile/profileScreen.dart';
 import 'package:bannet_movil_t/src/View/Recibo/ListRecibosScreen.dart';
 import 'package:bannet_movil_t/src/View/Recibo/ReciboScreen.dart';
 import 'package:bannet_movil_t/src/View/ZonaGamer/ZonaGamerScreen.dart';
+import 'package:bannet_movil_t/src/widget/AlertshowModalBottomSheet.dart';
 import 'package:bannet_movil_t/src/widget/DrawerSectionCustom.dart';
 import 'package:bannet_movil_t/src/widget/TaskCardWidget.dart';
 import 'package:flutter/material.dart';
 
-class Indexscreen extends StatelessWidget {
+class Indexscreen extends StatefulWidget {
+  Indexscreen({super.key});
+
+  @override
+  State<Indexscreen> createState() => _IndexscreenState();
+}
+
+class _IndexscreenState extends State<Indexscreen> {
   final Color verdeLima = Color(0xFFA5CD39);
+
   final Color grisFondo = Color(0xFFF5F5F5);
+
   final Color grisOscuro = Color(0xFF333333);
+
   final Color negro = Color(0xFF000000);
+  bool _isExpanded = true;
 
   int _selectedIndex = 0;
 
-  Indexscreen({super.key});
   void _mostrarConfirmacionCerrarSesion(BuildContext context) {
     showDialog(
       context: context,
@@ -81,8 +92,8 @@ class Indexscreen extends StatelessWidget {
         iconTheme: IconThemeData(color: verdeLima),
         title: Center(
           child: Image.asset(
-            'assets/images/logo_bannet_1.png',
-            height: 30,
+            'assets/images/logo_miportal.png',
+            height: 55,
           ),
         ),
         toolbarHeight: 60,
@@ -167,70 +178,176 @@ class Indexscreen extends StatelessWidget {
       ),
 
       drawer: CustomDrawer(),
-      body: Container(
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage(
-                'assets/images/Bannet_Fond.jpg'), // Reemplaza con tu imagen
-            fit: BoxFit.cover,
-          ),
-          color: Color(0xFF000000),
-        ),
-        child: Column(
-          children: [
-            // Banner promocional
-            // _buildBannerPromo(),
-            //Banner Usuario
-            _buildBannerUsuario(),
-            // SizedBox(height: 15),
-
-            // // Mi recibo
-            // _buildMiRecibo(),
-            SizedBox(height: 20),
-
-            //
-            Expanded(
-              child: ListView(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-                    child: Text(
-                      "Planes",
-                      style: TextStyle(
-                          color: verdeLima,
-                          fontSize: 30,
-                          fontWeight: FontWeight.w700),
-                    ),
-                  ),
-                  TaskCardWidget(
-                      titulo:
-                          'Plan : INTERNET 400 MBPS + 3 STREAMING PLAN FULL PRIME',
-                      precio: 'Monto : S/. 35.00',
-                      fecha: 'Inicio de facturación : 21/08/2024',
-                      color: verdeLima,
-                      isCompleted: false),
-                  TaskCardWidget(
-                      titulo:
-                          'Plan : INTERNET 400 MBPS + 3 STREAMING PLAN FULL PRIME',
-                      precio: 'Monto : S/. 55.00',
-                      fecha: 'Inicio de facturación : 21/08/2024',
-                      color: verdeLima,
-                      isCompleted: false),
-                  TaskCardWidget(
-                      titulo:
-                          'Plan : INTERNET 400 MBPS + 3 STREAMING PLAN FULL PRIME',
-                      precio: 'Monto : S/. 65.00',
-                      fecha: 'Inicio de facturación : 21/08/2024',
-                      color: verdeLima,
-                      isCompleted: false),
-                ],
+      body: Stack(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage(
+                    'assets/images/Bannet_Fond.jpg'), // Reemplaza con tu imagen
+                fit: BoxFit.cover,
               ),
+              color: Color(0xFF000000),
             ),
-
-            // Accesos directos
-            // _buildAccesosDirectos(),
-          ],
-        ),
+            child: Column(
+              children: [
+                _buildBannerUsuario(),
+                SizedBox(height: 20),
+                //
+                Expanded(
+                  child: ListView(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                        child: Text(
+                          "Planes",
+                          style: TextStyle(
+                              color: verdeLima,
+                              fontSize: 30,
+                              fontWeight: FontWeight.w700),
+                        ),
+                      ),
+                      TaskCardWidget(
+                          titulo:
+                              'Plan : INTERNET 400 MBPS + 3 STREAMING PLAN FULL PRIME',
+                          precio: 'Monto : S/. 35.00',
+                          fecha: 'Inicio de facturación : 21/08/2024',
+                          color: verdeLima,
+                          isCompleted: false),
+                      TaskCardWidget(
+                          titulo:
+                              'Plan : INTERNET 400 MBPS + 3 STREAMING PLAN FULL PRIME',
+                          precio: 'Monto : S/. 55.00',
+                          fecha: 'Inicio de facturación : 21/08/2024',
+                          color: verdeLima,
+                          isCompleted: false),
+                      TaskCardWidget(
+                          titulo:
+                              'Plan : INTERNET 400 MBPS + 3 STREAMING PLAN FULL PRIME',
+                          precio: 'Monto : S/. 65.00',
+                          fecha: 'Inicio de facturación : 21/08/2024',
+                          color: verdeLima,
+                          isCompleted: false),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          // Botón flotante encima del BottomNavigationBar
+          Positioned(
+            bottom: 10, // Posición base
+            left: _isExpanded ? 16 : 16, // Siempre a la izquierda
+            child: AnimatedContainer(
+              duration: Duration(milliseconds: 300), // Animación suave
+              width: _isExpanded ? MediaQuery.of(context).size.width - 32 : 60,
+              height: _isExpanded
+                  ? 200
+                  : 60, // Usa una altura fija cuando se expanda
+              padding: _isExpanded ? EdgeInsets.all(20) : EdgeInsets.zero,
+              decoration: BoxDecoration(
+                color:
+                    _isExpanded ? grisOscuro : Colors.white, // Fondo ajustado
+                borderRadius: BorderRadius.circular(_isExpanded ? 12 : 8),
+                border: Border.all(
+                  color: verdeLima, // Color del borde verde
+                  width: 2,
+                ),
+              ),
+              child: _isExpanded
+                  ? Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _isExpanded = !_isExpanded;
+                            });
+                          },
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "Métodos de Pago",
+                                style: TextStyle(
+                                  color: verdeLima,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Icon(
+                                _isExpanded
+                                    ? Icons.expand_less
+                                    : Icons.expand_more,
+                                color: verdeLima,
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(height: 20), // Espacio entre título y botones
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Expanded(
+                              child: FloatingActionButton(
+                                heroTag: 'button1',
+                                onPressed: () {
+                                  // Acción del primer botón
+                                },
+                                backgroundColor: Colors.white,
+                                child: Image.asset(
+                                  'assets/logo/Versión-Móvil_BBVA-16.png', // Reemplaza con tu imagen
+                                  height: 30,
+                                ),
+                              ),
+                            ),
+                            SizedBox(width: 10),
+                            Expanded(
+                              child: FloatingActionButton(
+                                heroTag: 'button2',
+                                onPressed: () {
+                                  // Acción del segundo botón
+                                },
+                                backgroundColor: Colors.white,
+                                child: Image.asset(
+                                  'assets/logo/Versión-Móvil_BCP-17.png', // Reemplaza con tu imagen
+                                  height: 30,
+                                ),
+                              ),
+                            ),
+                            SizedBox(width: 10),
+                            Expanded(
+                              child: FloatingActionButton(
+                                heroTag: 'button3',
+                                onPressed: () {
+                                  // Acción del tercer botón
+                                },
+                                backgroundColor: Colors.white,
+                                child: Image.asset(
+                                  'assets/logo/Versión-Móvil_Yape-Logo.png', // Reemplaza con tu imagen
+                                  height: 50,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    )
+                  : GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _isExpanded = !_isExpanded;
+                        });
+                      },
+                      child: Icon(
+                        Icons.payment,
+                        color: verdeLima,
+                        size: 40,
+                      ),
+                    ),
+            ),
+          )
+        ],
       ),
       // Navegación inferior
       bottomNavigationBar: Theme(
@@ -331,220 +448,54 @@ class Indexscreen extends StatelessWidget {
     );
   }
 
-  // Banner promocional
-  Widget _buildBannerPromo() {
-    return Container(
-      margin: EdgeInsets.all(12),
-      width: double.infinity,
-      height: 140,
-      decoration: BoxDecoration(
-        color: verdeLima,
-        borderRadius: BorderRadius.circular(8),
-        image: DecorationImage(
-          image: AssetImage('assets/images/img2.jpg'),
-          fit: BoxFit.cover,
-        ),
-      ),
-    );
-  }
+  Widget _buildBotonImage(String assetPath, String tipo, Color colorFondo,
+      Color colorTexto, bool conBorde) {
+    return Builder(
+      builder: (BuildContext context) {
+        return SizedBox(
+          width: double.infinity, // Ocupa todo el ancho disponible
 
-  // Widget _buildMiRecibo() {
-  //   return Card(
-  //     margin: EdgeInsets.all(12),
-  //     child: Padding(
-  //       padding: const EdgeInsets.all(16.0),
-  //       child: Column(
-  //         crossAxisAlignment: CrossAxisAlignment.center,
-  //         children: [
-  //           Row(
-  //             mainAxisAlignment: MainAxisAlignment.start,
-  //             children: [
-  //               Icon(Icons.receipt_long_outlined, color: grisOscuro),
-  //               SizedBox(width: 8),
-  //               Text(
-  //                 '¿Qué quieres hacer hoy?',
-  //                 style: TextStyle(
-  //                     fontSize: 16,
-  //                     fontWeight: FontWeight.w500,
-  //                     color: grisOscuro),
-  //               ),
-  //             ],
-  //           ),
-  //           SizedBox(height: 20),
-  //           Row(
-  //             mainAxisAlignment: MainAxisAlignment.center,
-  //             children: [
-  //               _buildBoton('Ver recibos', Colors.white, grisOscuro, true),
-  //               SizedBox(width: 20),
-  //               _buildBoton('Pagar', verdeLima, Colors.white, true),
-  //             ],
-  //           ),
-  //         ],
-  //       ),
-  //     ),
-  //   );
-  // }
-
-  // Widget _buildBoton(
-  //     String texto, Color colorFondo, Color colorTexto, bool conBorde) {
-  //   return Builder(
-  //     builder: (BuildContext context) {
-  //       return TextButton(
-  //         style: TextButton.styleFrom(
-  //           backgroundColor: colorFondo,
-  //           foregroundColor: colorTexto,
-  //           padding: EdgeInsets.symmetric(vertical: 18, horizontal: 40),
-  //           shape: RoundedRectangleBorder(
-  //             borderRadius: BorderRadius.circular(8),
-  //             side: conBorde
-  //                 ? BorderSide(color: grisOscuro, width: 2)
-  //                 : BorderSide.none,
-  //           ),
-  //         ),
-  //         onPressed: () {
-  //           if (texto == 'Ver recibos') {
-  //             // Navegar a la pantalla del recibo
-  //             Navigator.push(
-  //               context,
-  //               MaterialPageRoute(builder: (context) => ReciboScreen()),
-  //             );
-  //           } else {
-  //             print("Botón presionado: $texto");
-  //           }
-  //         },
-  //         child: Text(
-  //           texto,
-  //           style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-  //         ),
-  //       );
-  //     },
-  //   );
-  // }
-
-  // Accesos directos
-  Widget _buildAccesosDirectos() {
-    return Padding(
-      padding: EdgeInsets.all(8.0),
-      child: GridView.count(
-        physics: NeverScrollableScrollPhysics(),
-        crossAxisCount: 2,
-        shrinkWrap: true,
-        children: [
-          _buildAccesoCard(
-              'Recibos de Servicios', Icons.receipt_long), // Recibos
-          _buildAccesoCard(
-              'Comprobantes', Icons.local_shipping), // Comprobantes
-          _buildAccesoCard(
-              'Solicitud de Baja', Icons.cancel), // Solicitud de baja
-          _buildAccesoCard(
-              'Servicios PostVenta', Icons.headset_mic), // Soporte técnico
-          _buildAccesoCard('Zona Gamer', Icons.sports_esports), // Zona Gamer
-          _buildAccesoCard('Libro de Reclamaciones', Icons.book),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildAccesoCard(String titulo, IconData icon) {
-    return Card(
-      elevation: 2,
-      child: Container(
-        padding: EdgeInsets.all(16),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: 40, color: verdeLima),
-            SizedBox(height: 10),
-            Text(
-              titulo,
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 14, color: grisOscuro),
+          child: TextButton(
+            style: TextButton.styleFrom(
+              backgroundColor: colorFondo,
+              foregroundColor: colorTexto,
+              padding: EdgeInsets.symmetric(vertical: 18, horizontal: 50),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+                side: conBorde
+                    ? BorderSide(color: Colors.black12, width: 2)
+                    : BorderSide.none,
+              ),
             ),
-          ],
-        ),
-      ),
+            onPressed: () {
+              if (tipo == 'BBVA') {
+                // Navegar a la pantalla del recibo
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ReciboScreen()),
+                );
+              } else if (tipo == 'BCP') {
+                // Navegar a la pantalla del recibo
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ReciboScreen()),
+                );
+              } else if (tipo == 'YAPE') {
+                // Navegar a la pantalla del recibo
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ReciboScreen()),
+                );
+              }
+            },
+            child: Image.asset(
+              assetPath, // Ruta de la imagen en tus assets
+              width: 70, // Opcional: ajusta el ancho
+              height: 50, // Opcional: ajusta la altura
+            ),
+          ),
+        );
+      },
     );
   }
-
-  // Widget _buildTaskCard({
-  //   required String titulo,
-  //   required String fecha,
-  //   required String precio,
-  //   required Color color,
-  //   required bool isCompleted,
-  // }) {
-  //   return Container(
-  //     width: double.infinity, // Asegura que use el espacio disponible
-
-  //     margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-  //     decoration: BoxDecoration(
-  //       color: Colors.grey[900],
-  //       borderRadius: BorderRadius.circular(12),
-  //     ),
-  //     child: Row(
-  //       children: [
-  //         // Borde de color a la izquierda
-  //         Container(
-  //           width: 8,
-  //           height: 130,
-  //           decoration: BoxDecoration(
-  //             color: color,
-  //             borderRadius: BorderRadius.only(
-  //               topLeft: Radius.circular(12),
-  //               bottomLeft: Radius.circular(12),
-  //             ),
-  //           ),
-  //         ),
-  //         SizedBox(width: 16),
-  //         // Información de la tarea
-  //         Expanded(
-  //           child: Column(
-  //             crossAxisAlignment: CrossAxisAlignment.start,
-  //             children: [
-  //               Text(
-  //                 titulo,
-  //                 style: TextStyle(
-  //                     color: Colors.white,
-  //                     fontSize: 16,
-  //                     fontWeight: FontWeight.bold),
-  //               ),
-  //               SizedBox(height: 4),
-  //               Row(
-  //                 children: [
-  //                   Icon(Icons.calendar_today, size: 14, color: Colors.white54),
-  //                   SizedBox(width: 4),
-  //                   Text(
-  //                     precio,
-  //                     style: TextStyle(color: Colors.white54),
-  //                   ),
-  //                 ],
-  //               ),
-  //               SizedBox(height: 4),
-  //               Row(
-  //                 children: [
-  //                   Icon(Icons.calendar_today, size: 14, color: Colors.white54),
-  //                   SizedBox(width: 4),
-  //                   Text(
-  //                     fecha,
-  //                     style: TextStyle(color: Colors.white54),
-  //                   ),
-  //                 ],
-  //               )
-  //             ],
-  //           ),
-  //         ),
-  //         // Icono de estado
-  //         Padding(
-  //           padding: const EdgeInsets.only(right: 16.0),
-  //           child: Icon(
-  //             isCompleted
-  //                 ? Icons.check_circle_rounded
-  //                 : Icons.radio_button_unchecked,
-  //             color: isCompleted ? Colors.purpleAccent : Colors.white54,
-  //           ),
-  //         )
-  //       ],
-  //     ),
-  //   );
-  // }
 }

@@ -1,5 +1,6 @@
 import 'package:bannet_movil_t/src/View/Recibo/Recibo2.dart';
 import 'package:bannet_movil_t/src/View/Recibo/ReciboScreen.dart';
+import 'package:bannet_movil_t/src/widget/AlertshowModalBottomSheet.dart';
 import 'package:flutter/material.dart';
 
 class TaskCardWidget extends StatefulWidget {
@@ -30,6 +31,7 @@ class TaskCardWidget extends StatefulWidget {
 
 class _TaskCardWidgetState extends State<TaskCardWidget> {
   bool _isExpanded = false; // Controla si el panel está expandido o no
+
   final Color verdeLima = Color(0xFFA5CD39);
   final Color grisFondo = Color(0xFFF5F5F5);
   final Color grisOscuro = Color(0xFF333333);
@@ -61,8 +63,6 @@ class _TaskCardWidgetState extends State<TaskCardWidget> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               _buildBoton('Ver recibo', Colors.white, negro, true),
-              // SizedBox(width: 20),
-              // _buildBoton('Pagar', verdeLima, Colors.white, true),
             ],
           ),
         ],
@@ -70,7 +70,7 @@ class _TaskCardWidgetState extends State<TaskCardWidget> {
     );
   }
 
-  // Botón de acción
+// Botón de acción
   Widget _buildBoton(
       String texto, Color colorFondo, Color colorTexto, bool conBorde) {
     return Builder(
@@ -94,9 +94,7 @@ class _TaskCardWidgetState extends State<TaskCardWidget> {
                 context,
                 MaterialPageRoute(builder: (context) => ReciboScreen()),
               );
-            } else {
-              print("Botón presionado: $texto");
-            }
+            } else {}
           },
           child: Text(
             texto,

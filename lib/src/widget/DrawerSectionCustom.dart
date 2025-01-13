@@ -29,9 +29,9 @@ class CustomDrawer extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Image.asset(
-                    'assets/images/logo_bannet_1.png',
-                    width: 230,
-                    height: 45,
+                    'assets/images/logo_miportal.png',
+                    width: 400,
+                    height: 80,
                     fit: BoxFit.contain,
                   ),
                   // SizedBox(height: 10),
