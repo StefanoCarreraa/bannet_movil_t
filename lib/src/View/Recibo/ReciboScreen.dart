@@ -121,20 +121,28 @@ class ReciboScreen extends StatelessWidget {
   /// Función para descargar el recibo en la carpeta pública Descargas
   Future<void> _downloadRecibo() async {
     try {
-      // Solicitar permisos
-      final status = await Permission.storage.request();
-      if (!status.isGranted) {
-        throw Exception("Permiso de almacenamiento denegado");
+// Solicitar permiso de almacenamiento
+      PermissionStatus status = await Permission.manageExternalStorage.request();
+
+      if (status.isGranted) {
+        // El permiso fue concedido
+      } else if (status.isDenied) {
+        print("Permiso denegado");
+        return;
+      } else if (status.isPermanentlyDenied) {
+        print("Permiso denegado");
+        return;
       }
 
       // Cargar el archivo desde los assets
       final byteData = await rootBundle.load('assets/pdfs/Recibo.pdf');
 
-      // Obtener la ruta de la carpeta pública Descargas usando path_provider
-      final directory = await getExternalStorageDirectory();
-      final downloadsDir = Directory('${directory?.path}/Download');
+      // Obtener la ruta de la carpeta pública de Descargas
+      final downloadsDir = Directory('/storage/emulated/0/Download');
+
+      // Crear la carpeta si no existe
       if (!downloadsDir.existsSync()) {
-        await downloadsDir.create();
+        await downloadsDir.create(recursive: true);
       }
 
       final filePath = '${downloadsDir.path}/Recibo.pdf';

@@ -1,3 +1,4 @@
+import 'package:bannet_movil_t/src/View/Recibo/Recibo2.dart';
 import 'package:bannet_movil_t/src/View/Recibo/ReciboScreen.dart';
 import 'package:flutter/material.dart';
 
