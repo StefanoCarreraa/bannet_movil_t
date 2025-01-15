@@ -9,6 +9,7 @@ import 'package:bannet_movil_t/src/widget/AlertshowModalBottomSheet.dart';
 import 'package:bannet_movil_t/src/widget/DrawerSectionCustom.dart';
 import 'package:bannet_movil_t/src/widget/TaskCardWidget.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class Indexscreen extends StatefulWidget {
   Indexscreen({super.key});
@@ -57,34 +58,34 @@ class _IndexscreenState extends State<Indexscreen> {
     );
   }
 
+  void _onItemTapped(int index) {
+    _selectedIndex = index;
+
+    if (index == 1) {
+      // Cuando se selecciona el ítem "Recibo"
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => Listrecibosscreen()),
+      );
+    }
+    if (index == 2) {
+      // Cuando se selecciona el ítem "Recibo"
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => Listcomprobantesscreen()),
+      );
+    }
+    if (index == 3) {
+      // Cuando se selecciona el ítem "Recibo"
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => ZonaGamerScreen()),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    void _onItemTapped(int index) {
-      _selectedIndex = index;
-
-      if (index == 1) {
-        // Cuando se selecciona el ítem "Recibo"
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => Listrecibosscreen()),
-        );
-      }
-      if (index == 2) {
-        // Cuando se selecciona el ítem "Recibo"
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => Listcomprobantesscreen()),
-        );
-      }
-      if (index == 3) {
-        // Cuando se selecciona el ítem "Recibo"
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => ZonaGamerScreen()),
-        );
-      }
-    }
-
     return Scaffold(
       backgroundColor: grisFondo,
       appBar: AppBar(
@@ -242,7 +243,7 @@ class _IndexscreenState extends State<Indexscreen> {
               duration: Duration(milliseconds: 300), // Animación suave
               width: _isExpanded ? MediaQuery.of(context).size.width - 32 : 60,
               height: _isExpanded
-                  ? 200
+                  ? 150
                   : 60, // Usa una altura fija cuando se expanda
               padding: _isExpanded ? EdgeInsets.all(20) : EdgeInsets.zero,
               decoration: BoxDecoration(
@@ -264,26 +265,30 @@ class _IndexscreenState extends State<Indexscreen> {
                               _isExpanded = !_isExpanded;
                             });
                           },
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                "Métodos de Pago",
-                                style: TextStyle(
-                                  color: verdeLima,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
+                          child: Material(
+                            color: Colors.transparent,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  "Métodos de Pago",
+                                  style: TextStyle(
+                                    color: verdeLima,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
-                              ),
-                              Icon(
-                                _isExpanded
-                                    ? Icons.expand_less
-                                    : Icons.expand_more,
-                                color: verdeLima,
-                              ),
-                            ],
+                                Icon(
+                                  _isExpanded
+                                      ? Icons.expand_less
+                                      : Icons.expand_more,
+                                  color: verdeLima,
+                                ),
+                              ],
+                            ),
                           ),
                         ),
+
                         SizedBox(height: 20), // Espacio entre título y botones
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -306,7 +311,7 @@ class _IndexscreenState extends State<Indexscreen> {
                               child: FloatingActionButton(
                                 heroTag: 'button2',
                                 onPressed: () {
-                                  // Acción del segundo botón
+                                  showBCPModal(context);
                                 },
                                 backgroundColor: Colors.white,
                                 child: Image.asset(
@@ -320,7 +325,7 @@ class _IndexscreenState extends State<Indexscreen> {
                               child: FloatingActionButton(
                                 heroTag: 'button3',
                                 onPressed: () {
-                                  // Acción del tercer botón
+                                  showYapeModal(context);
                                 },
                                 backgroundColor: Colors.white,
                                 child: Image.asset(
@@ -448,54 +453,257 @@ class _IndexscreenState extends State<Indexscreen> {
     );
   }
 
-  Widget _buildBotonImage(String assetPath, String tipo, Color colorFondo,
-      Color colorTexto, bool conBorde) {
-    return Builder(
+  void showYapeModal(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent, // Fondo transparente para el modal
       builder: (BuildContext context) {
-        return SizedBox(
-          width: double.infinity, // Ocupa todo el ancho disponible
-
-          child: TextButton(
-            style: TextButton.styleFrom(
-              backgroundColor: colorFondo,
-              foregroundColor: colorTexto,
-              padding: EdgeInsets.symmetric(vertical: 18, horizontal: 50),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-                side: conBorde
-                    ? BorderSide(color: Colors.black12, width: 2)
-                    : BorderSide.none,
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white, // Borde blanco detrás del contenido
+              borderRadius: BorderRadius.circular(
+                  20.0), // Bordes redondeados para el modal
+              border: Border.all(
+                color: Colors.white, // Borde blanco
+                width: 2.0,
               ),
             ),
-            onPressed: () {
-              if (tipo == 'BBVA') {
-                // Navegar a la pantalla del recibo
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => ReciboScreen()),
-                );
-              } else if (tipo == 'BCP') {
-                // Navegar a la pantalla del recibo
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => ReciboScreen()),
-                );
-              } else if (tipo == 'YAPE') {
-                // Navegar a la pantalla del recibo
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => ReciboScreen()),
-                );
-              }
-            },
-            child: Image.asset(
-              assetPath, // Ruta de la imagen en tus assets
-              width: 70, // Opcional: ajusta el ancho
-              height: 50, // Opcional: ajusta la altura
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(
+                  18.0), // Bordes internos ligeramente más pequeños
+              child: Container(
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage(
+                        'assets/images/Versión-Móvil_FONDO_Yape.png'), // Reemplaza con tu imagen
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                child: Stack(
+                  children: [
+                    // Icono de cierre en la esquina superior derecha
+                    IconButton(
+                      icon: FaIcon(
+                        FontAwesomeIcons.timesCircle,
+                        color: Colors.white,
+                        size: 40,
+                      ),
+                      onPressed: () =>
+                          Navigator.pop(context), // Cerrar el modal
+                    ),
+                    // Contenido del modal
+                    Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          // Logo de Yape
+                          Image.asset(
+                            'assets/logo/Versión-Móvil_Yape-Blanco.png', // Reemplaza con la ruta de tu logo
+                            height: 80,
+                          ),
+                          const SizedBox(height: 20),
+                          // Título
+                          const Text(
+                            'PAGA TU RECIBO POR YAPE',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white, // Texto blanco
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 20),
+                          // Instrucciones
+                          Column(
+                            children: [
+                              _buildStep(
+                                1,
+                                'Accede a "Yapear Servicios"',
+                                Colors.purple,
+                                Colors.white,
+                              ),
+                              _buildStep(
+                                2,
+                                'Digita el nombre "Bantel"',
+                                Colors.purple,
+                                Colors.white,
+                              ),
+                              _buildStep(
+                                3,
+                                'Selecciona la opción "Bantel Sac"',
+                                Colors.purple,
+                                Colors.white,
+                              ),
+                              _buildStep(
+                                4,
+                                'Digita número de DNI del titular Bantel',
+                                Colors.purple,
+                                Colors.white,
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 20),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ),
         );
       },
+    );
+  }
+
+void showBCPModal(BuildContext context) {
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.transparent, // Fondo transparente para el modal
+    builder: (BuildContext context) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0), // Reducir padding
+        child: Container(
+          constraints: BoxConstraints(maxHeight: 400), // Limitar la altura del modal
+          decoration: BoxDecoration(
+            color: Colors.white, // Borde blanco detrás del contenido
+            borderRadius: BorderRadius.circular(20.0), // Bordes redondeados para el modal
+            border: Border.all(
+              color: Colors.white, // Borde blanco
+              width: 2.0,
+            ),
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(18.0), // Bordes internos ligeramente más pequeños
+            child: Container(
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage(
+                      'assets/images/Versión-Móvil_FONDO_BCP.png'), // Imagen de fondo
+                  fit: BoxFit.cover,
+                ),
+              ),
+              child: Stack(
+                children: [
+                  // Icono de cierre en la esquina superior derecha
+                  Positioned(
+                    top: 10,
+                    right: 10,
+                    child: IconButton(
+                      icon: FaIcon(
+                        FontAwesomeIcons.timesCircle,
+                        color: Colors.white,
+                        size: 40,
+                      ),
+                      onPressed: () =>
+                          Navigator.pop(context), // Cerrar el modal
+                    ),
+                  ),
+                  // Contenido del modal
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 20.0), // Reducir padding
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // Logo de BCP
+                        Image.asset(
+                          'assets/logo/Versión-Móvil_BCP_blanco.png', // Reemplaza con la ruta de tu logo
+                          height: 60,
+                        ),
+                        const SizedBox(height: 10), // Reducir el espacio entre elementos
+                        // Título
+                        const Text(
+                          'PAGA TU RECIBO POR BCP',
+                          style: TextStyle(
+                            fontSize: 16, // Reducir tamaño del texto
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white, // Texto blanco
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 10), // Reducir el espacio entre elementos
+                        // Instrucciones con scroll
+                        SingleChildScrollView(
+                          child: Column(
+                            children: [
+                              _buildStep(
+                                1,
+                                'Accede a "Yapear Servicios"',
+                                Colors.white,
+                                Colors.black,
+                              ),
+                              _buildStep(
+                                2,
+                                'Digita el nombre "Bantel"',
+                                Colors.white,
+                                Colors.black,
+                              ),
+                              _buildStep(
+                                3,
+                                'Selecciona la opción "Bantel Sac"',
+                                Colors.white,
+                                Colors.black,
+                              ),
+                              _buildStep(
+                                4,
+                                'Digita número de DNI del titular Bantel',
+                                Colors.white,
+                                Colors.black,
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 10), // Reducir el espacio entre elementos
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    },
+  );
+}
+
+
+  Widget _buildStep(
+      int stepNumber, String description, Color colorfondo, Color colortexto) {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 8.0),
+      padding: const EdgeInsets.all(15.0),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.7), // Fondo blanco semitransparente
+        borderRadius: BorderRadius.circular(10.0),
+        border: Border.all(color: Colors.white, width: 2.0), // Borde blanco
+      ),
+      child: Row(
+        children: [
+          CircleAvatar(
+            backgroundColor: colorfondo,
+            child: Text(
+              stepNumber.toString(),
+              style: TextStyle(color: colortexto),
+            ),
+          ),
+          const SizedBox(width: 15),
+          Expanded(
+            child: Text(
+              description,
+              style: const TextStyle(
+                fontSize: 16,
+                color: Colors.black,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
