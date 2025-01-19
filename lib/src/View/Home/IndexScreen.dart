@@ -29,6 +29,10 @@ class _IndexscreenState extends State<Indexscreen> {
   bool _isExpanded = true;
 
   int _selectedIndex = 0;
+  final GlobalKey _key1 = GlobalKey();
+  final GlobalKey _key2 = GlobalKey();
+
+  double _width = 0; // Variable para almacenar el largo del widget
 
   void _mostrarConfirmacionCerrarSesion(BuildContext context) {
     showDialog(
@@ -86,7 +90,21 @@ class _IndexscreenState extends State<Indexscreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Calcular el tamaño del widget después de que se haya renderizado
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final renderBox = _key1.currentContext?.findRenderObject() as RenderBox?;
+      if (renderBox != null) {
+        final size = renderBox.size;
+        if (size.width > 0) {
+          setState(() {
+            _width = size.width; // Obtener el largo del widget
+          });
+        }
+      }
+    });
     return Scaffold(
+      key: _key1, // Asignar un GlobalKey único
+
       backgroundColor: grisFondo,
       appBar: AppBar(
         backgroundColor: negro,
@@ -184,8 +202,7 @@ class _IndexscreenState extends State<Indexscreen> {
           Container(
             decoration: BoxDecoration(
               image: DecorationImage(
-                image: AssetImage(
-                    'assets/images/Bannet_Fond.jpg'), // Reemplaza con tu imagen
+                image: AssetImage('assets/images/Bannet_Fond.jpg'),
                 fit: BoxFit.cover,
               ),
               color: Color(0xFF000000),
@@ -215,20 +232,20 @@ class _IndexscreenState extends State<Indexscreen> {
                           fecha: 'Inicio de facturación : 21/08/2024',
                           color: verdeLima,
                           isCompleted: false),
-                      TaskCardWidget(
-                          titulo:
-                              'Plan : INTERNET 400 MBPS + 3 STREAMING PLAN FULL PRIME',
-                          precio: 'Monto : S/. 55.00',
-                          fecha: 'Inicio de facturación : 21/08/2024',
-                          color: verdeLima,
-                          isCompleted: false),
-                      TaskCardWidget(
-                          titulo:
-                              'Plan : INTERNET 400 MBPS + 3 STREAMING PLAN FULL PRIME',
-                          precio: 'Monto : S/. 65.00',
-                          fecha: 'Inicio de facturación : 21/08/2024',
-                          color: verdeLima,
-                          isCompleted: false),
+                      // TaskCardWidget(
+                      //     titulo:
+                      //         'Plan : INTERNET 400 MBPS + 3 STREAMING PLAN FULL PRIME',
+                      //     precio: 'Monto : S/. 55.00',
+                      //     fecha: 'Inicio de facturación : 21/08/2024',
+                      //     color: verdeLima,
+                      //     isCompleted: false),
+                      // TaskCardWidget(
+                      //     titulo:
+                      //         'Plan : INTERNET 400 MBPS + 3 STREAMING PLAN FULL PRIME',
+                      //     precio: 'Monto : S/. 65.00',
+                      //     fecha: 'Inicio de facturación : 21/08/2024',
+                      //     color: verdeLima,
+                      //     isCompleted: false),
                     ],
                   ),
                 ),
@@ -256,87 +273,94 @@ class _IndexscreenState extends State<Indexscreen> {
                 ),
               ),
               child: _isExpanded
-                  ? Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              _isExpanded = !_isExpanded;
-                            });
-                          },
-                          child: Material(
-                            color: Colors.transparent,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  "Métodos de Pago",
-                                  style: TextStyle(
-                                    color: verdeLima,
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
+                  ? SingleChildScrollView(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                _isExpanded = !_isExpanded;
+                              });
+                            },
+                            child: Material(
+                              color: Colors.transparent,
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Flexible(
+                                    // Permite que el texto se ajuste al espacio disponible
+                                    child: Text(
+                                      "Métodos de Pago",
+                                      style: TextStyle(
+                                        color: verdeLima,
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                      overflow: TextOverflow
+                                          .ellipsis, // Opcional: Agrega puntos suspensivos si es necesario
+                                    ),
                                   ),
-                                ),
-                                Icon(
-                                  _isExpanded
-                                      ? Icons.expand_less
-                                      : Icons.expand_more,
-                                  color: verdeLima,
-                                ),
-                              ],
+                                  Icon(
+                                    _isExpanded
+                                        ? Icons.expand_less
+                                        : Icons.expand_more,
+                                    color: verdeLima,
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-
-                        SizedBox(height: 20), // Espacio entre título y botones
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            Expanded(
-                              child: FloatingActionButton(
-                                heroTag: 'button1',
-                                onPressed: () {
-                                  // Acción del primer botón
-                                },
-                                backgroundColor: Colors.white,
-                                child: Image.asset(
-                                  'assets/logo/Versión-Móvil_BBVA-16.png', // Reemplaza con tu imagen
-                                  height: 30,
+                          SizedBox(height: 20),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              Expanded(
+                                child: FloatingActionButton(
+                                  heroTag: 'button1',
+                                  onPressed: () {
+                                    showBBVAModal(context);
+                                  },
+                                  backgroundColor: Colors.white,
+                                  child: Image.asset(
+                                    'assets/logo/Versión-Móvil_BBVA-16.png',
+                                    height: 30,
+                                  ),
                                 ),
                               ),
-                            ),
-                            SizedBox(width: 10),
-                            Expanded(
-                              child: FloatingActionButton(
-                                heroTag: 'button2',
-                                onPressed: () {
-                                  showBCPModal(context);
-                                },
-                                backgroundColor: Colors.white,
-                                child: Image.asset(
-                                  'assets/logo/Versión-Móvil_BCP-17.png', // Reemplaza con tu imagen
-                                  height: 30,
+                              SizedBox(width: 10),
+                              Expanded(
+                                child: FloatingActionButton(
+                                  heroTag: 'button2',
+                                  onPressed: () {
+                                    showBCPModal(context);
+                                  },
+                                  backgroundColor: Colors.white,
+                                  child: Image.asset(
+                                    'assets/logo/Versión-Móvil_BCP-17.png',
+                                    height: 30,
+                                  ),
                                 ),
                               ),
-                            ),
-                            SizedBox(width: 10),
-                            Expanded(
-                              child: FloatingActionButton(
-                                heroTag: 'button3',
-                                onPressed: () {
-                                  showYapeModal(context);
-                                },
-                                backgroundColor: Colors.white,
-                                child: Image.asset(
-                                  'assets/logo/Versión-Móvil_Yape-Logo.png', // Reemplaza con tu imagen
-                                  height: 50,
+                              SizedBox(width: 10),
+                              Expanded(
+                                child: FloatingActionButton(
+                                  heroTag: 'button3',
+                                  onPressed: () {
+                                    showYapeModal(context);
+                                  },
+                                  backgroundColor: Colors.white,
+                                  child: Image.asset(
+                                    'assets/logo/Versión-Móvil_Yape-Logo.png',
+                                    height: 50,
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
-                        ),
-                      ],
+                            ],
+                          ),
+                        ],
+                      ),
                     )
                   : GestureDetector(
                       onTap: () {
@@ -392,29 +416,32 @@ class _IndexscreenState extends State<Indexscreen> {
   }
 
   Widget _buildBannerUsuario() {
+    double adjustedHeight = _width < 615
+        ? 180
+        : 130; // Si el ancho es menor que 615, la altura será 200
+
     return ClipRRect(
       borderRadius: BorderRadius.circular(12), // Bordes redondeados
       child: SizedBox(
-        height: 130, // Altura ajustable
+        height: adjustedHeight, // Altura ajustable
         child: Stack(
           children: [
             // Imagen de fondo, alineada a la derecha
             Positioned.fill(
               child: Image.asset(
                 'assets/images/barra_degrade.png',
-                fit: BoxFit
-                    .cover, // Cubrir el área disponible sin cambiar el tamaño
+                fit: BoxFit.cover,
                 alignment: Alignment.centerRight, // Alineación a la derecha
               ),
             ),
-            // Texto superpuesto
+            // Texto y widget superpuesto
             Positioned(
               left: 35,
               top: 35,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
-                  Text(
+                children: [
+                  const Text(
                     'Bienvenida,',
                     style: TextStyle(
                       color: Colors.white,
@@ -429,21 +456,57 @@ class _IndexscreenState extends State<Indexscreen> {
                       ],
                     ),
                   ),
-                  Text(
-                    'Johana Caceda',
-                    style: TextStyle(
-                      color: Colors.lightGreen,
-                      fontSize: 26,
-                      fontWeight: FontWeight.bold,
-                      shadows: [
-                        Shadow(
-                          color: Colors.black,
-                          offset: Offset(1, 1),
-                          blurRadius: 2,
-                        )
-                      ],
-                    ),
-                  ),
+                  const SizedBox(height: 5),
+                  _width < 615
+                      ? Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                              Text(
+                                "Stefano Manuel", // Mostrar todo el nombre si el ancho es suficiente
+                                style: TextStyle(
+                                  color: Colors.lightGreen,
+                                  fontSize: 26,
+                                  fontWeight: FontWeight.bold,
+                                  shadows: [
+                                    Shadow(
+                                      color: Colors.black,
+                                      offset: Offset(1, 1),
+                                      blurRadius: 2,
+                                    )
+                                  ],
+                                ),
+                              ),
+                              Text(
+                                "Carrera Alvarado", // Mostrar todo el nombre si el ancho es suficiente
+                                style: TextStyle(
+                                  color: Colors.lightGreen,
+                                  fontSize: 26,
+                                  fontWeight: FontWeight.bold,
+                                  shadows: [
+                                    Shadow(
+                                      color: Colors.black,
+                                      offset: Offset(1, 1),
+                                      blurRadius: 2,
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ])
+                      : Text(
+                          "Stefano Manuel Carrera Alvarado", // Mostrar todo el nombre si el ancho es suficiente
+                          style: TextStyle(
+                            color: Colors.lightGreen,
+                            fontSize: 26,
+                            fontWeight: FontWeight.bold,
+                            shadows: [
+                              Shadow(
+                                color: Colors.black,
+                                offset: Offset(1, 1),
+                                blurRadius: 2,
+                              )
+                            ],
+                          ),
+                        ),
                 ],
               ),
             ),
@@ -482,75 +545,85 @@ class _IndexscreenState extends State<Indexscreen> {
                     fit: BoxFit.cover,
                   ),
                 ),
-                child: Stack(
-                  children: [
-                    // Icono de cierre en la esquina superior derecha
-                    IconButton(
-                      icon: FaIcon(
-                        FontAwesomeIcons.timesCircle,
-                        color: Colors.white,
-                        size: 40,
-                      ),
-                      onPressed: () =>
-                          Navigator.pop(context), // Cerrar el modal
-                    ),
-                    // Contenido del modal
-                    Padding(
-                      padding: const EdgeInsets.all(20.0),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          // Logo de Yape
-                          Image.asset(
-                            'assets/logo/Versión-Móvil_Yape-Blanco.png', // Reemplaza con la ruta de tu logo
-                            height: 80,
-                          ),
-                          const SizedBox(height: 20),
-                          // Título
-                          const Text(
-                            'PAGA TU RECIBO POR YAPE',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white, // Texto blanco
+                child: DefaultTabController(
+                  length: 3,
+                  child: Wrap(
+                    children: [
+                      // Icono de cierre
+                      Padding(
+                        padding: const EdgeInsets.only(top: 10, right: 10),
+                        child: Align(
+                          alignment: Alignment.topRight,
+                          child: IconButton(
+                            icon: FaIcon(
+                              FontAwesomeIcons.timesCircle,
+                              color: Colors.white,
+                              size: 40,
                             ),
-                            textAlign: TextAlign.center,
+                            onPressed: () => Navigator.pop(context),
                           ),
-                          const SizedBox(height: 20),
-                          // Instrucciones
-                          Column(
+                        ),
+                      ),
+                      // Contenido del modal
+                      Center(
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
                             children: [
-                              _buildStep(
-                                1,
-                                'Accede a "Yapear Servicios"',
-                                Colors.purple,
-                                Colors.white,
+                              // Logo de Yape
+                              Image.asset(
+                                'assets/logo/Versión-Móvil_Yape-Blanco.png', // Reemplaza con la ruta de tu logo
+                                height: 80,
                               ),
-                              _buildStep(
-                                2,
-                                'Digita el nombre "Bantel"',
-                                Colors.purple,
-                                Colors.white,
+                              const SizedBox(height: 20),
+                              // Título
+                              const Text(
+                                'PAGA TU RECIBO POR YAPE',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white, // Texto blanco
+                                ),
+                                textAlign: TextAlign.center,
                               ),
-                              _buildStep(
-                                3,
-                                'Selecciona la opción "Bantel Sac"',
-                                Colors.purple,
-                                Colors.white,
+                              const SizedBox(height: 20),
+                              // Instrucciones
+                              Column(
+                                children: [
+                                  _buildStep(
+                                    1,
+                                    'Accede a "Yapear Servicios"',
+                                    Colors.purple,
+                                    Colors.white,
+                                  ),
+                                  _buildStep(
+                                    2,
+                                    'Digita el nombre "Bantel"',
+                                    Colors.purple,
+                                    Colors.white,
+                                  ),
+                                  _buildStep(
+                                    3,
+                                    'Selecciona la opción "Bantel Sac"',
+                                    Colors.purple,
+                                    Colors.white,
+                                  ),
+                                  _buildStep(
+                                    4,
+                                    'Digita número de DNI del titular Bantel',
+                                    Colors.purple,
+                                    Colors.white,
+                                  ),
+                                ],
                               ),
-                              _buildStep(
-                                4,
-                                'Digita número de DNI del titular Bantel',
-                                Colors.purple,
-                                Colors.white,
-                              ),
+                              const SizedBox(height: 20),
                             ],
                           ),
-                          const SizedBox(height: 20),
-                        ],
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -560,118 +633,266 @@ class _IndexscreenState extends State<Indexscreen> {
     );
   }
 
-void showBCPModal(BuildContext context) {
-  showModalBottomSheet(
-    context: context,
-    isScrollControlled: true,
-    backgroundColor: Colors.transparent, // Fondo transparente para el modal
-    builder: (BuildContext context) {
-      return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0), // Reducir padding
-        child: Container(
-          constraints: BoxConstraints(maxHeight: 400), // Limitar la altura del modal
-          decoration: BoxDecoration(
-            color: Colors.white, // Borde blanco detrás del contenido
-            borderRadius: BorderRadius.circular(20.0), // Bordes redondeados para el modal
-            border: Border.all(
-              color: Colors.white, // Borde blanco
-              width: 2.0,
-            ),
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(18.0), // Bordes internos ligeramente más pequeños
-            child: Container(
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage(
-                      'assets/images/Versión-Móvil_FONDO_BCP.png'), // Imagen de fondo
-                  fit: BoxFit.cover,
-                ),
+  void showBCPModal(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20.0),
+              border: Border.all(
+                color: Colors.white,
+                width: 2.0,
               ),
-              child: Stack(
-                children: [
-                  // Icono de cierre en la esquina superior derecha
-                  Positioned(
-                    top: 10,
-                    right: 10,
-                    child: IconButton(
-                      icon: FaIcon(
-                        FontAwesomeIcons.timesCircle,
-                        color: Colors.white,
-                        size: 40,
-                      ),
-                      onPressed: () =>
-                          Navigator.pop(context), // Cerrar el modal
-                    ),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(18.0),
+              child: Container(
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image:
+                        AssetImage('assets/images/Versión-Móvil_FONDO_BCP.png'),
+                    fit: BoxFit.cover,
                   ),
-                  // Contenido del modal
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 20.0), // Reducir padding
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        // Logo de BCP
-                        Image.asset(
-                          'assets/logo/Versión-Móvil_BCP_blanco.png', // Reemplaza con la ruta de tu logo
-                          height: 60,
-                        ),
-                        const SizedBox(height: 10), // Reducir el espacio entre elementos
-                        // Título
-                        const Text(
-                          'PAGA TU RECIBO POR BCP',
-                          style: TextStyle(
-                            fontSize: 16, // Reducir tamaño del texto
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white, // Texto blanco
+                ),
+                child: DefaultTabController(
+                  length: 3,
+                  child: Wrap(
+                    children: [
+                      // Icono de cierre
+                      Padding(
+                        padding: const EdgeInsets.only(top: 10, right: 10),
+                        child: Align(
+                          alignment: Alignment.topRight,
+                          child: IconButton(
+                            icon: FaIcon(
+                              FontAwesomeIcons.timesCircle,
+                              color: Colors.white,
+                              size: 40,
+                            ),
+                            onPressed: () => Navigator.pop(context),
                           ),
-                          textAlign: TextAlign.center,
                         ),
-                        const SizedBox(height: 10), // Reducir el espacio entre elementos
-                        // Instrucciones con scroll
-                        SingleChildScrollView(
+                      ),
+                      // Logo y título
+                      Center(
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
                           child: Column(
                             children: [
-                              _buildStep(
-                                1,
-                                'Accede a "Yapear Servicios"',
-                                Colors.white,
-                                Colors.black,
+                              Image.asset(
+                                'assets/logo/Versión-Móvil_BCP_blanco.png',
+                                height: 60,
                               ),
-                              _buildStep(
-                                2,
-                                'Digita el nombre "Bantel"',
-                                Colors.white,
-                                Colors.black,
+                              const SizedBox(height: 10),
+                              const Text(
+                                'PAGA TU RECIBO POR BCP',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                                textAlign: TextAlign.center,
                               ),
-                              _buildStep(
-                                3,
-                                'Selecciona la opción "Bantel Sac"',
-                                Colors.white,
-                                Colors.black,
-                              ),
-                              _buildStep(
-                                4,
-                                'Digita número de DNI del titular Bantel',
-                                Colors.white,
-                                Colors.black,
-                              ),
+                              const SizedBox(height: 10),
                             ],
                           ),
                         ),
-                        const SizedBox(height: 10), // Reducir el espacio entre elementos
-                      ],
-                    ),
+                      ),
+                      // TabBar
+                      TabBar(
+                        labelColor: Colors.white,
+                        unselectedLabelColor: Colors.grey[400],
+                        indicatorColor: Colors.white,
+                        labelPadding: EdgeInsets.symmetric(
+                            horizontal: 16.0), // Ajusta el padding aquí
+                        tabs: const [
+                          Tab(text: 'Agente BCP'),
+                          Tab(text: 'App BCP'),
+                          Tab(text: 'Banca por Internet'),
+                        ],
+                      ),
+                      // Contenido de las pestañas
+                      SizedBox(
+                        height: MediaQuery.of(context).size.height *
+                            0.5, // Máximo 50% de la pantalla
+                        child: TabBarView(
+                          children: [
+                            _buildStepsSection([
+                              'Acércate a un Agente BCP más cercana',
+                              'Indica el nombre del convenio "BANTEL SAC" con código de recaudo 22327',
+                              'Brinda tu "RUC o Dni"',
+                              'Recibe el Voucher y listo',
+                            ]),
+                            _buildStepsSection([
+                              'Ingresa a la App BCP',
+                              'Dirígete a la sección "Pagar Servicios"',
+                              'Indica en buscador: "BANDTEL SAC"',
+                              'Digita tu DNI, C.E. ó RUC',
+                              'Continuar'
+                            ]),
+                            _buildStepsSection([
+                              'Ingresa a tu cuenta BCP',
+                              'Selecciona "Pagar Servicios" e "Instituciones y Empresas"',
+                              'Ingresa el nombre: "BANDTEL SAC"',
+                              'Indica tu DNI, C.E. ó RUC',
+                            ]),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
             ),
           ),
-        ),
-      );
-    },
-  );
-}
+        );
+      },
+    );
+  }
 
+  void showBBVAModal(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20.0),
+              border: Border.all(
+                color: Colors.white,
+                width: 2.0,
+              ),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(18.0),
+              child: Container(
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage(
+                        'assets/images/Versión-Móvil_FONDO_BBVA.png'),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                child: DefaultTabController(
+                  length: 3,
+                  child: Wrap(
+                    children: [
+                      // Icono de cierre
+                      Padding(
+                        padding: const EdgeInsets.only(top: 10, right: 10),
+                        child: Align(
+                          alignment: Alignment.topRight,
+                          child: IconButton(
+                            icon: FaIcon(
+                              FontAwesomeIcons.timesCircle,
+                              color: Colors.white,
+                              size: 40,
+                            ),
+                            onPressed: () => Navigator.pop(context),
+                          ),
+                        ),
+                      ),
+                      // Logo y título
+                      Center(
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                          child: Column(
+                            children: [
+                              Image.asset(
+                                'assets/logo/Versión-Móvil_BBVA-16.png',
+                                height: 60,
+                              ),
+                              const SizedBox(height: 10),
+                              const Text(
+                                'PAGA TU RECIBO POR BBVA',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                              const SizedBox(height: 10),
+                            ],
+                          ),
+                        ),
+                      ),
+                      // TabBar
+                      TabBar(
+                        labelColor: Colors.white,
+                        unselectedLabelColor: Colors.grey[400],
+                        indicatorColor: Colors.white,
+                        tabs: const [
+                          Tab(text: 'Agente BBVA'),
+                          Tab(text: 'App BBVA'),
+                          Tab(text: 'Banca por Internet'),
+                        ],
+                      ),
+                      // Contenido de las pestañas
+                      SizedBox(
+                        height: MediaQuery.of(context).size.height *
+                            0.5, // Máximo 50% de la pantalla
+                        child: TabBarView(
+                          children: [
+                            _buildStepsSection([
+                              'Acércate a un Agente BBVA más cercana',
+                              'Indica el nombre del convenio "BANTEL SOLES" con código de recaudo 18150',
+                              'Brinda tu "RUC o Dni"',
+                              'Recibe el Voucher y listo',
+                            ]),
+                            _buildStepsSection([
+                              'Ingresa a la App BBVA',
+                              'Dirígete a la sección "Pagar Servicios"',
+                              'Indica en buscador: "BANTEL SOLES"',
+                              'Digita tu DNI, C.E. ó RUC',
+                              'Continuar'
+                            ]),
+                            _buildStepsSection([
+                              'Ingresa a tu cuenta BBVA',
+                              'Selecciona "Pagar Servicios" e "Instituciones y Empresas"',
+                              'Ingresa el nombre: "BANTEL SOLES"',
+                              'Indica tu DNI, C.E. ó RUC',
+                            ]),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildStepsSection(List<String> steps) {
+    return Padding(
+      padding: const EdgeInsets.all(20.0),
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: steps
+              .asMap()
+              .entries
+              .map((entry) => _buildStep(
+                  entry.key + 1, entry.value, Colors.white, Colors.black))
+              .toList(),
+        ),
+      ),
+    );
+  }
 
   Widget _buildStep(
       int stepNumber, String description, Color colorfondo, Color colortexto) {
