@@ -7,7 +7,6 @@ import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class Comprobantescreen extends StatelessWidget {
-  final Color verdeLima = Color(0xFFA5CD39);
   final Color blanco = Color(0xFFFFFFFF);
   final Color negro = Color(0xFF000000);
 

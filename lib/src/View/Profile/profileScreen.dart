@@ -1,9 +1,12 @@
 import 'dart:ui';
-import 'package:bannet_movil_t/src/widget/AlertshowModalBottomSheet.dart';
+import 'package:bannet_movil_t/src/Controllers/Login/Login_Controller.dart';
+import 'package:bannet_movil_t/src/utils/constants/app_colors.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class ProfileScreen extends StatelessWidget {
+  final LoginController _logincontroller = LoginController();
+
   final Color verdeLima = Color(0xFFA5CD39); // Verde lima
   final Color grisFondo = Color(0xFFF5F5F5); // Gris claro
   final Color grisOscuro = Color(0xFF333333); // Gris oscuro para detalles
@@ -48,7 +51,7 @@ class ProfileScreen extends StatelessWidget {
             }),
             _construirElementoLista(Icons.phone, 'Cambiar número de teléfono',
                 () {
-                  _mostrarTelefonoCustomActionSheet(context);
+              _mostrarTelefonoCustomActionSheet(context);
               // mostrarNotificacion(
               //   context: context,
               //   titulo: 'Titulo Notificacion',
@@ -68,7 +71,9 @@ class ProfileScreen extends StatelessWidget {
             // _construirElementoLista(
             //     Icons.feedback_outlined, 'Ayuda y comentarios', () {}),
             // _construirElementoLista(Icons.support_agent, 'Soporte', () {}),
-            _construirBotonCerrarSesion(),
+            _construirBotonCerrarSesion(() {
+              _mostrarConfirmacionCerrarSesion(context);
+            }),
           ],
         ),
       ),
@@ -524,6 +529,117 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
+  void _mostrarConfirmacionCerrarSesion(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      isDismissible: false,
+      builder: (BuildContext context) {
+        return Container(
+          decoration: BoxDecoration(
+            color: AppColors.grisOscuro,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(16),
+              topRight: Radius.circular(16),
+            ),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Indicador de deslizar
+              Container(
+                height: 5,
+                width: 50,
+                margin: EdgeInsets.symmetric(vertical: 15),
+                decoration: BoxDecoration(
+                  color: AppColors.grisFondo,
+                  borderRadius: BorderRadius.circular(2.5),
+                ),
+              ),
+              // Contenido del diálogo
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+                child: Column(
+                  children: [
+                    // Mensaje de éxito
+                    Text(
+                      'Confirmación!!!',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Colors.red,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    Text(
+                      "¿Estás seguro de que deseas cerrar sesión?",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
+                    ),
+                    SizedBox(height: 40),
+                    // Botón Cancelar
+                    Row(
+                      children: [
+                        Expanded(
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.blanco,
+                              padding: EdgeInsets.symmetric(vertical: 15),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                side: BorderSide(color: Colors.white, width: 2),
+                              ),
+                            ),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: Text(
+                              'Cancelar',
+                              style: TextStyle(color: Colors.black),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 15),
+                        Expanded(
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.blanco,
+                              padding: EdgeInsets.symmetric(vertical: 15),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                side: BorderSide(color: Colors.red, width: 2),
+                              ),
+                            ),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                              _logincontroller.logout(context);
+                            },
+                            child: Text(
+                              'Cerrar Sesión',
+                              style: TextStyle(color: Colors.red),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 20),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   Widget _construirEncabezadoPerfil() {
     return Column(
       children: [
@@ -576,17 +692,14 @@ class ProfileScreen extends StatelessWidget {
         onTap: onTap);
   }
 
-  Widget _construirBotonCerrarSesion() {
+  Widget _construirBotonCerrarSesion(VoidCallback onTap) {
     return ListTile(
-      leading: Icon(Icons.logout, color: Colors.red),
-      title: Text(
-        'Cerrar sesión',
-        style: TextStyle(fontSize: 16, color: Colors.red),
-      ),
-      onTap: () {
-        print('Cerrando sesión...');
-      },
-    );
+        leading: Icon(Icons.logout, color: Colors.red),
+        title: Text(
+          'Cerrar sesión',
+          style: TextStyle(fontSize: 16, color: Colors.red),
+        ),
+        onTap: onTap);
   }
 }
 

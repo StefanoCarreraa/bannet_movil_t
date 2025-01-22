@@ -1,89 +1,155 @@
 import 'dart:ui';
-
+import 'package:bannet_movil_t/src/Controllers/Login/Login_Controller.dart';
 import 'package:bannet_movil_t/src/View/Comprobante/ListComprobantesScreen.dart';
 import 'package:bannet_movil_t/src/View/Profile/profileScreen.dart';
 import 'package:bannet_movil_t/src/View/Recibo/ListRecibosScreen.dart';
-import 'package:bannet_movil_t/src/View/Recibo/ReciboScreen.dart';
 import 'package:bannet_movil_t/src/View/ZonaGamer/ZonaGamerScreen.dart';
-import 'package:bannet_movil_t/src/widget/AlertshowModalBottomSheet.dart';
+import 'package:bannet_movil_t/src/utils/constants/app_colors.dart';
 import 'package:bannet_movil_t/src/widget/DrawerSectionCustom.dart';
 import 'package:bannet_movil_t/src/widget/TaskCardWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class Indexscreen extends StatefulWidget {
-  Indexscreen({super.key});
+  const Indexscreen({
+    super.key,
+  });
 
   @override
   State<Indexscreen> createState() => _IndexscreenState();
 }
 
 class _IndexscreenState extends State<Indexscreen> {
-  final Color verdeLima = Color(0xFFA5CD39);
-
-  final Color grisFondo = Color(0xFFF5F5F5);
-
-  final Color grisOscuro = Color(0xFF333333);
-
-  final Color negro = Color(0xFF000000);
+  final LoginController _logincontroller = LoginController();
   bool _isExpanded = true;
-
   int _selectedIndex = 0;
   final GlobalKey _key1 = GlobalKey();
-  final GlobalKey _key2 = GlobalKey();
 
   double _width = 0; // Variable para almacenar el largo del widget
 
   void _mostrarConfirmacionCerrarSesion(BuildContext context) {
-    showDialog(
+    showModalBottomSheet(
       context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      isDismissible: false,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Confirmar cierre de sesión'),
-          content: Text('¿Está seguro de que desea cerrar sesión?'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // Cierra el diálogo
-              },
-              child: Text('Cancelar'),
+        return Container(
+          decoration: BoxDecoration(
+            color: AppColors.grisOscuro,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(16),
+              topRight: Radius.circular(16),
             ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // Cierra el diálogo
-                // Lógica para cerrar sesión
-                print('Sesión cerrada');
-              },
-              child: Text('Cerrar sesión', style: TextStyle(color: Colors.red)),
-            ),
-          ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Indicador de deslizar
+              Container(
+                height: 5,
+                width: 50,
+                margin: EdgeInsets.symmetric(vertical: 15),
+                decoration: BoxDecoration(
+                  color: AppColors.grisFondo,
+                  borderRadius: BorderRadius.circular(2.5),
+                ),
+              ),
+              // Contenido del diálogo
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+                child: Column(
+                  children: [
+                    // Mensaje de éxito
+                    Text(
+                      'Confirmación!!!',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Colors.red,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    Text(
+                      "¿Estás seguro de que deseas cerrar sesión?",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
+                    ),
+                    SizedBox(height: 40),
+                    // Botón Cancelar
+                    Row(
+                      children: [
+                        Expanded(
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.blanco,
+                              padding: EdgeInsets.symmetric(vertical: 15),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                side: BorderSide(color: Colors.white, width: 2),
+                              ),
+                            ),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: Text(
+                              'Cancelar',
+                              style: TextStyle(color: Colors.black),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 15),
+                        Expanded(
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.blanco,
+                              padding: EdgeInsets.symmetric(vertical: 15),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                side: BorderSide(color: Colors.red, width: 2),
+                              ),
+                            ),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                              _logincontroller.logout(context);
+                            },
+                            child: Text(
+                              'Cerrar Sesión',
+                              style: TextStyle(color: Colors.red),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 20),
+                  ],
+                ),
+              ),
+            ],
+          ),
         );
       },
     );
   }
 
-  void _onItemTapped(int index) {
-    _selectedIndex = index;
+  void navigateBasedOnIndex(BuildContext context, int index) {
+    // Mapa de índices a pantallas
+    final Map<int, Widget> screens = {
+      1: Listrecibosscreen(),
+      2: Listcomprobantesscreen(),
+      3: ZonaGamerScreen(),
+    };
 
-    if (index == 1) {
-      // Cuando se selecciona el ítem "Recibo"
+    if (screens.containsKey(index)) {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => Listrecibosscreen()),
-      );
-    }
-    if (index == 2) {
-      // Cuando se selecciona el ítem "Recibo"
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => Listcomprobantesscreen()),
-      );
-    }
-    if (index == 3) {
-      // Cuando se selecciona el ítem "Recibo"
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => ZonaGamerScreen()),
+        MaterialPageRoute(builder: (context) => screens[index]!),
       );
     }
   }
@@ -103,12 +169,11 @@ class _IndexscreenState extends State<Indexscreen> {
       }
     });
     return Scaffold(
-      key: _key1, // Asignar un GlobalKey único
-
-      backgroundColor: grisFondo,
+      key: _key1,
+      backgroundColor: AppColors.negro,
       appBar: AppBar(
-        backgroundColor: negro,
-        iconTheme: IconThemeData(color: verdeLima),
+        backgroundColor: AppColors.negro,
+        iconTheme: IconThemeData(color: AppColors.verdeLima),
         title: Center(
           child: Image.asset(
             'assets/images/logo_miportal.png',
@@ -120,22 +185,17 @@ class _IndexscreenState extends State<Indexscreen> {
           Builder(
             builder: (context) {
               return IconButton(
-                icon: Icon(Icons.account_circle, color: verdeLima),
+                icon: Icon(Icons.account_circle, color: AppColors.verdeLima),
                 onPressed: () {
                   final RenderBox appBarBox =
                       context.findRenderObject() as RenderBox;
                   final Offset position = appBarBox
                       .localToGlobal(Offset.zero); // Posición global del AppBar
-
                   showMenu(
                     context: context,
                     position: RelativeRect.fromLTRB(
-                      position.dx +
-                          appBarBox.size.width -
-                          60, // Ajusta la posición horizontal
-                      position.dy +
-                          appBarBox.size.height +
-                          5, // Ajusta la posición vertical
+                      position.dx + appBarBox.size.width - 60,
+                      position.dy + appBarBox.size.height + 5,
                       0,
                       0,
                     ),
@@ -144,7 +204,7 @@ class _IndexscreenState extends State<Indexscreen> {
                         value: 'Perfil',
                         child: Row(
                           children: [
-                            Icon(Icons.person, color: verdeLima),
+                            Icon(Icons.person, color: AppColors.verdeLima),
                             SizedBox(width: 8),
                             Text('Perfil'),
                           ],
@@ -220,7 +280,7 @@ class _IndexscreenState extends State<Indexscreen> {
                         child: Text(
                           "Planes",
                           style: TextStyle(
-                              color: verdeLima,
+                              color: AppColors.verdeLima,
                               fontSize: 30,
                               fontWeight: FontWeight.w700),
                         ),
@@ -230,7 +290,7 @@ class _IndexscreenState extends State<Indexscreen> {
                               'Plan : INTERNET 400 MBPS + 3 STREAMING PLAN FULL PRIME',
                           precio: 'Monto : S/. 35.00',
                           fecha: 'Inicio de facturación : 21/08/2024',
-                          color: verdeLima,
+                          color: AppColors.verdeLima,
                           isCompleted: false),
                       // TaskCardWidget(
                       //     titulo:
@@ -264,11 +324,12 @@ class _IndexscreenState extends State<Indexscreen> {
                   : 60, // Usa una altura fija cuando se expanda
               padding: _isExpanded ? EdgeInsets.all(20) : EdgeInsets.zero,
               decoration: BoxDecoration(
-                color:
-                    _isExpanded ? grisOscuro : Colors.white, // Fondo ajustado
+                color: _isExpanded
+                    ? AppColors.grisOscuro
+                    : Colors.white, // Fondo ajustado
                 borderRadius: BorderRadius.circular(_isExpanded ? 12 : 8),
                 border: Border.all(
-                  color: verdeLima, // Color del borde verde
+                  color: AppColors.verdeLima, // Color del borde verde
                   width: 2,
                 ),
               ),
@@ -294,7 +355,7 @@ class _IndexscreenState extends State<Indexscreen> {
                                     child: Text(
                                       "Métodos de Pago",
                                       style: TextStyle(
-                                        color: verdeLima,
+                                        color: AppColors.verdeLima,
                                         fontSize: 18,
                                         fontWeight: FontWeight.bold,
                                       ),
@@ -306,7 +367,7 @@ class _IndexscreenState extends State<Indexscreen> {
                                     _isExpanded
                                         ? Icons.expand_less
                                         : Icons.expand_more,
-                                    color: verdeLima,
+                                    color: AppColors.verdeLima,
                                   ),
                                 ],
                               ),
@@ -370,7 +431,7 @@ class _IndexscreenState extends State<Indexscreen> {
                       },
                       child: Icon(
                         Icons.payment,
-                        color: verdeLima,
+                        color: AppColors.verdeLima,
                         size: 40,
                       ),
                     ),
@@ -381,7 +442,7 @@ class _IndexscreenState extends State<Indexscreen> {
       // Navegación inferior
       bottomNavigationBar: Theme(
         data: ThemeData(
-          canvasColor: negro, // Fondo negro de la barra de navegación
+          canvasColor: AppColors.negro, // Fondo negro de la barra de navegación
         ),
         child: BottomNavigationBar(
           currentIndex: _selectedIndex,
@@ -390,7 +451,7 @@ class _IndexscreenState extends State<Indexscreen> {
               Colors.grey, // Elementos no seleccionados en gris
           showUnselectedLabels: true,
           onTap: (index) {
-            _onItemTapped(index); // Solo pasa el índice, no context
+            navigateBasedOnIndex(context, index);
           },
           items: const [
             BottomNavigationBarItem(
@@ -556,7 +617,7 @@ class _IndexscreenState extends State<Indexscreen> {
                           alignment: Alignment.topRight,
                           child: IconButton(
                             icon: FaIcon(
-                              FontAwesomeIcons.timesCircle,
+                              FontAwesomeIcons.circleXmark,
                               color: Colors.white,
                               size: 40,
                             ),
@@ -671,7 +732,7 @@ class _IndexscreenState extends State<Indexscreen> {
                           alignment: Alignment.topRight,
                           child: IconButton(
                             icon: FaIcon(
-                              FontAwesomeIcons.timesCircle,
+                              FontAwesomeIcons.circleXmark,
                               color: Colors.white,
                               size: 40,
                             ),
@@ -794,7 +855,7 @@ class _IndexscreenState extends State<Indexscreen> {
                           alignment: Alignment.topRight,
                           child: IconButton(
                             icon: FaIcon(
-                              FontAwesomeIcons.timesCircle,
+                              FontAwesomeIcons.circleXmark,
                               color: Colors.white,
                               size: 40,
                             ),

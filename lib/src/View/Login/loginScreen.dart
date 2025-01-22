@@ -1,4 +1,6 @@
+import 'package:bannet_movil_t/src/Controllers/Login/Login_Controller.dart';
 import 'package:bannet_movil_t/src/View/Home/IndexScreen.dart';
+import 'package:bannet_movil_t/src/utils/constants/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -9,13 +11,18 @@ class Loginscreen extends StatefulWidget {
 }
 
 class _LoginscreenState extends State<Loginscreen> {
-  final Color verdeLima = Color(0xFFA8C329);
-  // Verde lima
-  final Color grisFondo = Color(0xFFF5F5F5);
-  // Fondo gris claro
-  final Color grisOscuro = Color(0xFF333333);
+  final LoginController _controller = LoginController();
+  final TextEditingController _usuarioController = TextEditingController();
+  final TextEditingController _claveController = TextEditingController();
+  bool _isLoading = false;
+  bool _isPasswordVisible = false; // Estado de visibilidad de contraseña
 
-  // Gris oscuro para detalles
+  @override
+  void initState() {
+    super.initState();
+    _controller.checkLoginStatus();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,27 +48,28 @@ class _LoginscreenState extends State<Loginscreen> {
               padding: const EdgeInsets.symmetric(horizontal: 30),
               child: Column(
                 children: [
-                  TextField(
-                    decoration: InputDecoration(
-                      hintText: 'Usuario',
-                      filled: true,
-                      fillColor: Colors.white,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
+                  _buildTextField(
+                    label: 'Usuario',
+                    controller: _usuarioController,
+                    hint: 'Usuario',
+                    isPassword: false,
+                    prefixIcon: Icons.account_circle_outlined,
                   ),
                   SizedBox(height: 20),
-                  TextField(
-                    obscureText: true,
-                    decoration: InputDecoration(
-                      hintText: 'Contraseña',
-                      filled: true,
-                      fillColor: Colors.white,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
+                  _buildTextField(
+                    label: 'Contraseña',
+                    controller: _claveController,
+                    hint: 'Escriba su Contraseña',
+                    isPassword: !_isPasswordVisible, // Cambia según el estado
+                    prefixIcon: Icons.key,
+                    suffixIcon: _isPasswordVisible
+                        ? Icons.visibility
+                        : Icons.visibility_off,
+                    onSuffixIconPressed: () {
+                      setState(() {
+                        _isPasswordVisible = !_isPasswordVisible;
+                      });
+                    },
                   ),
                   SizedBox(height: 50),
                   Row(
@@ -70,15 +78,26 @@ class _LoginscreenState extends State<Loginscreen> {
                       SizedBox(
                         width: 150,
                         child: ElevatedButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => Indexscreen()),
-                            );
-                          },
+                          onPressed: _isLoading
+                              ? null
+                              : () async {
+                                  setState(() => _isLoading = true);
+                                  final loginUsuario = _usuarioController.text;
+                                  final claveUsuario = _claveController.text;
+
+                                  final success =
+                                      await _controller.attemptLogin(
+                                          loginUsuario, claveUsuario, context);
+
+                                  setState(() => _isLoading = false);
+
+                                  if (!success) {
+                                    _showAlertDialog(context, 'Error',
+                                        'No se pudo conectar con el servidor.');
+                                  }
+                                },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: verdeLima,
+                            backgroundColor: AppColors.verdeLima,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(14),
                             ),
@@ -97,7 +116,7 @@ class _LoginscreenState extends State<Loginscreen> {
                         child: ElevatedButton(
                           onPressed: () {},
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: verdeLima,
+                            backgroundColor: AppColors.verdeLima,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(14),
                             ),
@@ -122,12 +141,12 @@ class _LoginscreenState extends State<Loginscreen> {
               child: Text(
                 'Para recuperar contraseña, comunícate con nosotros al (01) 480 0501',
                 textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.white),
+                style: TextStyle(color: AppColors.blanco),
               ),
             ),
             SizedBox(height: 30),
             Divider(
-              color: verdeLima,
+              color: AppColors.verdeLima,
               thickness: 2,
               indent: 30,
               endIndent: 30,
@@ -140,7 +159,7 @@ class _LoginscreenState extends State<Loginscreen> {
                 style: TextStyle(
                   fontSize: 25,
                   fontWeight: FontWeight.bold,
-                  color: verdeLima,
+                  color: AppColors.verdeLima,
                 ),
               ),
             ),
@@ -149,25 +168,29 @@ class _LoginscreenState extends State<Loginscreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 IconButton(
-                  icon: FaIcon(FontAwesomeIcons.facebook, color: Colors.white),
+                  icon: FaIcon(FontAwesomeIcons.facebook,
+                      color: AppColors.blanco),
                   onPressed: () {
                     // Acción para Facebook
                   },
                 ),
                 IconButton(
-                  icon: FaIcon(FontAwesomeIcons.instagram, color: Colors.white),
+                  icon: FaIcon(FontAwesomeIcons.instagram,
+                      color: AppColors.blanco),
                   onPressed: () {
                     // Acción para Instagram
                   },
                 ),
                 IconButton(
-                  icon: FaIcon(FontAwesomeIcons.tiktok, color: Colors.white),
+                  icon:
+                      FaIcon(FontAwesomeIcons.tiktok, color: AppColors.blanco),
                   onPressed: () {
                     // Acción para TikTok
                   },
                 ),
                 IconButton(
-                  icon: FaIcon(FontAwesomeIcons.linkedin, color: Colors.white),
+                  icon: FaIcon(FontAwesomeIcons.linkedin,
+                      color: AppColors.blanco),
                   onPressed: () {
                     // Acción para LinkedIn
                   },
@@ -176,6 +199,67 @@ class _LoginscreenState extends State<Loginscreen> {
             ),
             SizedBox(height: 20),
           ],
+        ),
+      ),
+    );
+  }
+
+  void _showAlertDialog(BuildContext context, String title, String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(message),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Aceptar'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildTextField({
+    required String label,
+    required TextEditingController controller,
+    required String hint,
+    bool isPassword = false,
+    IconData? prefixIcon,
+    IconData? suffixIcon,
+    VoidCallback? onSuffixIconPressed,
+  }) {
+    Color negro = Color(0xff070707);
+    return TextField(
+      controller: controller,
+      obscureText: isPassword,
+      decoration: InputDecoration(
+        labelText: label,
+        labelStyle: TextStyle(color: negro),
+        hintText: hint,
+        hintStyle: const TextStyle(color: Colors.grey),
+        prefixIcon: prefixIcon != null ? Icon(prefixIcon, color: negro) : null,
+        suffixIcon: suffixIcon != null
+            ? IconButton(
+                icon: Icon(suffixIcon, color: negro),
+                onPressed: onSuffixIconPressed,
+              )
+            : null,
+        fillColor: AppColors.blanco, // Fondo blanco
+        filled: true, // Activar el fondo
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: const BorderSide(color: AppColors.verdeLima, width: 3),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: const BorderSide(color: AppColors.verdeLima, width: 3),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(color: negro, width: 2),
         ),
       ),
     );
