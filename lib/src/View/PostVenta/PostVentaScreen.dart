@@ -1,8 +1,11 @@
+import 'package:bannet_movil_t/src/Controllers/TipoServicio_Controller.dart';
+import 'package:bannet_movil_t/src/Models/tipoServicio_model.dart';
 import 'package:bannet_movil_t/src/widget/dropdown_custom_form_widget.dart';
 import 'package:bannet_movil_t/src/widget/terminos_Section_widget.dart';
 import 'package:bannet_movil_t/src/widget/textfield_custom_form_widget.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class PostVentaScreen extends StatefulWidget {
   const PostVentaScreen({super.key});
@@ -24,11 +27,17 @@ class _PostVentaScreenState extends State<PostVentaScreen> {
   late TextEditingController _textsolicitudController;
 
   bool _aceptaTerminos = false;
+  bool _isLoading = false; // Indicador de estado para guardar
+  int? _selectedTipoServicioId;
 
   @override
   void initState() {
     super.initState();
     _textsolicitudController = TextEditingController();
+
+    final tipoServicioController =
+    Provider.of<TipoServicioController>(context, listen: false);
+    tipoServicioController.fetchTipoServicios();
   }
 
   Future<bool?> _mostrarTerminosYCondiciones() async {
@@ -92,8 +101,10 @@ class _PostVentaScreenState extends State<PostVentaScreen> {
 
   @override
   Widget build(BuildContext context) {
+
+    final tipoServicioController = Provider.of<TipoServicioController>(context);
+
     String? selectedValue;
-    String? selectedValue2;
 
     final List<String> dropdownItems = [
       'Contrato 1',
@@ -102,14 +113,6 @@ class _PostVentaScreenState extends State<PostVentaScreen> {
       'Contrato 4',
       'Contrato 5',
       'Contrato 6'
-    ];
-    final List<String> dropdownItems2 = [
-      'Servicio 1',
-      'Servicio 2',
-      'Servicio 3',
-      'Servicio 4',
-      'Servicio 5',
-      'Servicio 6',
     ];
 
     return Scaffold(
@@ -174,19 +177,28 @@ class _PostVentaScreenState extends State<PostVentaScreen> {
                   formFieldKey: _contratoDropdownKey,
                 ),
                 SizedBox(height: 30),
-                DropdowncustomFormWidget<String>(
+                DropdowncustomFormWidget<TipoServicioModel>(
                   label: 'Tipo de Servicio',
                   hint: 'Selecciona un tipo de servicio',
-                  value: selectedValue2,
-                  items: dropdownItems2,
-                  onChanged: (String? newValue) {
+                  value: tipoServicioController.tipoServicios.firstWhere(
+                    (tipoServicio) =>
+                        tipoServicio.iDCategoriaTicket == _selectedTipoServicioId,
+                    orElse: () =>
+                        TipoServicioModel.empty(), // Retornar el objeto vacío
+                  ),                  
+                  items: tipoServicioController.tipoServicios,
+                  onChanged: (TipoServicioModel? newValue) {
+                    _isLoading = true;                    
+
                     setState(() {
-                      selectedValue2 = newValue;
+                      _selectedTipoServicioId = newValue?.iDCategoriaTicket;
+                      //tipoServicioController.fetchTipoServicios();
                     });
+                    _isLoading = false;  
                   },
-                  itemLabel: (String item) => item,
-                  validator: (String? value) {
-                    if (value == null || value.isEmpty) {
+                  itemLabel: (tipoServicio) => tipoServicio.descripcionCategoriaTicket,
+                  validator: (value) {
+                    if (value == null) {
                       return 'Por favor selecciona un tipo de servicio';
                     }
                     return null;
