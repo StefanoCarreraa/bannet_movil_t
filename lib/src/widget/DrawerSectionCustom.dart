@@ -46,8 +46,8 @@ class CustomDrawer extends StatelessWidget {
             // Sección de opciones principales
             _buildDrawerSection([
               _buildDrawerItem(Icons.home, 'Inicio', () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => Indexscreen()));
+                // Navigator.push(context,
+                //     MaterialPageRoute(builder: (context) => Indexscreen()));
               }),
               _buildDrawerItem(Icons.receipt, 'Recibos de Servicios', () {
                 Navigator.push(context,

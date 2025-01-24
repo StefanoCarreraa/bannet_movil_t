@@ -1,5 +1,4 @@
 import 'package:bannet_movil_t/src/Controllers/Login/Login_Controller.dart';
-import 'package:bannet_movil_t/src/View/Home/IndexScreen.dart';
 import 'package:bannet_movil_t/src/utils/constants/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -29,176 +28,192 @@ class _LoginscreenState extends State<Loginscreen> {
       body: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
-            image: AssetImage(
-                'assets/images/Bannet_Fondo.jpg'), // Reemplaza con tu imagen
+            image:
+                AssetImage('assets/images/Bannet_Fondo.jpg'), // Imagen de fondo
             fit: BoxFit.cover,
           ),
           color: Color(0xFF000000),
         ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Spacer(),
-            Image.asset(
-              'assets/images/logo_miportal.png',
-              height: 100,
+        child: SingleChildScrollView(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              minHeight: MediaQuery.of(context).size.height,
             ),
-            SizedBox(height: 50),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 30),
+            child: IntrinsicHeight(
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  _buildTextField(
-                    label: 'Usuario',
-                    controller: _usuarioController,
-                    hint: 'Usuario',
-                    isPassword: false,
-                    prefixIcon: Icons.account_circle_outlined,
-                  ),
-                  SizedBox(height: 20),
-                  _buildTextField(
-                    label: 'Contraseña',
-                    controller: _claveController,
-                    hint: 'Escriba su Contraseña',
-                    isPassword: !_isPasswordVisible, // Cambia según el estado
-                    prefixIcon: Icons.key,
-                    suffixIcon: _isPasswordVisible
-                        ? Icons.visibility
-                        : Icons.visibility_off,
-                    onSuffixIconPressed: () {
-                      setState(() {
-                        _isPasswordVisible = !_isPasswordVisible;
-                      });
-                    },
+                  SizedBox(height: 100),
+                  Image.asset(
+                    'assets/images/logo_miportal.png',
+                    height: 100,
                   ),
                   SizedBox(height: 50),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      SizedBox(
-                        width: 150,
-                        child: ElevatedButton(
-                          onPressed: _isLoading
-                              ? null
-                              : () async {
-                                  setState(() => _isLoading = true);
-                                  final loginUsuario = _usuarioController.text;
-                                  final claveUsuario = _claveController.text;
-
-                                  final success =
-                                      await _controller.attemptLogin(
-                                          loginUsuario, claveUsuario, context);
-
-                                  setState(() => _isLoading = false);
-
-                                  if (!success) {
-                                    _showAlertDialog(context, 'Error',
-                                        'No se pudo conectar con el servidor.');
-                                  }
-                                },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.verdeLima,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(14),
-                            ),
-                            padding: const EdgeInsets.symmetric(vertical: 20),
-                          ),
-                          child: Text(
-                            'Ingresar',
-                            style: TextStyle(
-                                color: Color(0xFF000000),
-                                fontWeight: FontWeight.w700),
-                          ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 30),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        _buildTextField(
+                          label: 'Usuario',
+                          controller: _usuarioController,
+                          hint: 'Usuario',
+                          isPassword: false,
+                          prefixIcon: Icons.account_circle_outlined,
                         ),
+                        SizedBox(height: 20),
+                        _buildTextField(
+                          label: 'Contraseña',
+                          controller: _claveController,
+                          hint: 'Escriba su Contraseña',
+                          isPassword: !_isPasswordVisible,
+                          prefixIcon: Icons.key,
+                          suffixIcon: _isPasswordVisible
+                              ? Icons.visibility
+                              : Icons.visibility_off,
+                          onSuffixIconPressed: () {
+                            setState(() {
+                              _isPasswordVisible = !_isPasswordVisible;
+                            });
+                          },
+                        ),
+                        SizedBox(height: 50),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            SizedBox(
+                              width: 150,
+                              child: ElevatedButton(
+                                onPressed: _isLoading
+                                    ? null
+                                    : () async {
+                                        setState(() => _isLoading = true);
+                                        final loginUsuario =
+                                            _usuarioController.text;
+                                        final claveUsuario =
+                                            _claveController.text;
+
+                                        final success =
+                                            await _controller.attemptLogin(
+                                                loginUsuario,
+                                                claveUsuario,
+                                                context);
+
+                                        setState(() => _isLoading = false);
+
+                                        if (!success) {
+                                          _showAlertDialog(context, 'Error',
+                                              'No se pudo conectar con el servidor.');
+                                        }
+                                      },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppColors.verdeLima,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(14),
+                                  ),
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 20),
+                                ),
+                                child: Text(
+                                  'Ingresar',
+                                  style: TextStyle(
+                                      color: Color(0xFF000000),
+                                      fontWeight: FontWeight.w700),
+                                ),
+                              ),
+                            ),
+                            SizedBox(
+                              width: 150,
+                              child: ElevatedButton(
+                                onPressed: () {},
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppColors.verdeLima,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(14),
+                                  ),
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 20),
+                                ),
+                                child: Text(
+                                  'Registrarte',
+                                  style: TextStyle(
+                                      color: Color(0xFF000000),
+                                      fontWeight: FontWeight.w700),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 30),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 70),
+                    child: Text(
+                      'Para recuperar contraseña, comunícate con nosotros al (01) 480 0501',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: AppColors.blanco),
+                    ),
+                  ),
+                  SizedBox(height: 30),
+                  Divider(
+                    color: AppColors.verdeLima,
+                    thickness: 2,
+                    indent: 30,
+                    endIndent: 30,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Text(
+                      '¡Bienvenidos al Portal de Clientes Bantel!',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 25,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.verdeLima,
                       ),
-                      SizedBox(
-                        width: 150,
-                        child: ElevatedButton(
-                          onPressed: () {},
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.verdeLima,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(14),
-                            ),
-                            padding: const EdgeInsets.symmetric(vertical: 20),
-                          ),
-                          child: Text(
-                            'Registrarte',
-                            style: TextStyle(
-                                color: Color(0xFF000000),
-                                fontWeight: FontWeight.w700),
-                          ),
-                        ),
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      IconButton(
+                        icon: FaIcon(FontAwesomeIcons.facebook,
+                            color: AppColors.blanco),
+                        onPressed: () {
+                          // Acción para Facebook
+                        },
+                      ),
+                      IconButton(
+                        icon: FaIcon(FontAwesomeIcons.instagram,
+                            color: AppColors.blanco),
+                        onPressed: () {
+                          // Acción para Instagram
+                        },
+                      ),
+                      IconButton(
+                        icon: FaIcon(FontAwesomeIcons.tiktok,
+                            color: AppColors.blanco),
+                        onPressed: () {
+                          // Acción para TikTok
+                        },
+                      ),
+                      IconButton(
+                        icon: FaIcon(FontAwesomeIcons.linkedin,
+                            color: AppColors.blanco),
+                        onPressed: () {
+                          // Acción para LinkedIn
+                        },
                       ),
                     ],
                   ),
+                  SizedBox(height: 20),
                 ],
               ),
             ),
-            SizedBox(height: 50),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 70),
-              child: Text(
-                'Para recuperar contraseña, comunícate con nosotros al (01) 480 0501',
-                textAlign: TextAlign.center,
-                style: TextStyle(color: AppColors.blanco),
-              ),
-            ),
-            SizedBox(height: 30),
-            Divider(
-              color: AppColors.verdeLima,
-              thickness: 2,
-              indent: 30,
-              endIndent: 30,
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Text(
-                '¡Bienvenidos al Portal de Clientes Bantel!',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 25,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.verdeLima,
-                ),
-              ),
-            ),
-            SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                IconButton(
-                  icon: FaIcon(FontAwesomeIcons.facebook,
-                      color: AppColors.blanco),
-                  onPressed: () {
-                    // Acción para Facebook
-                  },
-                ),
-                IconButton(
-                  icon: FaIcon(FontAwesomeIcons.instagram,
-                      color: AppColors.blanco),
-                  onPressed: () {
-                    // Acción para Instagram
-                  },
-                ),
-                IconButton(
-                  icon:
-                      FaIcon(FontAwesomeIcons.tiktok, color: AppColors.blanco),
-                  onPressed: () {
-                    // Acción para TikTok
-                  },
-                ),
-                IconButton(
-                  icon: FaIcon(FontAwesomeIcons.linkedin,
-                      color: AppColors.blanco),
-                  onPressed: () {
-                    // Acción para LinkedIn
-                  },
-                ),
-              ],
-            ),
-            SizedBox(height: 20),
-          ],
+          ),
         ),
       ),
     );

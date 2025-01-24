@@ -200,6 +200,20 @@ class LoginController with ChangeNotifier {
     );
   }
 
+  Future<Map<String, dynamic>> loadUserData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return {
+      'idUsuarioBannet': prefs.getInt('IDUsuarioBannet') ?? 0,
+      'idPersona': prefs.getInt('IDPersona') ?? 0,
+      'nombreOrganizacion': prefs.getString('NombreOrganizacion') ??
+          'NombreOrganizacion desconocido',
+      'loginUsuario': prefs.getInt('LoginUsuario') ?? 0,
+      'emailOrganizacion': prefs.getString('EmailOrganizacion') ??
+          'EmailOrganizacion desconocido',
+      'idOrganizacion': prefs.getInt('IDOrganizacion') ?? 0,
+    };
+  }
+
   void _showSnackBar(BuildContext context, String message) {
     ScaffoldMessenger.of(context)
         .showSnackBar(SnackBar(content: Text(message)));

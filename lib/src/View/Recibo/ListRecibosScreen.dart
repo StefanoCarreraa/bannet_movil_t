@@ -1,102 +1,137 @@
+import 'package:bannet_movil_t/src/Controllers/Login/Login_Controller.dart';
+import 'package:bannet_movil_t/src/Controllers/Recibo/Recibo_Controller.dart';
+import 'package:bannet_movil_t/src/utils/constants/app_colors.dart';
 import 'package:bannet_movil_t/src/widget/TaskCardWidget.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-class Listrecibosscreen extends StatelessWidget {
-  final Color verdeLima = Color(0xFFA5CD39);
-  final Color blanco = Color(0xFFFFFFFF);
-  final Color negro = Color(0xFF000000);
+class Listrecibosscreen extends StatefulWidget {
+  const Listrecibosscreen({super.key});
 
-  Listrecibosscreen({super.key});
+  @override
+  State<Listrecibosscreen> createState() => _ListrecibosscreenState();
+}
+
+class _ListrecibosscreenState extends State<Listrecibosscreen> {
+  final LoginController _logincontroller = LoginController();
+
+  int idPersona = 0;
+  Future<void> _loadUserData() async {
+    final userData = await _logincontroller.loadUserData();
+    setState(() {
+      idPersona = userData['idPersona'];
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _initialize();
+  }
+
+  Future<void> _initialize() async {
+    await _loadUserData();
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final reciboController =
+          Provider.of<ReciboController>(context, listen: false);
+      reciboController.fetchRecibosPendientes(idPersona);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: blanco, // Fondo blanco
-      appBar: AppBar(
-        title: Image.asset(
-          'assets/images/logo_miportal.png',
-          height: 55,
-        ),
-        toolbarHeight: 60,
-        backgroundColor: negro,
-        centerTitle: true, // Garantiza que el título esté centrado
-        iconTheme: IconThemeData(color: verdeLima),
-      ),
-      body: Container(
-        constraints:
-            BoxConstraints.expand(), // Ocupa todo el espacio disponible
+    final reciboController = Provider.of<ReciboController>(context);
 
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage(
-                'assets/images/Bannet_Fond.jpg'), // Reemplaza con tu imagen
-            fit: BoxFit.cover,
+    return Scaffold(
+        backgroundColor: AppColors.negro, // Fondo blanco
+        appBar: AppBar(
+          title: Image.asset(
+            'assets/images/logo_miportal.png',
+            height: 55,
           ),
-          color: Color(0xFF000000),
+          toolbarHeight: 60,
+          backgroundColor: AppColors.negro,
+          centerTitle: true, // Garantiza que el título esté centrado
+          iconTheme: IconThemeData(color: AppColors.verdeLima),
         ),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(
-                height: 20,
-              ),
-              Center(
-                child: Text(
-                  "Mis recibos",
-                  style: TextStyle(
-                      color: verdeLima,
+        body: Container(
+          constraints:
+              BoxConstraints.expand(), // Ocupa todo el espacio disponible
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage(
+                  'assets/images/Bannet_Fond.jpg'), // Reemplaza con tu imagen
+              fit: BoxFit.cover,
+            ),
+            color: Color(0xFF000000),
+          ),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(height: 20),
+                Center(
+                  child: Text(
+                    "Mis recibos",
+                    style: TextStyle(
+                      color: AppColors.verdeLima,
                       fontSize: 30,
-                      fontWeight: FontWeight.w700),
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
                 ),
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              TaskCardWidget(
-                  titulo: 'Nro. Recibo : 000000000598866',
-                  subtitulo:
-                      'Plan : INTERNET 400 MBPS + 3 STREAMING PLAN FULL PRIME',
-                  periodo: 'Periodo: 2025-ENERO',
-                  precio: 'Monto : S/. 35.00',
-                  color: verdeLima,
-                  isCompleted: false),
-              TaskCardWidget(
-                  titulo: 'Nro. Recibo : 000000000598866',
-                  subtitulo:
-                      'Plan : INTERNET 400 MBPS + 3 STREAMING PLAN FULL PRIME',
-                  periodo: 'Periodo: 2025-ENERO',
-                  precio: 'Monto : S/. 55.00',
-                  color: verdeLima,
-                  isCompleted: false),
-              TaskCardWidget(
-                  titulo: 'Nro. Recibo : 000000000598866',
-                  subtitulo:
-                      'Plan : INTERNET 400 MBPS + 3 STREAMING PLAN FULL PRIME',
-                  periodo: 'Periodo: 2025-ENERO',
-                  precio: 'Monto : S/. 65.00',
-                  color: verdeLima,
-                  isCompleted: false),
-              SizedBox(height: 30),
-              Divider(
-                color: verdeLima,
-                thickness: 1,
-              ),
-              SizedBox(height: 20),
-              _buildMontoPagarCard(
-                titulo: "Monto facturado",
-                monto: "S/. 155.00",
-              ),
-              _buildMontoPagarCard(
-                titulo: "Monto a pagar",
-                monto: "S/. 0.00",
-              ),
-              _buildGeneral(),
-            ],
+                SizedBox(height: 20),
+                SizedBox(
+                  height: 20,
+                ),
+                // Verificamos si el controller está cargando o si no hay recibos
+                reciboController.isLoading
+                    ? Center(child: CircularProgressIndicator())
+                    : reciboController.recibos.isEmpty
+                        ? Center(
+                            child: Text(
+                              "No hay recibos disponibles.",
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 18),
+                            ),
+                          )
+                        : ListView.builder(
+                            shrinkWrap:
+                                true, // Hace que ListView ocupe solo el espacio necesario
+                            itemCount: reciboController.recibos.length,
+                            itemBuilder: (context, index) {
+                              final recibo = reciboController.recibos[index];
+                              return TaskCardWidget(
+                                titulo: 'Nro. Recibo: ${recibo.numeroRecibo}',
+                                subtitulo: 'Plan: ${recibo.nombreServicio}',
+                                periodo: 'Periodo: ${recibo.periodo}',
+                                precio: 'Monto: ${recibo.importe}',
+                                estado: 'Estado: ${recibo.nombreEstadoRecibo}',
+                                color: AppColors.verdeLima,
+                                isCompleted: false,
+                              );
+                            },
+                          ),
+                SizedBox(height: 30),
+                Divider(
+                  color: AppColors.verdeLima,
+                  thickness: 1,
+                ),
+                SizedBox(height: 20),
+                _buildMontoPagarCard(
+                  titulo: "Monto facturado",
+                  monto: "S/. 155.00",
+                ),
+                _buildMontoPagarCard(
+                  titulo: "Monto a pagar",
+                  monto: "S/. 0.00",
+                ),
+                _buildGeneral(),
+              ],
+            ),
           ),
-        ),
-      ),
-    );
+        ));
   }
 
   Widget _buildMontoPagarCard({required String titulo, required String monto}) {
@@ -107,13 +142,14 @@ class Listrecibosscreen extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
       ),
       child: ListTile(
-        leading: Icon(Icons.payment_outlined, color: verdeLima, size: 36),
+        leading:
+            Icon(Icons.payment_outlined, color: AppColors.verdeLima, size: 36),
         title: Text(
           titulo,
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
-            color: negro,
+            color: AppColors.negro,
           ),
         ),
         trailing: Column(
@@ -124,7 +160,7 @@ class Listrecibosscreen extends StatelessWidget {
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: verdeLima,
+                color: AppColors.verdeLima,
               ),
             ),
           ],
@@ -136,56 +172,78 @@ class Listrecibosscreen extends StatelessWidget {
   Widget _buildGeneral() {
     return Container(
       width: double.infinity,
-      height: 170,
       margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
         color: Colors.grey.withOpacity(0.4),
         borderRadius: BorderRadius.circular(12),
       ),
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Center(
-                        child: Text(
-                          "¡Felicidades, Bantelino!",
-                          style: TextStyle(
-                              color: verdeLima,
-                              fontSize: 30,
-                              fontWeight: FontWeight.bold),
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center, // Centra la columna
+            crossAxisAlignment: CrossAxisAlignment
+                .center, // Centra los elementos dentro de la columna
+            mainAxisSize: MainAxisSize
+                .min, // Hace que la columna solo ocupe el espacio necesario
+            children: [
+              Row(
+                mainAxisAlignment:
+                    MainAxisAlignment.center, // Centra el contenido de la fila
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment
+                          .center, // Centra los elementos dentro de la columna
+                      children: [
+                        // Centra el título
+                        Center(
+                          child: Text(
+                            "¡Felicidades, Bantelino!",
+                            style: TextStyle(
+                                color: AppColors.verdeLima,
+                                fontSize: 30,
+                                fontWeight: FontWeight.bold),
+                            textAlign: TextAlign
+                                .center, // Asegura que el texto se mantenga centrado
+                          ),
                         ),
-                      ),
-                      SizedBox(height: 14),
-                      Center(
-                        child: Column(
-                          children: [
-                            Text(
-                              "No tienes deudas.",
-                              style: TextStyle(color: Colors.white, fontSize: 25,
-                              fontWeight: FontWeight.bold),
-                            ),
-                             Text(
-                              "Pagaste tu último recibo",
-                              style: TextStyle(color: Colors.white,  fontSize: 25,
-                              fontWeight: FontWeight.bold),
-                            ),
-                          ],
+                        SizedBox(height: 14),
+                        // Centra el contenido
+                        Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment
+                                .center, // Centra el texto dentro de la columna
+                            children: [
+                              Text(
+                                "No tienes deudas.",
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 25,
+                                    fontWeight: FontWeight.bold),
+                                textAlign: TextAlign
+                                    .center, // Asegura que el texto se mantenga centrado
+                              ),
+                              Text(
+                                "Pagaste tu último recibo",
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 25,
+                                    fontWeight: FontWeight.bold),
+                                textAlign: TextAlign
+                                    .center, // Asegura que el texto se mantenga centrado
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-               
-              ],
-            ),
+                ],
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

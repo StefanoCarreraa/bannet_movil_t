@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:bannet_movil_t/src/Controllers/Login/Login_Controller.dart';
+import 'package:bannet_movil_t/src/Controllers/Recibo/Recibo_Controller.dart';
 import 'package:bannet_movil_t/src/View/Comprobante/ListComprobantesScreen.dart';
 import 'package:bannet_movil_t/src/View/Profile/profileScreen.dart';
 import 'package:bannet_movil_t/src/View/Recibo/ListRecibosScreen.dart';
@@ -9,6 +10,7 @@ import 'package:bannet_movil_t/src/widget/DrawerSectionCustom.dart';
 import 'package:bannet_movil_t/src/widget/TaskCardWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
 
 class Indexscreen extends StatefulWidget {
   const Indexscreen({
@@ -26,6 +28,33 @@ class _IndexscreenState extends State<Indexscreen> {
   final GlobalKey _key1 = GlobalKey();
 
   double _width = 0; // Variable para almacenar el largo del widget
+
+  String nombreOrganizacion = 'Cargando...';
+  int idPersona = 0;
+
+  Future<void> _loadUserData() async {
+    final userData = await _logincontroller.loadUserData();
+    setState(() {
+      nombreOrganizacion = userData['nombreOrganizacion'];
+      idPersona = userData['idPersona'];
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _initialize();
+  }
+
+  Future<void> _initialize() async {
+    await _loadUserData();
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final reciboController =
+          Provider.of<ReciboController>(context, listen: false);
+      reciboController.fetchRecibosPendientes(idPersona);
+    });
+  }
 
   void _mostrarConfirmacionCerrarSesion(BuildContext context) {
     showModalBottomSheet(
@@ -156,6 +185,8 @@ class _IndexscreenState extends State<Indexscreen> {
 
   @override
   Widget build(BuildContext context) {
+    final reciboController = Provider.of<ReciboController>(context);
+
     // Calcular el tamaño del widget después de que se haya renderizado
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final renderBox = _key1.currentContext?.findRenderObject() as RenderBox?;
@@ -270,7 +301,7 @@ class _IndexscreenState extends State<Indexscreen> {
             child: Column(
               children: [
                 _buildBannerUsuario(),
-                SizedBox(height: 20),
+                SizedBox(height: 5),
                 //
                 Expanded(
                   child: ListView(
@@ -281,17 +312,38 @@ class _IndexscreenState extends State<Indexscreen> {
                           "Planes",
                           style: TextStyle(
                               color: AppColors.verdeLima,
-                              fontSize: 30,
+                              fontSize: 26,
                               fontWeight: FontWeight.w700),
                         ),
                       ),
-                      TaskCardWidget(
-                          titulo:
-                              'Plan : INTERNET 400 MBPS + 3 STREAMING PLAN FULL PRIME',
-                          precio: 'Monto : S/. 35.00',
-                          fecha: 'Inicio de facturación : 21/08/2024',
-                          color: AppColors.verdeLima,
-                          isCompleted: false),
+                      reciboController.isLoading
+                          ? Center(child: CircularProgressIndicator())
+                          : reciboController.recibos.isEmpty
+                              ? Center(
+                                  child: Text(
+                                    "No hay recibos disponibles.",
+                                    style: TextStyle(
+                                        color: Colors.white, fontSize: 18),
+                                  ),
+                                )
+                              : Column(
+                                  children:
+                                      reciboController.recibos.map((recibo) {
+                                    return TaskCardWidget(
+                                      titulo:
+                                          'Nro. Recibo: ${recibo.numeroRecibo}',
+                                      subtitulo:
+                                          'Plan: ${recibo.nombreServicio}',
+                                      periodo: 'Periodo: ${recibo.periodo}',
+                                      precio: 'Monto: ${recibo.importe}',
+                                      estado:
+                                          'Estado: ${recibo.nombreEstadoRecibo}',
+                                      color: AppColors.verdeLima,
+                                      isCompleted: false,
+                                    );
+                                  }).toList(),
+                                )
+
                       // TaskCardWidget(
                       //     titulo:
                       //         'Plan : INTERNET 400 MBPS + 3 STREAMING PLAN FULL PRIME',
@@ -477,9 +529,26 @@ class _IndexscreenState extends State<Indexscreen> {
   }
 
   Widget _buildBannerUsuario() {
+    String ParteNombre1 = "";
+    String ParteNombre2 = "";
+    void splitName(String fullName) {
+      // Dividimos el nombre en palabras
+      List<String> words = fullName.split(' ');
+
+      if (words.length > 2) {
+        // Si hay más de dos palabras, unimos las dos primeras y el resto
+        String firstPart = words.take(2).join(' ');
+        String secondPart = words.skip(2).join(' ');
+        ParteNombre1 = firstPart;
+        ParteNombre2 = secondPart;
+      }
+    }
+
+    splitName(nombreOrganizacion);
+
     double adjustedHeight = _width < 615
-        ? 180
-        : 130; // Si el ancho es menor que 615, la altura será 200
+        ? 160
+        : 110; // Si el ancho es menor que 615, la altura será 200
 
     return ClipRRect(
       borderRadius: BorderRadius.circular(12), // Bordes redondeados
@@ -503,10 +572,10 @@ class _IndexscreenState extends State<Indexscreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
-                    'Bienvenida,',
+                    'Bienvenido,',
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: 24,
+                      fontSize: 21,
                       fontWeight: FontWeight.w500,
                       shadows: [
                         Shadow(
@@ -523,10 +592,10 @@ class _IndexscreenState extends State<Indexscreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                               Text(
-                                "Stefano Manuel", // Mostrar todo el nombre si el ancho es suficiente
+                                ParteNombre1, // Mostrar todo el nombre si el ancho es suficiente
                                 style: TextStyle(
                                   color: Colors.lightGreen,
-                                  fontSize: 26,
+                                  fontSize: 22,
                                   fontWeight: FontWeight.bold,
                                   shadows: [
                                     Shadow(
@@ -538,10 +607,10 @@ class _IndexscreenState extends State<Indexscreen> {
                                 ),
                               ),
                               Text(
-                                "Carrera Alvarado", // Mostrar todo el nombre si el ancho es suficiente
+                                ParteNombre2, // Mostrar todo el nombre si el ancho es suficiente
                                 style: TextStyle(
                                   color: Colors.lightGreen,
-                                  fontSize: 26,
+                                  fontSize: 22,
                                   fontWeight: FontWeight.bold,
                                   shadows: [
                                     Shadow(
@@ -554,7 +623,7 @@ class _IndexscreenState extends State<Indexscreen> {
                               ),
                             ])
                       : Text(
-                          "Stefano Manuel Carrera Alvarado", // Mostrar todo el nombre si el ancho es suficiente
+                          nombreOrganizacion, // Mostrar todo el nombre si el ancho es suficiente
                           style: TextStyle(
                             color: Colors.lightGreen,
                             fontSize: 26,
