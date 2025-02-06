@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:bannet_movil_t/src/utils/constants/app_colors.dart';
 import 'package:bannet_movil_t/src/widget/AlertshowModalBottomSheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -7,15 +8,12 @@ import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class Comprobantescreen extends StatelessWidget {
-  final Color blanco = Color(0xFFFFFFFF);
-  final Color negro = Color(0xFF000000);
-
-  Comprobantescreen({super.key});
+  const Comprobantescreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: blanco,
+      backgroundColor: AppColors.blanco,
       appBar: AppBar(
         title: Center(
           child: Image.asset(
@@ -27,12 +25,12 @@ class Comprobantescreen extends StatelessWidget {
         actions: [
           IconButton(
             onPressed: () {},
-            icon: Icon(Icons.refresh, color: negro),
+            icon: Icon(Icons.refresh, color: AppColors.negro),
           ),
         ],
-        backgroundColor: negro,
+        backgroundColor: AppColors.negro,
         centerTitle: true,
-        iconTheme: IconThemeData(color: verdeLima),
+        iconTheme: IconThemeData(color: AppColors.verdeLima),
       ),
       body: Container(
         constraints: BoxConstraints.expand(),
@@ -51,7 +49,7 @@ class Comprobantescreen extends StatelessWidget {
                 child: Text(
                   "Mi Comprobante Bantel",
                   style: TextStyle(
-                    color: verdeLima,
+                    color: AppColors.verdeLima,
                     fontSize: 30,
                     fontWeight: FontWeight.w700,
                   ),

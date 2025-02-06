@@ -1,10 +1,5 @@
+import 'package:bannet_movil_t/src/utils/constants/app_colors.dart';
 import 'package:flutter/material.dart';
-
-final Color verdeLima = Color(0xFFA5CD39); // Verde lima
-final Color grisFondo = Color(0xFFF5F5F5); // Gris claro
-final Color grisOscuro = Color(0xFF333333); // Gris oscuro para detalles
-final Color blanco = Colors.white; // Blanco puro
-final Color negro = Colors.black; // Blanco puro
 
 void mostrarNotificacion({
   required BuildContext context,
@@ -19,7 +14,7 @@ void mostrarNotificacion({
       return Container(
         width: MediaQuery.of(context).size.width,
         decoration: BoxDecoration(
-          color: grisOscuro,
+          color: AppColors.grisOscuro,
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(16),
             topRight: Radius.circular(16),
@@ -63,7 +58,7 @@ void mostrarNotificacion({
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: Colors.white70,
-                fontSize: 16,
+                fontSize: 18,
               ),
             ),
             const SizedBox(height: 20),

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bannet_movil_t/src/View/Home/IndexScreen.dart';
 import 'package:bannet_movil_t/src/View/Login/loginScreen.dart';
 import 'package:bannet_movil_t/src/utils/constants/app_colors.dart';
+import 'package:bannet_movil_t/src/widget/AlertshowModalBottomSheet.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../services/auth_service.dart';
@@ -12,11 +13,6 @@ class LoginController with ChangeNotifier {
 
   Future<bool> attemptLogin(
       String usuario, String clave, BuildContext context) async {
-    if (usuario.isEmpty || clave.isEmpty) {
-      _showSnackBar(context, 'Por favor ingresa tus credenciales');
-      return false;
-    }
-
     try {
       // Limitar tiempo de espera a 5 segundos
       final response = await Future.any([
@@ -53,14 +49,21 @@ class LoginController with ChangeNotifier {
         return true;
       } else {
         if (context.mounted) {
-          _showSnackBar(context, 'Credenciales inválidas');
+          mostrarNotificacion(
+            context: context,
+            titulo: 'Error',
+            mensaje: 'Credenciales inválidas',
+          );
         }
         return false;
       }
     } catch (e) {
       if (context.mounted) {
-        _showSnackBar(context,
-            e is TimeoutException ? e.message! : 'Error de conexión: $e');
+        mostrarNotificacion(
+          context: context,
+          titulo: 'Error',
+          mensaje: e is TimeoutException ? e.message! : 'Error de conexión: $e',
+        );
       }
       return false;
     }
@@ -214,8 +217,8 @@ class LoginController with ChangeNotifier {
     };
   }
 
-  void _showSnackBar(BuildContext context, String message) {
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text(message)));
-  }
+  // void _showSnackBar(BuildContext context, String message) {
+  //   ScaffoldMessenger.of(context)
+  //       .showSnackBar(SnackBar(content: Text(message)));
+  // }
 }

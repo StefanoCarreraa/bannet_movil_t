@@ -1,10 +1,14 @@
 import 'package:bannet_movil_t/src/Controllers/Contrato/Contrato_Controller.dart';
 import 'package:bannet_movil_t/src/Controllers/Login/Login_Controller.dart';
+import 'package:bannet_movil_t/src/Controllers/baja_suspension_controller.dart';
 import 'package:bannet_movil_t/src/Models/contrato_model.dart';
+import 'package:bannet_movil_t/src/Models/solicitudbaja_model.dart';
 import 'package:bannet_movil_t/src/utils/constants/app_colors.dart';
 import 'package:bannet_movil_t/src/widget/dropdown_custom_form_widget.dart';
 import 'package:bannet_movil_t/src/widget/terminos_section_widget.dart';
 import 'package:bannet_movil_t/src/widget/textfield_custom_form_widget.dart';
+import 'package:bannet_movil_t/src/widget/AlertshowModalBottomSheet.dart';
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -28,10 +32,11 @@ class _SolicitudBajaScreenState extends State<SolicitudBajaScreen> {
       TextEditingController();
 
   String? selectedValue;
-  String? selectedValue2;
   bool _aceptaTerminos = false;
 
-  int? _selectedContratoId = 2000;
+  int? _selectedContratoId = 0;
+  int? _selectedCategoriaTicketid;
+
   bool _isLoading = false; // Indicador de estado para guardar
 
   int idOrganizacion = 0;
@@ -68,75 +73,82 @@ class _SolicitudBajaScreenState extends State<SolicitudBajaScreen> {
   //     _aceptaTerminos = false;
   //   });
   // }
+
   Future<bool?> _mostrarTerminosYCondiciones() async {
     return await showDialog<bool>(
       context: context,
       builder: (context) {
         return TerminosYCondicionesDialog(
           onAccept: () {
-            Navigator.of(context).pop(true); // Devuelve "true" si acepta
+            Navigator.of(context).pop(true);
           },
         );
       },
     );
   }
 
-  void _validarYEnviarFormulario() {
-    final istiposervicioValid =
+  Future<void> _validarYEnviarFormulario(BuildContext context,
+      BajaSuspensionController bajaSuspensionController) async {
+    if (!_validarFormulario()) {
+      mostrarNotificacion(
+          context: context,
+          titulo: 'Error',
+          mensaje: 'Por favor completa correctamente todos los campos.');
+      return;
+    }
+
+    if (!_aceptaTerminos) {
+      mostrarNotificacion(
+          context: context,
+          titulo: 'Error',
+          mensaje:
+              'Debes aceptar las Políticas de Privacidad y Términos y Condiciones.');
+      return;
+    }
+
+    final bajaSuspension = BajaSuspensionModel(
+      idServicioContratado: int.parse(_selectedContratoId.toString()),
+      idCategoriaTicket: int.parse(_selectedCategoriaTicketid.toString()),
+      observacion: _textsolicitudController.text,
+    );
+
+    // bajaSuspensionController.registrarBajaSuspension(bajaSuspension);
+    final response =
+        await bajaSuspensionController.registrarBajaSuspension(bajaSuspension);
+
+    mostrarNotificacion(
+      context: context,
+      titulo: 'Solicitud enviada',
+      mensaje: response['message'],
+    );
+
+    // Opcional: Limpia el formulario si es necesario
+    // _limpiarFormulario();
+  }
+
+  bool _validarFormulario() {
+    final isTipoServicioValid =
         _tiposervicioDropdownKey.currentState?.validate() ?? false;
-    final iscontratoValid =
+    final isContratoValid =
         _contratoDropdownKey.currentState?.validate() ?? false;
     final isFormValid = _formKey.currentState?.validate() ?? false;
 
-    if (!_aceptaTerminos) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Debes aceptar las Políticas de Privacidad y Términos y Condiciones.',
-          ),
-          backgroundColor: Colors.red,
-        ),
-      );
-      return;
-    }
-
-    if (!isFormValid || !istiposervicioValid || !iscontratoValid) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Por favor completa correctamente todos los campos.',
-          ),
-          backgroundColor: Colors.red,
-        ),
-      );
-      return;
-    }
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          '¡Solicitud enviada correctamente!',
-        ),
-        backgroundColor: AppColors.verdeLima,
-      ),
-    );
-
-    // Procesar la solicitud aquí
-    // _limpiarFormulario();
+    return isTipoServicioValid && isContratoValid && isFormValid;
   }
 
   final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
-    String? selectedValue2;
-
-    final List<String> dropdownItems2 = [
-      'Suspensión Temporal',
-      'Solicitud de Baja'
-    ];
-
     final contratoController = Provider.of<ContratoController>(context);
+    final bajaSuspensioncontroller =
+        Provider.of<BajaSuspensionController>(context);
+
+    // Cambia la lista a un mapa para asociar valores numéricos.
+    final Map<int, String> dropdownItems2 = {
+      6: 'Suspensión Temporal',
+      30: 'Solicitud de Baja',
+    };
 
     return Scaffold(
       backgroundColor: AppColors.negro,
@@ -177,7 +189,7 @@ class _SolicitudBajaScreenState extends State<SolicitudBajaScreen> {
                 ),
                 SizedBox(height: 30),
                 DropdowncustomFormWidget<ContratoModel>(
-                  fondoColor: Color(0xFFA5CD39),
+                  fondoColor: AppColors.verdeLima,
                   borderColor: Colors.white,
                   labelColor: Colors.black,
                   textColor: Colors.black,
@@ -212,19 +224,19 @@ class _SolicitudBajaScreenState extends State<SolicitudBajaScreen> {
                   formFieldKey: _contratoDropdownKey,
                 ),
                 SizedBox(height: 30),
-                DropdowncustomFormWidget<String>(
+                DropdowncustomFormWidget<int>(
                   label: 'Tipo de Servicio',
                   hint: 'Selecciona un tipo de servicio',
-                  value: selectedValue2,
-                  items: dropdownItems2,
-                  onChanged: (String? newValue) {
+                  value: _selectedCategoriaTicketid,
+                  items: dropdownItems2.keys.toList(),
+                  onChanged: (int? newValue) {
                     setState(() {
-                      selectedValue2 = newValue;
+                      _selectedCategoriaTicketid = newValue;
                     });
                   },
-                  itemLabel: (String item) => item,
-                  validator: (String? value) {
-                    if (value == null || value.isEmpty) {
+                  itemLabel: (int item) => dropdownItems2[item]!,
+                  validator: (int? value) {
+                    if (value == null) {
                       return 'Por favor selecciona un tipo de servicio';
                     }
                     return null;
@@ -326,7 +338,8 @@ class _SolicitudBajaScreenState extends State<SolicitudBajaScreen> {
                 SizedBox(height: 30),
                 Center(
                   child: ElevatedButton(
-                    onPressed: _validarYEnviarFormulario,
+                    onPressed: () => _validarYEnviarFormulario(
+                        context, bajaSuspensioncontroller),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.verdeLima,
                       foregroundColor: Colors.white,

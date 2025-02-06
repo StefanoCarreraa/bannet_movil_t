@@ -1,21 +1,25 @@
+import 'package:bannet_movil_t/src/Controllers/Contrato/Contrato_Controller.dart';
+import 'package:bannet_movil_t/src/Controllers/Login/Login_Controller.dart';
+import 'package:bannet_movil_t/src/Models/contrato_model.dart';
+import 'package:bannet_movil_t/src/utils/constants/app_colors.dart';
 import 'package:bannet_movil_t/src/widget/dropdown_custom_form_widget.dart';
 import 'package:bannet_movil_t/src/widget/terminos_Section_widget.dart';
 import 'package:bannet_movil_t/src/widget/textfield_custom_form_widget.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class LibroReclamacionesScreen extends StatefulWidget {
-  const LibroReclamacionesScreen({super.key});
+  final int? iDOrganizacion;
+
+  const LibroReclamacionesScreen({super.key, this.iDOrganizacion});
 
   @override
   State<LibroReclamacionesScreen> createState() => _LibroReclamacionesScreen();
 }
 
 class _LibroReclamacionesScreen extends State<LibroReclamacionesScreen> {
-  final Color verdeLima = Color(0xFFA5CD39);
-  final Color grisFondo = Color(0xFFF5F5F5);
-  final Color grisOscuro = Color(0xFF333333);
-  final Color negro = Color(0xFF000000);
+  final LoginController _logincontroller = LoginController();
 
   final GlobalKey<FormFieldState> _contratoDropdownKey =
       GlobalKey<FormFieldState>();
@@ -23,16 +27,39 @@ class _LibroReclamacionesScreen extends State<LibroReclamacionesScreen> {
       GlobalKey<FormFieldState>();
   late TextEditingController _textsolicitudController;
   late TextEditingController _textnombreController;
-  late TextEditingController _textdocController;  
+  late TextEditingController _textdocController;
 
   bool _aceptaTerminos = false;
+  int idOrganizacion = 0;
+  bool _isLoading = false; // Indicador de estado para guardar
+  int? _selectedContratoId = 0;
+
+  Future<void> _loadUserData() async {
+    final userData = await _logincontroller.loadUserData();
+    setState(() {
+      idOrganizacion = userData['idOrganizacion'];
+      setState(() {});
+      ();
+    });
+  }
 
   @override
   void initState() {
     super.initState();
+    _initialize();
+
     _textsolicitudController = TextEditingController();
     _textnombreController = TextEditingController();
-    _textdocController = TextEditingController();      
+    _textdocController = TextEditingController();
+  }
+
+  Future<void> _initialize() async {
+    await _loadUserData(); // Espera a que _loadUserData se complete
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final contratoController =
+          Provider.of<ContratoController>(context, listen: false);
+      contratoController.fetchContratos(idOrganizacion);
+    });
   }
 
   Future<bool?> _mostrarTerminosYCondiciones() async {
@@ -84,7 +111,7 @@ class _LibroReclamacionesScreen extends State<LibroReclamacionesScreen> {
         content: Text(
           '¡Solicitud enviada correctamente!',
         ),
-        backgroundColor: verdeLima,
+        backgroundColor: AppColors.verdeLima,
       ),
     );
 
@@ -96,33 +123,26 @@ class _LibroReclamacionesScreen extends State<LibroReclamacionesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    String? selectedValue;
+    final contratoController = Provider.of<ContratoController>(context);
+
     String? selectedValue2;
 
-    final List<String> dropdownItems = [
-      'Contrato 1',
-      'Contrato 2',
-      'Contrato 3',
-      'Contrato 4',
-      'Contrato 5',
-      'Contrato 6'
-    ];
     final List<String> dropdownItems2 = [
       'Reclamo',
       'Queja',
     ];
 
     return Scaffold(
-      backgroundColor: negro,
+      backgroundColor: AppColors.negro,
       appBar: AppBar(
         title: Image.asset(
           'assets/images/logo_miportal.png',
           height: 55,
         ),
         toolbarHeight: 60,
-        backgroundColor: negro,
+        backgroundColor: AppColors.negro,
         centerTitle: true,
-        iconTheme: IconThemeData(color: verdeLima),
+        iconTheme: IconThemeData(color: AppColors.verdeLima),
       ),
       body: Container(
         constraints: BoxConstraints.expand(),
@@ -144,7 +164,7 @@ class _LibroReclamacionesScreen extends State<LibroReclamacionesScreen> {
                   child: Text(
                     "Libro de Reclamaciones",
                     style: TextStyle(
-                        color: verdeLima,
+                        color: AppColors.verdeLima,
                         fontSize: 20,
                         fontWeight: FontWeight.w600),
                   ),
@@ -155,7 +175,7 @@ class _LibroReclamacionesScreen extends State<LibroReclamacionesScreen> {
                   controller: _textnombreController,
                   hintText: 'Ingrese nombre del titular',
                   min: 1,
-                  max: 2,                  
+                  max: 2,
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
                       return '**Este campo es obligatorio**';
@@ -169,7 +189,7 @@ class _LibroReclamacionesScreen extends State<LibroReclamacionesScreen> {
                   controller: _textdocController,
                   hintText: 'Ingrese DNI/CE del titular',
                   min: 1,
-                  max: 2,                   
+                  max: 2,
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
                       return '**Este campo es obligatorio**';
@@ -177,25 +197,36 @@ class _LibroReclamacionesScreen extends State<LibroReclamacionesScreen> {
                     return null;
                   },
                 ),
-
                 SizedBox(height: 30),
-                DropdowncustomFormWidget<String>(
+                DropdowncustomFormWidget<ContratoModel>(
                   fondoColor: Color(0xFFA5CD39),
                   borderColor: Colors.white,
                   labelColor: Colors.black,
                   textColor: Colors.black,
                   label: 'Contrato',
                   hint: 'Selecciona un contrato',
-                  value: selectedValue,
-                  items: dropdownItems,
-                  onChanged: (String? newValue) {
+                  value: contratoController.contratos.firstWhere(
+                    (contrato) =>
+                        contrato.iDServicioContratado == _selectedContratoId,
+                    orElse: () =>
+                        ContratoModel.empty(), // Retornar el objeto vacío
+                  ),
+                  items: contratoController.contratos,
+                  onChanged: (ContratoModel? newValue) {
+                    _isLoading = true;
+
                     setState(() {
-                      selectedValue = newValue;
+                      _selectedContratoId = newValue?.iDServicioContratado;
+                      //contratoController.fetchContratos(_selectedContratoId!);
+                      //_contratoDropdownKey.currentState?.reset();
                     });
+                    //_selectedContratoId = null;
+                    //_contratoDropdownKey.currentState?.reset();
+                    _isLoading = false;
                   },
-                  itemLabel: (String? item) => item ?? '',
-                  validator: (String? value) {
-                    if (value == null || value.isEmpty) {
+                  itemLabel: (contrato) => contrato.nombreServicio,
+                  validator: (value) {
+                    if (value == null) {
                       return 'Por favor selecciona un contrato';
                     }
                     return null;
@@ -244,7 +275,9 @@ class _LibroReclamacionesScreen extends State<LibroReclamacionesScreen> {
                         _aceptaTerminos
                             ? Icons.check_circle
                             : Icons.radio_button_unchecked,
-                        color: _aceptaTerminos ? verdeLima : grisFondo,
+                        color: _aceptaTerminos
+                            ? AppColors.verdeLima
+                            : AppColors.grisFondo,
                         size: 28,
                       ),
                       onTap: () async {
@@ -271,14 +304,14 @@ class _LibroReclamacionesScreen extends State<LibroReclamacionesScreen> {
                           text:
                               'Al hacer click en el botón “SOLICITAR”, aceptas nuestras ',
                           style: TextStyle(
-                            color: grisFondo,
+                            color: AppColors.grisFondo,
                             fontSize: 14,
                           ),
                           children: [
                             TextSpan(
                               text: 'Políticas de Privacidad',
                               style: TextStyle(
-                                color: verdeLima,
+                                color: AppColors.verdeLima,
                                 fontWeight: FontWeight.bold,
                                 decoration: TextDecoration.underline,
                               ),
@@ -291,13 +324,13 @@ class _LibroReclamacionesScreen extends State<LibroReclamacionesScreen> {
                             TextSpan(
                               text: ' y ',
                               style: TextStyle(
-                                color: grisFondo,
+                                color: AppColors.grisFondo,
                               ),
                             ),
                             TextSpan(
                               text: 'Términos y Condiciones.',
                               style: TextStyle(
-                                color: verdeLima,
+                                color: AppColors.verdeLima,
                                 fontWeight: FontWeight.bold,
                                 decoration: TextDecoration.underline,
                               ),
@@ -317,7 +350,7 @@ class _LibroReclamacionesScreen extends State<LibroReclamacionesScreen> {
                   child: ElevatedButton(
                     onPressed: _validarYEnviarFormulario,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: verdeLima,
+                      backgroundColor: AppColors.verdeLima,
                       foregroundColor: Colors.white,
                       minimumSize: Size(double.infinity, 50),
                       shape: RoundedRectangleBorder(

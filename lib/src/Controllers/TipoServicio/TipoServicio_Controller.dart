@@ -30,6 +30,3 @@ class TipoServicioController with ChangeNotifier {
     }
   }
 }
-
-
-

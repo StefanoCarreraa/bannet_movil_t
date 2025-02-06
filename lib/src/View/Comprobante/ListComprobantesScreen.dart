@@ -1,12 +1,9 @@
 import 'package:bannet_movil_t/src/View/Comprobante/ComprobanteScreen.dart';
+import 'package:bannet_movil_t/src/utils/constants/app_colors.dart';
 import 'package:bannet_movil_t/src/widget/TaskCardWidget.dart';
 import 'package:flutter/material.dart';
 
 class Listcomprobantesscreen extends StatelessWidget {
-  final Color verdeLima = Color(0xFFA5CD39);
-  final Color blanco = Color(0xFFFFFFFF);
-  final Color negro = Color(0xFF000000);
-
   Widget _buildMiRecibo() {
     return Padding(
       padding: const EdgeInsets.all(16.0),
@@ -31,7 +28,8 @@ class Listcomprobantesscreen extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              _buildBoton('Descargar Comprobante', Colors.white, negro, true),
+              _buildBoton('Descargar Comprobante', AppColors.blanco,
+                  AppColors.negro, true),
               // SizedBox(width: 20),
               // _buildBoton('Pagar', verdeLima, Colors.white, true),
             ],
@@ -82,16 +80,16 @@ class Listcomprobantesscreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: blanco, // Fondo blanco
+      backgroundColor: AppColors.blanco, // Fondo blanco
       appBar: AppBar(
         title: Image.asset(
           'assets/images/logo_miportal.png',
           height: 55,
         ),
         toolbarHeight: 60,
-        backgroundColor: negro,
+        backgroundColor: AppColors.negro,
         centerTitle: true, // Garantiza que el título esté centrado
-        iconTheme: IconThemeData(color: verdeLima),
+        iconTheme: IconThemeData(color: AppColors.verdeLima),
       ),
       body: Container(
         constraints:
@@ -116,7 +114,7 @@ class Listcomprobantesscreen extends StatelessWidget {
                 child: Text(
                   "Comprobantes",
                   style: TextStyle(
-                      color: verdeLima,
+                      color: AppColors.verdeLima,
                       fontSize: 30,
                       fontWeight: FontWeight.w700),
                 ),
@@ -130,7 +128,7 @@ class Listcomprobantesscreen extends StatelessWidget {
                 // periodo: 'Periodo: 2025-ENERO',
                 fecha: 'Fecha: 21/09/2024',
                 precio: 'Monto : S/. 35.00',
-                color: verdeLima,
+                color: AppColors.verdeLima,
                 isCompleted: false,
                 expandedContent: _buildMiRecibo(),
               ),
@@ -140,7 +138,7 @@ class Listcomprobantesscreen extends StatelessWidget {
                 // periodo: 'Periodo: 2025-ENERO',
                 fecha: 'Fecha: 21/09/2024',
                 precio: 'Monto : S/. 35.00',
-                color: verdeLima,
+                color: AppColors.verdeLima,
                 isCompleted: false,
                 expandedContent: _buildMiRecibo(),
               ),
@@ -150,13 +148,13 @@ class Listcomprobantesscreen extends StatelessWidget {
                 // periodo: 'Periodo: 2025-ENERO',
                 fecha: 'Fecha: 21/09/2024',
                 precio: 'Monto : S/. 35.00',
-                color: verdeLima,
+                color: AppColors.verdeLima,
                 isCompleted: false,
                 expandedContent: _buildMiRecibo(),
               ),
               SizedBox(height: 30),
               Divider(
-                color: verdeLima,
+                color: AppColors.verdeLima,
                 thickness: 1,
               ),
             ],

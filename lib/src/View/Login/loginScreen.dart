@@ -1,5 +1,6 @@
 import 'package:bannet_movil_t/src/Controllers/Login/Login_Controller.dart';
 import 'package:bannet_movil_t/src/utils/constants/app_colors.dart';
+import 'package:bannet_movil_t/src/widget/AlertshowModalBottomSheet.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -92,7 +93,16 @@ class _LoginscreenState extends State<Loginscreen> {
                                             _usuarioController.text;
                                         final claveUsuario =
                                             _claveController.text;
-
+                                        if (_usuarioController.text.isEmpty ||
+                                            claveUsuario.isEmpty) {
+                                          mostrarNotificacion(
+                                            context: context,
+                                            titulo: 'Error',
+                                            mensaje:
+                                                'Por favor ingresa tus credenciales',
+                                          );
+                                          return;
+                                        }
                                         final success =
                                             await _controller.attemptLogin(
                                                 loginUsuario,
@@ -102,8 +112,12 @@ class _LoginscreenState extends State<Loginscreen> {
                                         setState(() => _isLoading = false);
 
                                         if (!success) {
-                                          _showAlertDialog(context, 'Error',
-                                              'No se pudo conectar con el servidor.');
+                                          mostrarNotificacion(
+                                            context: context,
+                                            titulo: 'Error',
+                                            mensaje:
+                                                'No se pudo conectar con el servidor.',
+                                          );
                                         }
                                       },
                                 style: ElevatedButton.styleFrom(
@@ -117,7 +131,7 @@ class _LoginscreenState extends State<Loginscreen> {
                                 child: Text(
                                   'Ingresar',
                                   style: TextStyle(
-                                      color: Color(0xFF000000),
+                                      color: AppColors.negro,
                                       fontWeight: FontWeight.w700),
                                 ),
                               ),
@@ -216,24 +230,6 @@ class _LoginscreenState extends State<Loginscreen> {
           ),
         ),
       ),
-    );
-  }
-
-  void _showAlertDialog(BuildContext context, String title, String message) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(title),
-          content: Text(message),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Aceptar'),
-            ),
-          ],
-        );
-      },
     );
   }
 

@@ -7,38 +7,32 @@ import 'package:flutter/material.dart';
 class ProfileScreen extends StatelessWidget {
   final LoginController _logincontroller = LoginController();
 
-  final Color verdeLima = Color(0xFFA5CD39); // Verde lima
-  final Color grisFondo = Color(0xFFF5F5F5); // Gris claro
-  final Color grisOscuro = Color(0xFF333333); // Gris oscuro para detalles
-  final Color blanco = Colors.white; // Blanco puro
-  final Color negro = Colors.black; // Blanco puro
-
   ProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: negro,
+      backgroundColor: AppColors.negro,
       appBar: AppBar(
-        backgroundColor: negro,
+        backgroundColor: AppColors.negro,
         elevation: 0,
         centerTitle: true,
         title: Text(
           'Perfil',
           style: TextStyle(
-            color: blanco,
+            color: AppColors.blanco,
             fontSize: 20,
             fontWeight: FontWeight.bold,
           ),
         ),
-        iconTheme: IconThemeData(color: verdeLima),
+        iconTheme: IconThemeData(color: AppColors.verdeLima),
       ),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             _construirEncabezadoPerfil(),
-            Divider(color: verdeLima, thickness: 1),
+            Divider(color: AppColors.verdeLima, thickness: 1),
             _construirTituloSeccion('Configuración'),
             _construirElementoLista(Icons.settings, 'Configuración de la app',
                 () async {
@@ -89,7 +83,7 @@ class ProfileScreen extends StatelessWidget {
       builder: (BuildContext context) {
         return Container(
           decoration: BoxDecoration(
-            color: grisOscuro,
+            color: AppColors.grisOscuro,
             borderRadius: BorderRadius.only(
               topLeft: Radius.circular(16),
               topRight: Radius.circular(16),
@@ -127,9 +121,9 @@ class ProfileScreen extends StatelessWidget {
                       onPressed: () {
                         Navigator.of(context).pop();
                       },
-                      appcolor: verdeLima,
-                      textColor: blanco,
-                      iconColor: blanco,
+                      appcolor: AppColors.verdeLima,
+                      textColor: AppColors.blanco,
+                      iconColor: AppColors.blanco,
                     ),
                     SizedBox(
                       height: 16,
@@ -140,9 +134,9 @@ class ProfileScreen extends StatelessWidget {
                       onPressed: () {
                         Navigator.of(context).pop();
                       },
-                      appcolor: verdeLima,
-                      textColor: blanco,
-                      iconColor: blanco,
+                      appcolor: AppColors.verdeLima,
+                      textColor: AppColors.blanco,
+                      iconColor: AppColors.blanco,
                     ),
                     SizedBox(height: 20),
                     Row(
@@ -150,7 +144,7 @@ class ProfileScreen extends StatelessWidget {
                         Expanded(
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: blanco,
+                              backgroundColor: AppColors.blanco,
                               padding: EdgeInsets.symmetric(vertical: 25),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
@@ -187,7 +181,7 @@ class ProfileScreen extends StatelessWidget {
       builder: (BuildContext context) {
         return Container(
           decoration: BoxDecoration(
-            color: grisOscuro,
+            color: AppColors.grisOscuro,
             borderRadius: BorderRadius.only(
               topLeft: Radius.circular(16),
               topRight: Radius.circular(16),
@@ -242,7 +236,7 @@ class ProfileScreen extends StatelessWidget {
                           Expanded(
                             child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: blanco,
+                                backgroundColor: AppColors.blanco,
                                 padding: EdgeInsets.symmetric(vertical: 25),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12),
@@ -263,7 +257,7 @@ class ProfileScreen extends StatelessWidget {
                           Expanded(
                             child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: verdeLima,
+                                backgroundColor: AppColors.verdeLima,
                                 padding: EdgeInsets.symmetric(vertical: 25),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12),
@@ -303,7 +297,7 @@ class ProfileScreen extends StatelessWidget {
       builder: (BuildContext context) {
         return Container(
           decoration: BoxDecoration(
-            color: grisOscuro,
+            color: AppColors.grisOscuro,
             borderRadius: BorderRadius.only(
               topLeft: Radius.circular(16),
               topRight: Radius.circular(16),
@@ -356,7 +350,7 @@ class ProfileScreen extends StatelessWidget {
                         Expanded(
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: blanco,
+                              backgroundColor: AppColors.blanco,
                               padding: EdgeInsets.symmetric(vertical: 25),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
@@ -376,7 +370,7 @@ class ProfileScreen extends StatelessWidget {
                         Expanded(
                             child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: verdeLima,
+                            backgroundColor: AppColors.verdeLima,
                             padding: EdgeInsets.symmetric(vertical: 25),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
@@ -412,7 +406,7 @@ class ProfileScreen extends StatelessWidget {
       builder: (BuildContext context) {
         return Container(
           decoration: BoxDecoration(
-            color: grisOscuro,
+            color: AppColors.grisOscuro,
             borderRadius: BorderRadius.only(
               topLeft: Radius.circular(16),
               topRight: Radius.circular(16),
@@ -481,7 +475,7 @@ class ProfileScreen extends StatelessWidget {
                         Expanded(
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: blanco,
+                              backgroundColor: AppColors.blanco,
                               padding: EdgeInsets.symmetric(vertical: 25),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
@@ -501,7 +495,7 @@ class ProfileScreen extends StatelessWidget {
                         Expanded(
                             child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: verdeLima,
+                            backgroundColor: AppColors.verdeLima,
                             padding: EdgeInsets.symmetric(vertical: 25),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
@@ -655,7 +649,7 @@ class ProfileScreen extends StatelessWidget {
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
-            color: blanco,
+            color: AppColors.blanco,
           ),
         ),
         SizedBox(height: 20),
@@ -673,7 +667,7 @@ class ProfileScreen extends StatelessWidget {
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,
-            color: verdeLima,
+            color: AppColors.verdeLima,
           ),
         ),
       ),
@@ -683,12 +677,13 @@ class ProfileScreen extends StatelessWidget {
   Widget _construirElementoLista(
       IconData icono, String titulo, VoidCallback onTap) {
     return ListTile(
-        leading: Icon(icono, color: verdeLima),
+        leading: Icon(icono, color: AppColors.verdeLima),
         title: Text(
           titulo,
-          style: TextStyle(fontSize: 16, color: blanco),
+          style: TextStyle(fontSize: 16, color: AppColors.blanco),
         ),
-        trailing: Icon(Icons.arrow_forward_ios, size: 16, color: verdeLima),
+        trailing:
+            Icon(Icons.arrow_forward_ios, size: 16, color: AppColors.verdeLima),
         onTap: onTap);
   }
 
@@ -723,8 +718,6 @@ class CustomButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Color verdeLima = Color(0xFFA5CD39); // Verde lima
-
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
         backgroundColor: appcolor,
@@ -738,12 +731,13 @@ class CustomButton extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Icon(icon, color: iconColor ?? verdeLima),
+          Icon(icon, color: iconColor ?? AppColors.verdeLima),
           Text(
             text,
             style: TextStyle(color: textColor ?? Colors.white),
           ),
-          Icon(Icons.keyboard_arrow_right, color: iconColor ?? verdeLima),
+          Icon(Icons.keyboard_arrow_right,
+              color: iconColor ?? AppColors.verdeLima),
         ],
       ),
     );

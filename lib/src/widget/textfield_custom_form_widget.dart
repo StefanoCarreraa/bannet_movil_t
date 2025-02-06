@@ -1,3 +1,4 @@
+import 'package:bannet_movil_t/src/utils/constants/app_colors.dart';
 import 'package:flutter/material.dart';
 
 class TextfieldcustomFormWidget extends StatelessWidget {
@@ -34,16 +35,12 @@ class TextfieldcustomFormWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Color verdeLima = Color(0xFFA5CD39);
-    final Color grisFondo = Color(0xFFF5F5F5);
-    final Color grisOscuro = Color(0xFF333333);
-    final Color negro = Color(0xFF000000);
 
     return Container(
       decoration: BoxDecoration(
         color: fondoColor ?? Colors.white,
         border: Border.all(
-          color: borderColor ?? verdeLima,
+          color: borderColor ?? AppColors.verdeLima,
           width: 2,
         ),
         borderRadius: BorderRadius.circular(6.0),
@@ -68,7 +65,7 @@ class TextfieldcustomFormWidget extends StatelessWidget {
                 decoration: InputDecoration(
                   labelText: label,
                   labelStyle: TextStyle(
-                    color: labelColor ?? verdeLima,
+                    color: labelColor ?? AppColors.verdeLima,
                     fontSize: 18,
                     fontWeight: labelFontWeight ?? FontWeight.w600,
                   ),

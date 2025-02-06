@@ -1,21 +1,25 @@
+import 'package:bannet_movil_t/src/Controllers/Contrato/Contrato_Controller.dart';
+import 'package:bannet_movil_t/src/Controllers/Login/Login_Controller.dart';
+import 'package:bannet_movil_t/src/Models/contrato_model.dart';
+import 'package:bannet_movil_t/src/utils/constants/app_colors.dart';
 import 'package:bannet_movil_t/src/widget/dropdown_custom_form_widget.dart';
 import 'package:bannet_movil_t/src/widget/terminos_Section_widget.dart';
 import 'package:bannet_movil_t/src/widget/textfield_custom_form_widget.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class ZonaGamerScreen extends StatefulWidget {
-  const ZonaGamerScreen({super.key});
+  final int? iDOrganizacion;
+
+  const ZonaGamerScreen({super.key, this.iDOrganizacion});
 
   @override
   State<ZonaGamerScreen> createState() => _ZonaGamerScreenState();
 }
 
 class _ZonaGamerScreenState extends State<ZonaGamerScreen> {
-  final Color verdeLima = Color(0xFFA5CD39);
-  final Color grisFondo = Color(0xFFF5F5F5);
-  final Color grisOscuro = Color(0xFF333333);
-  final Color negro = Color(0xFF000000);
+  final LoginController _logincontroller = LoginController();
 
   final GlobalKey<FormFieldState> _contratoDropdownKey =
       GlobalKey<FormFieldState>();
@@ -24,11 +28,34 @@ class _ZonaGamerScreenState extends State<ZonaGamerScreen> {
   late TextEditingController _textsolicitudController;
 
   bool _aceptaTerminos = false;
+  int idOrganizacion = 0;
+  bool _isLoading = false;
+  int? _selectedContratoId = 0;
+
+  Future<void> _loadUserData() async {
+    final userData = await _logincontroller.loadUserData();
+    setState(() {
+      idOrganizacion = userData['idOrganizacion'];
+      setState(() {});
+      ();
+    });
+  }
 
   @override
   void initState() {
     super.initState();
+    _initialize();
+
     _textsolicitudController = TextEditingController();
+  }
+
+  Future<void> _initialize() async {
+    await _loadUserData(); // Espera a que _loadUserData se complete
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final contratoController =
+          Provider.of<ContratoController>(context, listen: false);
+      contratoController.fetchContratos(idOrganizacion);
+    });
   }
 
   Future<bool?> _mostrarTerminosYCondiciones() async {
@@ -80,7 +107,7 @@ class _ZonaGamerScreenState extends State<ZonaGamerScreen> {
         content: Text(
           '¡Solicitud enviada correctamente!',
         ),
-        backgroundColor: verdeLima,
+        backgroundColor: AppColors.verdeLima,
       ),
     );
 
@@ -92,17 +119,10 @@ class _ZonaGamerScreenState extends State<ZonaGamerScreen> {
 
   @override
   Widget build(BuildContext context) {
-    String? selectedValue;
+    final contratoController = Provider.of<ContratoController>(context);
+
     String? selectedValue2;
 
-    final List<String> dropdownItems = [
-      'Contrato 1',
-      'Contrato 2',
-      'Contrato 3',
-      'Contrato 4',
-      'Contrato 5',
-      'Contrato 6'
-    ];
     final List<String> dropdownItems2 = [
       'Cambio de IP',
       'Servicio 2',
@@ -113,16 +133,16 @@ class _ZonaGamerScreenState extends State<ZonaGamerScreen> {
     ];
 
     return Scaffold(
-      backgroundColor: negro,
+      backgroundColor: AppColors.negro,
       appBar: AppBar(
         title: Image.asset(
           'assets/images/logo_miportal.png',
           height: 55,
         ),
         toolbarHeight: 60,
-        backgroundColor: negro,
+        backgroundColor: AppColors.negro,
         centerTitle: true, // Garantiza que el título esté centrado
-        iconTheme: IconThemeData(color: verdeLima),
+        iconTheme: IconThemeData(color: AppColors.verdeLima),
       ),
       body: Container(
         constraints: BoxConstraints.expand(),
@@ -144,29 +164,41 @@ class _ZonaGamerScreenState extends State<ZonaGamerScreen> {
                   child: Text(
                     "Zona Gamer",
                     style: TextStyle(
-                        color: verdeLima,
+                        color: AppColors.verdeLima,
                         fontSize: 20,
                         fontWeight: FontWeight.w600),
                   ),
                 ),
                 SizedBox(height: 30),
-                DropdowncustomFormWidget<String>(
+                DropdowncustomFormWidget<ContratoModel>(
                   fondoColor: Color(0xFFA5CD39),
                   borderColor: Colors.white,
                   labelColor: Colors.black,
                   textColor: Colors.black,
                   label: 'Contrato',
                   hint: 'Selecciona un contrato',
-                  value: selectedValue,
-                  items: dropdownItems,
-                  onChanged: (String? newValue) {
+                  value: contratoController.contratos.firstWhere(
+                    (contrato) =>
+                        contrato.iDServicioContratado == _selectedContratoId,
+                    orElse: () =>
+                        ContratoModel.empty(), // Retornar el objeto vacío
+                  ),
+                  items: contratoController.contratos,
+                  onChanged: (ContratoModel? newValue) {
+                    _isLoading = true;
+
                     setState(() {
-                      selectedValue = newValue;
+                      _selectedContratoId = newValue?.iDServicioContratado;
+                      //contratoController.fetchContratos(_selectedContratoId!);
+                      //_contratoDropdownKey.currentState?.reset();
                     });
+                    //_selectedContratoId = null;
+                    //_contratoDropdownKey.currentState?.reset();
+                    _isLoading = false;
                   },
-                  itemLabel: (String? item) => item ?? '',
-                  validator: (String? value) {
-                    if (value == null || value.isEmpty) {
+                  itemLabel: (contrato) => contrato.nombreServicio,
+                  validator: (value) {
+                    if (value == null) {
                       return 'Por favor selecciona un contrato';
                     }
                     return null;
@@ -215,7 +247,9 @@ class _ZonaGamerScreenState extends State<ZonaGamerScreen> {
                         _aceptaTerminos
                             ? Icons.check_circle
                             : Icons.radio_button_unchecked,
-                        color: _aceptaTerminos ? verdeLima : grisFondo,
+                        color: _aceptaTerminos
+                            ? AppColors.verdeLima
+                            : AppColors.grisFondo,
                         size: 28,
                       ),
                       onTap: () async {
@@ -242,14 +276,14 @@ class _ZonaGamerScreenState extends State<ZonaGamerScreen> {
                           text:
                               'Al hacer click en el botón “SOLICITAR”, aceptas nuestras ',
                           style: TextStyle(
-                            color: grisFondo,
+                            color: AppColors.grisFondo,
                             fontSize: 14,
                           ),
                           children: [
                             TextSpan(
                               text: 'Políticas de Privacidad',
                               style: TextStyle(
-                                color: verdeLima,
+                                color: AppColors.verdeLima,
                                 fontWeight: FontWeight.bold,
                                 decoration: TextDecoration.underline,
                               ),
@@ -262,13 +296,13 @@ class _ZonaGamerScreenState extends State<ZonaGamerScreen> {
                             TextSpan(
                               text: ' y ',
                               style: TextStyle(
-                                color: grisFondo,
+                                color: AppColors.grisFondo,
                               ),
                             ),
                             TextSpan(
                               text: 'Términos y Condiciones.',
                               style: TextStyle(
-                                color: verdeLima,
+                                color: AppColors.verdeLima,
                                 fontWeight: FontWeight.bold,
                                 decoration: TextDecoration.underline,
                               ),
@@ -288,7 +322,7 @@ class _ZonaGamerScreenState extends State<ZonaGamerScreen> {
                   child: ElevatedButton(
                     onPressed: _validarYEnviarFormulario,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: verdeLima,
+                      backgroundColor: AppColors.verdeLima,
                       foregroundColor: Colors.white,
                       minimumSize: Size(double.infinity, 50),
                       shape: RoundedRectangleBorder(
