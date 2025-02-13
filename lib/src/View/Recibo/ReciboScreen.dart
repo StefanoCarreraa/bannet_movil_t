@@ -7,9 +7,17 @@ import 'package:flutter/services.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-class ReciboScreen extends StatelessWidget {
-  const ReciboScreen({super.key});
+class ReciboScreen extends StatefulWidget {
+  final String fileName;
 
+  const ReciboScreen(this.fileName, {super.key});
+
+  @override
+  State<ReciboScreen> createState() => _ReciboScreenState();
+}
+
+class _ReciboScreenState extends State<ReciboScreen> {
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -63,7 +71,7 @@ class ReciboScreen extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          'Recibo.pdf', // Título del recibo
+                           widget.fileName, // Título del recibo
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
@@ -101,7 +109,7 @@ class ReciboScreen extends StatelessWidget {
                         child: SizedBox(
                           height: 500, // Ajusta la altura según tus necesidades
                           child: SfPdfViewer.asset(
-                            'assets/pdfs/Recibo.pdf', // Reemplaza con tu archivo
+                            'assets/pdfs/${widget.fileName}', // Reemplaza con tu archivo
                           ),
                         ),
                       ),
@@ -134,7 +142,7 @@ class ReciboScreen extends StatelessWidget {
       }
 
       // Cargar el archivo desde los assets
-      final byteData = await rootBundle.load('assets/pdfs/Recibo.pdf');
+      final byteData = await rootBundle.load('assets/pdfs/${widget.fileName}');
 
       // Obtener la ruta de la carpeta pública de Descargas
       final downloadsDir = Directory('/storage/emulated/0/Download');
@@ -144,7 +152,7 @@ class ReciboScreen extends StatelessWidget {
         await downloadsDir.create(recursive: true);
       }
 
-      final filePath = '${downloadsDir.path}/Recibo.pdf';
+      final filePath = '${downloadsDir.path}/${widget.fileName}';
 
       // Escribir el archivo
       final file = File(filePath);

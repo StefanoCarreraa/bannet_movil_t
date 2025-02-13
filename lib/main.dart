@@ -3,6 +3,8 @@ import 'package:bannet_movil_t/src/Controllers/Login/Login_Controller.dart';
 import 'package:bannet_movil_t/src/Controllers/Recibo/Recibo_Controller.dart';
 import 'package:bannet_movil_t/src/Controllers/TipoServicio/TipoServicio_Controller.dart';
 import 'package:bannet_movil_t/src/Controllers/baja_suspension_controller.dart';
+import 'package:bannet_movil_t/src/Controllers/comprobante_controller.dart';
+import 'package:bannet_movil_t/src/Controllers/libroreclamacion_controller.dart';
 import 'package:bannet_movil_t/src/Controllers/postventa_controller.dart';
 import 'package:bannet_movil_t/src/Services/auth_service.dart';
 import 'package:bannet_movil_t/src/app.dart';
@@ -35,6 +37,8 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (_) => TipoServicioController()),
         ChangeNotifierProvider(create: (_) => BajaSuspensionController()),
         ChangeNotifierProvider(create: (_) => PostventaController()),
+        ChangeNotifierProvider(create: (_) => LibroReclamacionController()),
+        ChangeNotifierProvider(create: (_) => ComprobanteController()),
       ],
       child: MyApp(
         isLoggedIn: isLoggedIn,

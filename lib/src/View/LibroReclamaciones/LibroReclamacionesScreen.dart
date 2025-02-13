@@ -1,7 +1,10 @@
 import 'package:bannet_movil_t/src/Controllers/Contrato/Contrato_Controller.dart';
 import 'package:bannet_movil_t/src/Controllers/Login/Login_Controller.dart';
+import 'package:bannet_movil_t/src/Controllers/libroreclamacion_controller.dart';
 import 'package:bannet_movil_t/src/Models/contrato_model.dart';
+import 'package:bannet_movil_t/src/Models/libroReclamacion_model.dart';
 import 'package:bannet_movil_t/src/utils/constants/app_colors.dart';
+import 'package:bannet_movil_t/src/widget/AlertshowModalBottomSheet.dart';
 import 'package:bannet_movil_t/src/widget/dropdown_custom_form_widget.dart';
 import 'package:bannet_movil_t/src/widget/terminos_Section_widget.dart';
 import 'package:bannet_movil_t/src/widget/textfield_custom_form_widget.dart';
@@ -33,6 +36,7 @@ class _LibroReclamacionesScreen extends State<LibroReclamacionesScreen> {
   int idOrganizacion = 0;
   bool _isLoading = false; // Indicador de estado para guardar
   int? _selectedContratoId = 0;
+  String? selectedTipoReclamo;
 
   Future<void> _loadUserData() async {
     final userData = await _logincontroller.loadUserData();
@@ -75,7 +79,8 @@ class _LibroReclamacionesScreen extends State<LibroReclamacionesScreen> {
     );
   }
 
-  void _validarYEnviarFormulario() {
+  Future<void> _validarYEnviarFormulario(
+      LibroReclamacionController libroReclamacionController) async {
     final istiposervicioValid =
         _tipoDropdownKey.currentState?.validate() ?? false;
     final iscontratoValid =
@@ -83,36 +88,35 @@ class _LibroReclamacionesScreen extends State<LibroReclamacionesScreen> {
     final isFormValid = _formKey.currentState?.validate() ?? false;
 
     if (!_aceptaTerminos) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
+      mostrarNotificacion(
+        context: context,
+        titulo: 'Error',
+        mensaje:
             'Debes aceptar las Políticas de Privacidad y Términos y Condiciones.',
-          ),
-          backgroundColor: Colors.red,
-        ),
       );
       return;
     }
 
     if (!isFormValid || !istiposervicioValid || !iscontratoValid) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Por favor completa correctamente todos los campos.',
-          ),
-          backgroundColor: Colors.red,
-        ),
+      mostrarNotificacion(
+        context: context,
+        titulo: 'Error',
+        mensaje: 'Por favor completa correctamente todos los campos.',
       );
       return;
     }
+    final libroReclamacion = LibroReclamacionModel(
+      idServicioContratado: int.parse(_selectedContratoId.toString()),
+      tipoReclamo: selectedTipoReclamo.toString(),
+      observacion: _textsolicitudController.text,
+    );
+    final response = await libroReclamacionController
+        .registrarLibroReclamacion(libroReclamacion);
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          '¡Solicitud enviada correctamente!',
-        ),
-        backgroundColor: AppColors.verdeLima,
-      ),
+    mostrarNotificacion(
+      context: context,
+      titulo: '¡Solicitud fue enviada!',
+      mensaje: response['message'],
     );
 
     // Procesar la solicitud aquí
@@ -124,12 +128,12 @@ class _LibroReclamacionesScreen extends State<LibroReclamacionesScreen> {
   @override
   Widget build(BuildContext context) {
     final contratoController = Provider.of<ContratoController>(context);
-
-    String? selectedValue2;
+    final libroReclamacionController =
+        Provider.of<LibroReclamacionController>(context, listen: false);
 
     final List<String> dropdownItems2 = [
-      'Reclamo',
-      'Queja',
+      'RECLAMO',
+      'QUEJA',
     ];
 
     return Scaffold(
@@ -169,35 +173,86 @@ class _LibroReclamacionesScreen extends State<LibroReclamacionesScreen> {
                         fontWeight: FontWeight.w600),
                   ),
                 ),
-                SizedBox(height: 30),
-                TextfieldcustomFormWidget(
-                  label: 'Nombre del titular',
-                  controller: _textnombreController,
-                  hintText: 'Ingrese nombre del titular',
-                  min: 1,
-                  max: 2,
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return '**Este campo es obligatorio**';
-                    }
-                    return null;
-                  },
+                SizedBox(height: 20),
+                Container(
+                  height: 44,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: Colors.black,
+                    border: Border.all(
+                      color: AppColors.verdeLima,
+                      width: 2,
+                    ),
+                    borderRadius: BorderRadius.circular(6.0),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: RichText(
+                      text: TextSpan(
+                        children: [
+                          TextSpan(
+                            text: "Nombre: ",
+                            style: TextStyle(
+                              color: AppColors
+                                  .verdeLima, // "Nombre" será verdeLima
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          TextSpan(
+                            text:
+                                "Stefano Manuel Carrera Alvarado", // El resto del texto será negro
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 ),
-                SizedBox(height: 30),
-                TextfieldcustomFormWidget(
-                  label: 'DNI/CE del titular',
-                  controller: _textdocController,
-                  hintText: 'Ingrese DNI/CE del titular',
-                  min: 1,
-                  max: 2,
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return '**Este campo es obligatorio**';
-                    }
-                    return null;
-                  },
+                SizedBox(height: 10),
+                Container(
+                  height: 44,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: Colors.black,
+                    border: Border.all(
+                      color: AppColors.verdeLima,
+                      width: 2,
+                    ),
+                    borderRadius: BorderRadius.circular(6.0),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: RichText(
+                      text: TextSpan(
+                        children: [
+                          TextSpan(
+                            text: "DNI/CE: ",
+                            style: TextStyle(
+                              color: AppColors
+                                  .verdeLima, // "Nombre" será verdeLima
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          TextSpan(
+                            text: "73957264", // El resto del texto será negro
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 ),
-                SizedBox(height: 30),
+                SizedBox(height: 15),
                 DropdowncustomFormWidget<ContratoModel>(
                   fondoColor: Color(0xFFA5CD39),
                   borderColor: Colors.white,
@@ -233,15 +288,15 @@ class _LibroReclamacionesScreen extends State<LibroReclamacionesScreen> {
                   },
                   formFieldKey: _contratoDropdownKey,
                 ),
-                SizedBox(height: 30),
+                SizedBox(height: 20),
                 DropdowncustomFormWidget<String>(
                   label: 'Tipo',
                   hint: 'Selecciona un tipo',
-                  value: selectedValue2,
+                  value: selectedTipoReclamo,
                   items: dropdownItems2,
                   onChanged: (String? newValue) {
                     setState(() {
-                      selectedValue2 = newValue;
+                      selectedTipoReclamo = newValue;
                     });
                   },
                   itemLabel: (String item) => item,
@@ -253,7 +308,7 @@ class _LibroReclamacionesScreen extends State<LibroReclamacionesScreen> {
                   },
                   formFieldKey: _tipoDropdownKey,
                 ),
-                SizedBox(height: 30),
+                SizedBox(height: 20),
                 TextfieldcustomFormWidget(
                   label: 'Detalle de Solicitud',
                   controller: _textsolicitudController,
@@ -267,7 +322,7 @@ class _LibroReclamacionesScreen extends State<LibroReclamacionesScreen> {
                     return null;
                   },
                 ),
-                SizedBox(height: 30),
+                SizedBox(height: 20),
                 Row(
                   children: [
                     GestureDetector(
@@ -348,7 +403,9 @@ class _LibroReclamacionesScreen extends State<LibroReclamacionesScreen> {
                 SizedBox(height: 30),
                 Center(
                   child: ElevatedButton(
-                    onPressed: _validarYEnviarFormulario,
+                    onPressed: () {
+                      _validarYEnviarFormulario(libroReclamacionController);
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.verdeLima,
                       foregroundColor: Colors.white,

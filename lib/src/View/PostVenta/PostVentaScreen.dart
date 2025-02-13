@@ -131,7 +131,6 @@ class _PostVentaScreenState extends State<PostVentaScreen> {
     return isTipoServicioValid && isContratoValid && isFormValid;
   }
 
-
   final _formKey = GlobalKey<FormState>();
 
   @override

@@ -1,7 +1,11 @@
 import 'package:bannet_movil_t/src/Controllers/Contrato/Contrato_Controller.dart';
 import 'package:bannet_movil_t/src/Controllers/Login/Login_Controller.dart';
+import 'package:bannet_movil_t/src/Controllers/TipoServicio/TipoServicio_Controller.dart';
+import 'package:bannet_movil_t/src/Controllers/postventa_controller.dart';
 import 'package:bannet_movil_t/src/Models/contrato_model.dart';
+import 'package:bannet_movil_t/src/Models/postventa_model.dart';
 import 'package:bannet_movil_t/src/utils/constants/app_colors.dart';
+import 'package:bannet_movil_t/src/widget/AlertshowModalBottomSheet.dart';
 import 'package:bannet_movil_t/src/widget/dropdown_custom_form_widget.dart';
 import 'package:bannet_movil_t/src/widget/terminos_Section_widget.dart';
 import 'package:bannet_movil_t/src/widget/textfield_custom_form_widget.dart';
@@ -30,7 +34,9 @@ class _ZonaGamerScreenState extends State<ZonaGamerScreen> {
   bool _aceptaTerminos = false;
   int idOrganizacion = 0;
   bool _isLoading = false;
-  int? _selectedContratoId = 0;
+
+  int? _selectedContratoId;
+  int? _selectedCategoriaTicketid;
 
   Future<void> _loadUserData() async {
     final userData = await _logincontroller.loadUserData();
@@ -55,6 +61,10 @@ class _ZonaGamerScreenState extends State<ZonaGamerScreen> {
       final contratoController =
           Provider.of<ContratoController>(context, listen: false);
       contratoController.fetchContratos(idOrganizacion);
+
+      final postventaController =
+          Provider.of<PostventaController>(context, listen: false);
+      postventaController.fetchPostventaGamer();
     });
   }
 
@@ -71,7 +81,8 @@ class _ZonaGamerScreenState extends State<ZonaGamerScreen> {
     );
   }
 
-  void _validarYEnviarFormulario() {
+  Future<void> _validarYEnviarFormulario(
+      PostventaController postVentaController) async {
     final istiposervicioValid =
         _tiposervicioDropdownKey.currentState?.validate() ?? false;
     final iscontratoValid =
@@ -79,36 +90,42 @@ class _ZonaGamerScreenState extends State<ZonaGamerScreen> {
     final isFormValid = _formKey.currentState?.validate() ?? false;
 
     if (!_aceptaTerminos) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
+      mostrarNotificacion(
+        context: context,
+        titulo: 'Error',
+        mensaje:
             'Debes aceptar las Políticas de Privacidad y Términos y Condiciones.',
-          ),
-          backgroundColor: Colors.red,
-        ),
       );
+
       return;
     }
 
     if (!isFormValid || !istiposervicioValid || !iscontratoValid) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Por favor completa correctamente todos los campos.',
-          ),
-          backgroundColor: Colors.red,
-        ),
+      mostrarNotificacion(
+        context: context,
+        titulo: 'Error',
+        mensaje: 'Por favor completa correctamente todos los campos.',
       );
+
       return;
     }
+    final postventa = PostventaModel(
+      idServicioContratado: int.parse(_selectedContratoId.toString()),
+      idCategoriaTicket: int.parse(_selectedCategoriaTicketid.toString()),
+      observacion: _textsolicitudController.text,
+    );
+    final response = await postVentaController.registrarPostventa(postventa);
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          '¡Solicitud enviada correctamente!',
-        ),
-        backgroundColor: AppColors.verdeLima,
-      ),
+    mostrarNotificacion(
+      context: context,
+      titulo: 'Solicitud enviada',
+      mensaje: response['message'],
+    );
+
+    mostrarNotificacion(
+      context: context,
+      titulo: 'Solicitud enviada',
+      mensaje: 'message',
     );
 
     // Procesar la solicitud aquí
@@ -120,17 +137,7 @@ class _ZonaGamerScreenState extends State<ZonaGamerScreen> {
   @override
   Widget build(BuildContext context) {
     final contratoController = Provider.of<ContratoController>(context);
-
-    String? selectedValue2;
-
-    final List<String> dropdownItems2 = [
-      'Cambio de IP',
-      'Servicio 2',
-      'Servicio 3',
-      'Servicio 4',
-      'Servicio 5',
-      'Servicio 6',
-    ];
+    final postVentaController = Provider.of<PostventaController>(context);
 
     return Scaffold(
       backgroundColor: AppColors.negro,
@@ -206,19 +213,37 @@ class _ZonaGamerScreenState extends State<ZonaGamerScreen> {
                   formFieldKey: _contratoDropdownKey,
                 ),
                 SizedBox(height: 30),
-                DropdowncustomFormWidget<String>(
+                DropdowncustomFormWidget<PostventaModel>(
+                  fondoColor: Color(0xFFA5CD39),
+                  borderColor: Colors.white,
+                  labelColor: Colors.black,
+                  textColor: Colors.black,
                   label: 'Tipo de Servicio',
-                  hint: 'Selecciona un tipo de servicio',
-                  value: selectedValue2,
-                  items: dropdownItems2,
-                  onChanged: (String? newValue) {
+                  hint: 'Selecciona un postventaGamer',
+                  value: postVentaController.postventaGamer.firstWhere(
+                    (postventaGamer) =>
+                        postventaGamer.idCategoriaTicket ==
+                        _selectedCategoriaTicketid,
+                    orElse: () =>
+                        PostventaModel.empty(), // Retornar el objeto vacío
+                  ),
+                  items: postVentaController.postventaGamer,
+                  onChanged: (PostventaModel? newValue) {
+                    _isLoading = true;
+
                     setState(() {
-                      selectedValue2 = newValue;
+                      _selectedCategoriaTicketid = newValue?.idCategoriaTicket;
+                      //contratoController.fetchContratos(_selectedContratoId!);
+                      //_contratoDropdownKey.currentState?.reset();
                     });
+                    //_selectedContratoId = null;
+                    //_contratoDropdownKey.currentState?.reset();
+                    _isLoading = false;
                   },
-                  itemLabel: (String item) => item,
-                  validator: (String? value) {
-                    if (value == null || value.isEmpty) {
+                  itemLabel: (contrato) =>
+                      contrato.descripcionCategoriaTicket ?? '',
+                  validator: (value) {
+                    if (value == null) {
                       return 'Por favor selecciona un tipo de servicio';
                     }
                     return null;
@@ -226,6 +251,26 @@ class _ZonaGamerScreenState extends State<ZonaGamerScreen> {
                   formFieldKey: _tiposervicioDropdownKey,
                 ),
                 SizedBox(height: 30),
+                // DropdowncustomFormWidget<String>(
+                //   label: 'Tipo de Servicio',
+                //   hint: 'Selecciona un tipo de servicio',
+                //   value: selectedValue2,
+                //   items: dropdownItems2,
+                //   onChanged: (String? newValue) {
+                //     setState(() {
+                //       selectedValue2 = newValue;
+                //     });
+                //   },
+                //   itemLabel: (String item) => item,
+                //   validator: (String? value) {
+                //     if (value == null || value.isEmpty) {
+                //       return 'Por favor selecciona un tipo de servicio';
+                //     }
+                //     return null;
+                //   },
+                //   formFieldKey: _tiposervicioDropdownKey,
+                // ),
+                // SizedBox(height: 30),
                 TextfieldcustomFormWidget(
                   label: 'Detalle de Solicitud',
                   controller: _textsolicitudController,
@@ -320,7 +365,8 @@ class _ZonaGamerScreenState extends State<ZonaGamerScreen> {
                 SizedBox(height: 30),
                 Center(
                   child: ElevatedButton(
-                    onPressed: _validarYEnviarFormulario,
+                    onPressed: () =>
+                        _validarYEnviarFormulario(postVentaController),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.verdeLima,
                       foregroundColor: Colors.white,

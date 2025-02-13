@@ -71,11 +71,11 @@ class AuthService {
         int currentTime = DateTime.now().millisecondsSinceEpoch;
         int timeElapsed = currentTime - loginTime;
 
-        if (timeElapsed > 36000000) {
-          // 10 horas en milisegundos
-          await logout(); // Cierra sesión si ha pasado más de 10 horas
-          return false;
-        }
+        // if (timeElapsed > 36000000) {
+        //   // 10 horas en milisegundos
+        //   await logout(); // Cierra sesión si ha pasado más de 10 horas
+        //   return false;
+        // }
       }
     }
 

@@ -1,5 +1,10 @@
 import 'package:bannet_movil_t/src/Controllers/Login/Login_Controller.dart';
 import 'package:bannet_movil_t/src/Controllers/Recibo/Recibo_Controller.dart';
+import 'package:bannet_movil_t/src/Controllers/reciboimpresion_controller.dart';
+import 'package:bannet_movil_t/src/Models/reciboImpresion_model%20.dart';
+import 'package:bannet_movil_t/src/Services/generatePdfNotificacion_service.dart';
+import 'package:bannet_movil_t/src/Services/pdf_controller.dart';
+import 'package:bannet_movil_t/src/View/Recibo/ReciboScreen.dart';
 import 'package:bannet_movil_t/src/utils/constants/app_colors.dart';
 import 'package:bannet_movil_t/src/widget/TaskCardWidget.dart';
 import 'package:flutter/material.dart';
@@ -110,6 +115,8 @@ class _ListrecibosscreenState extends State<Listrecibosscreen> {
                                 estado: 'Estado: ${recibo.nombreEstadoRecibo}',
                                 color: AppColors.verdeLima,
                                 isCompleted: false,
+                                expandedContent:
+                                    _buildMiRecibo(recibo.idDocCobrar),
                               );
                             },
                           ),
@@ -132,6 +139,91 @@ class _ListrecibosscreenState extends State<Listrecibosscreen> {
             ),
           ),
         ));
+  }
+
+  Widget _buildMiRecibo(int idDocCobrar) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Icon(Icons.receipt_long_outlined, color: Colors.grey),
+              SizedBox(width: 8),
+              Text(
+                '¿Qué quieres hacer hoy?',
+                style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.grey),
+              ),
+            ],
+          ),
+          SizedBox(height: 20),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _buildBoton(
+                'Descargar Rsecibo',
+                AppColors.blanco,
+                AppColors.negro,
+                true,
+                idDocCobrar,
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBoton(
+    String texto,
+    Color colorFondo,
+    Color colorTexto,
+    bool conBorde,
+    int idDocCobrar,
+  ) {
+    ReciboImpresionController _reciboImpresionController =
+        ReciboImpresionController();
+    PdfService pdfService = PdfService();
+    PdfDownloader pdfDownloader = PdfDownloader();
+    _reciboImpresionController.fetchRecibosPendientes(idDocCobrar);
+    return Builder(
+      builder: (BuildContext context) {
+        return TextButton(
+          style: TextButton.styleFrom(
+            backgroundColor: colorFondo,
+            foregroundColor: colorTexto,
+            padding: EdgeInsets.symmetric(vertical: 18, horizontal: 40),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+              side: conBorde
+                  ? BorderSide(color: Colors.black12, width: 2)
+                  : BorderSide.none,
+            ),
+          ),
+          onPressed: () async {
+            List<ReciboimpresionModel> lista =
+                _reciboImpresionController.recibos;
+            // pdfService.generatePdfNotificacion(lista);
+            final String? fileName =
+                await pdfDownloader.downloadAndOpenPdf(lista) ?? "";
+            // Navegar a la pantalla del recibo
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => ReciboScreen(fileName!)),
+            );
+          },
+          child: Text(
+            texto,
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          ),
+        );
+      },
+    );
   }
 
   Widget _buildMontoPagarCard({required String titulo, required String monto}) {

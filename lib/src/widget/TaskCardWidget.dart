@@ -218,7 +218,7 @@ class _TaskCardWidgetState extends State<TaskCardWidget> {
               // Navegar a la pantalla del recibo
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => ReciboScreen()),
+                MaterialPageRoute(builder: (context) => ReciboScreen("")),
               );
             } else {}
           },

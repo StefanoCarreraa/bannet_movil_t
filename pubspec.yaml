@@ -19,6 +19,7 @@ dependencies:
   open_file: ^3.5.10
   pdf: ^3.11.1
   shared_preferences: ^2.1.1
+  printing: ^5.11.0
 
   
 
