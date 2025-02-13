@@ -209,13 +209,22 @@ class _ListrecibosscreenState extends State<Listrecibosscreen> {
             List<ReciboimpresionModel> lista =
                 _reciboImpresionController.recibos;
             // pdfService.generatePdfNotificacion(lista);
-            final String? fileName =
-                await pdfDownloader.downloadAndOpenPdf(lista) ?? "";
-            // Navegar a la pantalla del recibo
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => ReciboScreen(fileName!)),
-            );
+            // Descargar el PDF y obtener la ruta del archivo
+            final List<String?> filePath =
+                await pdfDownloader.downloadAndOpenPdf(lista);
+
+            if (filePath != null && filePath.isNotEmpty) {
+              // Navegar a la pantalla del recibo solo si la ruta es válida
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ReciboScreen(filePath.whereType<String>().toList())),
+              );
+            } else {
+              // Mostrar un mensaje de error si la descarga falla
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text("Error al descargar el PDF")),
+              );
+            }
           },
           child: Text(
             texto,

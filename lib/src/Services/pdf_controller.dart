@@ -3,11 +3,12 @@ import 'dart:io';
 import 'package:bannet_movil_t/src/Models/reciboImpresion_model%20.dart';
 import 'package:bannet_movil_t/src/utils/constants/app_config.dart';
 import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
 
 class PdfDownloader {
   final String baseUrl = AppCconfig.baseUrl;
 
-  Future<String?> downloadAndOpenPdf(
+  Future<List<String?>> downloadAndOpenPdf(
       List<ReciboimpresionModel> reciboimpresionModel) async {
     final url = Uri.parse('$baseUrl/api/generar-pdf');
 
@@ -21,26 +22,32 @@ class PdfDownloader {
       if (response.statusCode == 200) {
         // Obtener la fecha actual y formatearla
         final DateTime now = DateTime.now();
-
-        // Obtener el número de documento
         final String numDocumento = reciboimpresionModel.first.numDocumento;
-
         final String formattedDate =
             "${now.year}${now.month.toString().padLeft(2, '0')}${now.day.toString().padLeft(2, '0')}";
-        // Obtener la ubicación para guardar el archivo
         final String fileName = '${numDocumento}_$formattedDate.pdf';
 
-        final file = File('assets/pdfs/$fileName');
+        // Obtener el directorio de almacenamiento interno
+        final Directory? directory = await getApplicationDocumentsDirectory();
+        if (directory == null) {
+          print("Error: No se pudo acceder al directorio");
+          return [];
+        }
 
-        // Escribir el contenido del PDF
+        final String filePath = '${directory.path}/$fileName';
+
+        // Guardar el archivo en almacenamiento interno
+        final file = File(filePath);
         await file.writeAsBytes(response.bodyBytes);
-        return fileName;
+
+        print("Archivo guardado en: $filePath");
+        return [filePath, fileName]; // Devolver la ruta del archivo guardado
       } else {
         throw Exception("Error al descargar el PDF");
       }
     } catch (e) {
       print("Error: $e");
-      return null;
+      return [];
     }
   }
 }
