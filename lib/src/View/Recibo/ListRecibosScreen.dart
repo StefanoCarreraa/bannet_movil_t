@@ -2,8 +2,7 @@ import 'package:bannet_movil_t/src/Controllers/Login/Login_Controller.dart';
 import 'package:bannet_movil_t/src/Controllers/Recibo/Recibo_Controller.dart';
 import 'package:bannet_movil_t/src/Controllers/reciboimpresion_controller.dart';
 import 'package:bannet_movil_t/src/Models/reciboImpresion_model%20.dart';
-import 'package:bannet_movil_t/src/Services/generatePdfNotificacion_service.dart';
-import 'package:bannet_movil_t/src/Services/pdf_controller.dart';
+import 'package:bannet_movil_t/src/Services/pdfRecibo_service.dart';
 import 'package:bannet_movil_t/src/View/Recibo/ReciboScreen.dart';
 import 'package:bannet_movil_t/src/utils/constants/app_colors.dart';
 import 'package:bannet_movil_t/src/widget/TaskCardWidget.dart';
@@ -126,15 +125,15 @@ class _ListrecibosscreenState extends State<Listrecibosscreen> {
                   thickness: 1,
                 ),
                 SizedBox(height: 20),
-                _buildMontoPagarCard(
-                  titulo: "Monto facturado",
-                  monto: "S/. 155.00",
-                ),
+                // _buildMontoPagarCard(
+                //   titulo: "Monto facturado",
+                //   monto: "S/. 155.00",
+                // ),
                 _buildMontoPagarCard(
                   titulo: "Monto a pagar",
-                  monto: "S/. 0.00",
+                  monto: "S/. ${reciboController.totalMontoPagar.toStringAsFixed(2)}",
                 ),
-                _buildGeneral(),
+                reciboController.totalMontoPagar == 0.0 ? _buildGeneral() : _buildGeneral1(),
               ],
             ),
           ),
@@ -188,8 +187,7 @@ class _ListrecibosscreenState extends State<Listrecibosscreen> {
   ) {
     ReciboImpresionController _reciboImpresionController =
         ReciboImpresionController();
-    PdfService pdfService = PdfService();
-    PdfDownloader pdfDownloader = PdfDownloader();
+    PdfreciboService pdfreciboService = PdfreciboService();
     _reciboImpresionController.fetchRecibosPendientes(idDocCobrar);
     return Builder(
       builder: (BuildContext context) {
@@ -208,16 +206,17 @@ class _ListrecibosscreenState extends State<Listrecibosscreen> {
           onPressed: () async {
             List<ReciboimpresionModel> lista =
                 _reciboImpresionController.recibos;
-            // pdfService.generatePdfNotificacion(lista);
             // Descargar el PDF y obtener la ruta del archivo
             final List<String?> filePath =
-                await pdfDownloader.downloadAndOpenPdf(lista);
+                await pdfreciboService.DescargarPdfRrecibo(lista);
 
             if (filePath != null && filePath.isNotEmpty) {
               // Navegar a la pantalla del recibo solo si la ruta es válida
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => ReciboScreen(filePath.whereType<String>().toList())),
+                MaterialPageRoute(
+                    builder: (context) =>
+                        ReciboScreen(filePath.whereType<String>().toList())),
               );
             } else {
               // Mostrar un mensaje de error si la descarga falla
@@ -327,6 +326,84 @@ class _ListrecibosscreenState extends State<Listrecibosscreen> {
                               ),
                               Text(
                                 "Pagaste tu último recibo",
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 25,
+                                    fontWeight: FontWeight.bold),
+                                textAlign: TextAlign
+                                    .center, // Asegura que el texto se mantenga centrado
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+   Widget _buildGeneral1() {
+    return Container(
+      width: double.infinity,
+      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      decoration: BoxDecoration(
+        color: Colors.grey.withOpacity(0.4),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center, // Centra la columna
+            crossAxisAlignment: CrossAxisAlignment
+                .center, // Centra los elementos dentro de la columna
+            mainAxisSize: MainAxisSize
+                .min, // Hace que la columna solo ocupe el espacio necesario
+            children: [
+              Row(
+                mainAxisAlignment:
+                    MainAxisAlignment.center, // Centra el contenido de la fila
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment
+                          .center, // Centra los elementos dentro de la columna
+                      children: [
+                        // Centra el título
+                        Center(
+                          child: Text(
+                            "¡Deudas Pendientes!",
+                            style: TextStyle(
+                                color: AppColors.verdeLima,
+                                fontSize: 30,
+                                fontWeight: FontWeight.bold),
+                            textAlign: TextAlign
+                                .center, // Asegura que el texto se mantenga centrado
+                          ),
+                        ),
+                        SizedBox(height: 14),
+                        // Centra el contenido
+                        Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment
+                                .center, // Centra el texto dentro de la columna
+                            children: [
+                              Text(
+                                "Regulariza tus pagos para seguir",
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 25,
+                                    fontWeight: FontWeight.bold),
+                                textAlign: TextAlign
+                                    .center, // Asegura que el texto se mantenga centrado
+                              ),
+                              Text(
+                                "disfrutando de Bantel",
                                 style: TextStyle(
                                     color: Colors.white,
                                     fontSize: 25,

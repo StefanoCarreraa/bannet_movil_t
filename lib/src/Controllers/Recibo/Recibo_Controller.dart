@@ -12,6 +12,15 @@ class ReciboController extends ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
 
+  // Nuevo getter para calcular el total a pagar
+  double get totalMontoPagar {
+    return _recibos.fold(0.0, (sum, recibo) {
+      double importe =
+          double.tryParse(recibo.importe.replaceAll("S/", "").trim()) ?? 0.0;
+      return sum + importe;
+    });
+  }
+
   Future<void> fetchRecibosPendientes(int idPersona) async {
     _isLoading = true;
     _errorMessage = null;

@@ -1,6 +1,10 @@
 import 'package:bannet_movil_t/src/Controllers/Login/Login_Controller.dart';
 import 'package:bannet_movil_t/src/Controllers/Recibo/Recibo_Controller.dart';
 import 'package:bannet_movil_t/src/Controllers/comprobante_controller.dart';
+import 'package:bannet_movil_t/src/Controllers/comprobanteimpresion_controller.dart';
+import 'package:bannet_movil_t/src/Models/comprobanteImpresion_model.dart';
+import 'package:bannet_movil_t/src/Services/comprobanteImpresion_service.dart';
+import 'package:bannet_movil_t/src/Services/pdfComprobante_service.dart';
 import 'package:bannet_movil_t/src/View/Comprobante/ComprobanteScreen.dart';
 import 'package:bannet_movil_t/src/utils/constants/app_colors.dart';
 import 'package:bannet_movil_t/src/widget/TaskCardWidget.dart';
@@ -113,20 +117,11 @@ class _ListcomprobantesscreenState extends State<Listcomprobantesscreen> {
                               // estado: 'Estado: ${comprobante.nombreEstadoRecibo}',
                               color: AppColors.verdeLima,
                               isCompleted: false,
-                              expandedContent: _buildMiRecibo(),
+                              expandedContent:
+                                  _buildMiRecibo(comprobante.idDocVenta),
                             );
                           },
                         ),
-              // TaskCardWidget(
-              //   titulo: 'Nro. Comprobante : 000000000598866',
-              //   subtitulo: 'Tipo Comprobante: BOLETA DE VENTA ELECTRONICA',
-              //   // periodo: 'Periodo: 2025-ENERO',
-              //   fecha: 'Fecha: 21/09/2024',
-              //   precio: 'Monto : S/. 35.00',
-              //   color: AppColors.verdeLima,
-              //   isCompleted: false,
-              //   expandedContent: _buildMiRecibo(),
-              // ),
               SizedBox(height: 30),
               Divider(
                 color: AppColors.verdeLima,
@@ -139,7 +134,7 @@ class _ListcomprobantesscreenState extends State<Listcomprobantesscreen> {
     );
   }
 
-  Widget _buildMiRecibo() {
+  Widget _buildMiRecibo(int idDocVenta) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
@@ -163,8 +158,13 @@ class _ListcomprobantesscreenState extends State<Listcomprobantesscreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              _buildBoton('Descargar Comprobante', AppColors.blanco,
-                  AppColors.negro, true),
+              _buildBoton(
+                'Descargar Comprobante',
+                AppColors.blanco,
+                AppColors.negro,
+                true,
+                idDocVenta,
+              ),
               // SizedBox(width: 20),
               // _buildBoton('Pagar', verdeLima, Colors.white, true),
             ],
@@ -175,7 +175,16 @@ class _ListcomprobantesscreenState extends State<Listcomprobantesscreen> {
   }
 
   Widget _buildBoton(
-      String texto, Color colorFondo, Color colorTexto, bool conBorde) {
+    String texto,
+    Color colorFondo,
+    Color colorTexto,
+    bool conBorde,
+    int idDocVenta,
+  ) {
+    ComprobanteImpresionController _comprobanteImpresionController =
+        ComprobanteImpresionController();
+    PdfcomprobanteService pdfcomprobanteService = PdfcomprobanteService();
+    _comprobanteImpresionController.fetchComprobantesPendientes(idDocVenta);
     return Builder(
       builder: (BuildContext context) {
         return TextButton(
@@ -190,17 +199,29 @@ class _ListcomprobantesscreenState extends State<Listcomprobantesscreen> {
                   : BorderSide.none,
             ),
           ),
-          onPressed: () {
-            if (texto == 'Descargar Comprobante') {
-              // Navegar a la pantalla del recibo
+          onPressed: () async {
+            List<ComprobanteImpresionModel> lista =
+                _comprobanteImpresionController.comprobantes;
+            // Descargar el PDF y obtener la ruta del archivo
+            final List<String?> filePath =
+                await pdfcomprobanteService.DescargarPdfComprobante(lista);
+
+            if (filePath != null && filePath.isNotEmpty) {
+              // Navegar a la pantalla del recibo solo si la ruta es válida
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => Comprobantescreen()),
+                MaterialPageRoute(
+                    builder: (context) => Comprobantescreen(
+                        filePath.whereType<String>().toList())),
               );
             } else {
-              print("Botón presionado: $texto");
+              // Mostrar un mensaje de error si la descarga falla
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text("Error al descargar el PDF")),
+              );
             }
           },
+
           child: Text(
             texto,
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),

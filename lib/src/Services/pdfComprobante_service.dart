@@ -1,16 +1,16 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:bannet_movil_t/src/Models/reciboImpresion_model%20.dart';
+import 'package:bannet_movil_t/src/Models/comprobanteImpresion_model.dart';
 import 'package:bannet_movil_t/src/utils/constants/app_config.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 
-class PdfDownloader {
+class PdfcomprobanteService {
   final String baseUrl = AppCconfig.baseUrl;
 
-  Future<List<String?>> downloadAndOpenPdf(
-      List<ReciboimpresionModel> reciboimpresionModel) async {
-    final url = Uri.parse('$baseUrl/api/generar-pdf');
+  Future<List<String?>> DescargarPdfComprobante(
+      List<ComprobanteImpresionModel> reciboimpresionModel) async {
+    final url = Uri.parse('$baseUrl/api/generar-pdf-comprobantes');
 
     try {
       final response = await http.post(
@@ -22,7 +22,7 @@ class PdfDownloader {
       if (response.statusCode == 200) {
         // Obtener la fecha actual y formatearla
         final DateTime now = DateTime.now();
-        final String numDocumento = reciboimpresionModel.first.numDocumento;
+        final String? numDocumento = reciboimpresionModel.first.nroDocumento;
         final String formattedDate =
             "${now.year}${now.month.toString().padLeft(2, '0')}${now.day.toString().padLeft(2, '0')}";
         final String fileName = '${numDocumento}_$formattedDate.pdf';

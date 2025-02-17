@@ -4,11 +4,66 @@ import 'package:bannet_movil_t/src/utils/constants/app_colors.dart';
 import 'package:bannet_movil_t/src/widget/AlertshowModalBottomSheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-class Comprobantescreen extends StatelessWidget {
-  const Comprobantescreen({super.key});
+class Comprobantescreen extends StatefulWidget {
+  final List<String> fileName;
+
+  const Comprobantescreen(this.fileName, {super.key});
+
+  @override
+  State<Comprobantescreen> createState() => _ComprobantescreenState();
+}
+
+class _ComprobantescreenState extends State<Comprobantescreen> {
+  Directory? directory;
+  String? filePath;
+  bool isLoading = true;
+  Uint8List? pdfBytes;
+  String? path;
+  @override
+  void initState() {
+    super.initState();
+    _esperarArchivo();
+  }
+
+  Future<void> _esperarArchivo() async {
+    Directory directory = await getApplicationDocumentsDirectory();
+    path = '${directory.path}/${widget.fileName[1]}';
+
+    int retries = 10;
+    while (!File(path!).existsSync() && retries > 0) {
+      print("⏳ Esperando que el archivo PDF esté disponible...");
+      await Future.delayed(Duration(milliseconds: 500));
+      retries--;
+    }
+
+    if (File(path!).existsSync()) {
+      print("✅ Archivo encontrado: $path");
+
+      // Espera 1 segundo para asegurarse de que el archivo se haya guardado completamente
+      await Future.delayed(Duration(seconds: 1));
+
+      File file = File(path!);
+      print("📂 Archivo existe: ${file.existsSync()}");
+      print("📄 Tamaño del archivo: ${file.lengthSync()} bytes");
+
+      // Cargar el archivo en memoria
+      pdfBytes = await file.readAsBytes();
+
+      setState(() {
+        filePath = path;
+        isLoading = false;
+      });
+    } else {
+      print("❌ No se encontró el archivo después de varios intentos");
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,9 +118,10 @@ class Comprobantescreen extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          'Comprobante.pdf', // Título del Comprobante
+                          widget.fileName[1], // Título del recibo
                           style: TextStyle(
-                            fontSize: 20,
+                            fontSize: 15,
+                            overflow: TextOverflow.ellipsis,
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
                           ),
@@ -74,7 +130,7 @@ class Comprobantescreen extends StatelessWidget {
                           onPressed: () async {
                             _downloadComprobante(context);
                           },
-                          icon: Icon(Icons.download), // Ícono de descarga
+                          icon: Icon(Icons.download),
                           color: Colors.white,
                         ),
                       ],
@@ -100,9 +156,13 @@ class Comprobantescreen extends StatelessWidget {
                             16), // Asegura que el contenido respete las esquinas
                         child: SizedBox(
                           height: 500, // Ajusta la altura según tus necesidades
-                          child: SfPdfViewer.asset(
-                            'assets/pdfs/Comprobante.pdf', // Reemplaza con tu archivo
-                          ),
+                          child: pdfBytes != null
+                              ? SfPdfViewer.memory(
+                                  pdfBytes!) // Muestra el PDF si se encuentra
+                              : Center(
+                                  child:
+                                      Text("Error: No se pudo cargar el PDF")),
+                          // SfPdfViewer.asset(filePath),
                         ),
                       ),
                     ),
@@ -132,6 +192,7 @@ class Comprobantescreen extends StatelessWidget {
         print("Permiso denegado");
         return;
       }
+      
 
       // Cargar el archivo desde los assets
       final byteData = await rootBundle.load('assets/pdfs/Comprobante.pdf');
