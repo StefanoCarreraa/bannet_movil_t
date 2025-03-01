@@ -19,6 +19,8 @@ class ComprobanteController extends ChangeNotifier {
       _comprobantes = await _comprobanteService.listarComprobantes(idPersona);
     } catch (e) {
       _errorMessage = e.toString();
+            print(comprobantes);
+
     } finally {
       isLoading = false;
       notifyListeners();

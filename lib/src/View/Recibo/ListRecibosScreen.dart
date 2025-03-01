@@ -37,9 +37,9 @@ class _ListrecibosscreenState extends State<Listrecibosscreen> {
     await _loadUserData();
     // WidgetsBinding.instance.addPostFrameCallback((_) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final reciboController =
-          Provider.of<ReciboController>(context, listen: false);
-      reciboController.fetchRecibosPendientes(idPersona);
+      // final reciboController =
+      //     Provider.of<ReciboController>(context, listen: false);
+      // reciboController.fetchRecibosPendientes(idPersona);
     });
   }
 
@@ -131,9 +131,12 @@ class _ListrecibosscreenState extends State<Listrecibosscreen> {
                 // ),
                 _buildMontoPagarCard(
                   titulo: "Monto a pagar",
-                  monto: "S/. ${reciboController.totalMontoPagar.toStringAsFixed(2)}",
+                  monto:
+                      "S/. ${reciboController.totalMontoPagar.toStringAsFixed(2)}",
                 ),
-                reciboController.totalMontoPagar == 0.0 ? _buildGeneral() : _buildGeneral1(),
+                reciboController.totalMontoPagar == 0.0
+                    ? _buildGeneral()
+                    : _buildGeneral1(),
               ],
             ),
           ),
@@ -188,7 +191,6 @@ class _ListrecibosscreenState extends State<Listrecibosscreen> {
     ReciboImpresionController _reciboImpresionController =
         ReciboImpresionController();
     PdfreciboService pdfreciboService = PdfreciboService();
-    _reciboImpresionController.fetchRecibosPendientes(idDocCobrar);
     return Builder(
       builder: (BuildContext context) {
         return TextButton(
@@ -204,6 +206,8 @@ class _ListrecibosscreenState extends State<Listrecibosscreen> {
             ),
           ),
           onPressed: () async {
+            _reciboImpresionController.fetchRecibosPendientes(idDocCobrar);
+
             List<ReciboimpresionModel> lista =
                 _reciboImpresionController.recibos;
             // Descargar el PDF y obtener la ruta del archivo
@@ -347,7 +351,8 @@ class _ListrecibosscreenState extends State<Listrecibosscreen> {
       ),
     );
   }
-   Widget _buildGeneral1() {
+
+  Widget _buildGeneral1() {
     return Container(
       width: double.infinity,
       margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),

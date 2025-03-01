@@ -5,7 +5,7 @@ class ComprobanteModel {
   final String numero;
   final String nroComprobante;
   final double neto;
-  final int total;
+  final double total;
   final int idDocumento;
   final String simboloMoneda;
   final String monDescripcion;
@@ -32,8 +32,8 @@ class ComprobanteModel {
       serie: json['Serie'],
       numero: json['Numero'],
       nroComprobante: json['NroComprobante'],
-      neto: json['Neto'],
-      total: json['Total'],
+      neto: (json['Neto'] as num).toDouble(),
+      total: (json['Total'] as num).toDouble(),
       idDocumento: json['ID_Documento'],
       simboloMoneda: json['SimboloMoneda'],
       monDescripcion: json['MonDescripcion'],

@@ -5,7 +5,7 @@ import 'package:bannet_movil_t/src/utils/constants/app_config.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 
-class PdfcomprobanteService {
+class PdfDescargarService {
   final String baseUrl = AppCconfig.baseUrl;
 
   Future<List<String?>> DescargarPdfComprobante(

@@ -27,10 +27,12 @@ class ComprobanteImpresionService {
           throw Exception(data['message']);
         }
       } else {
+        pragma('Error al obtener los comprobantes pendientes de impresión (Código ${response.statusCode})');
         throw Exception(
             'Error al obtener los comprobantes pendientes de impresión (Código ${response.statusCode})');
       }
     } catch (e) {
+      pragma('Error al conectar con el servidor: $e');
       throw Exception('Error al conectar con el servidor: $e');
     }
   }

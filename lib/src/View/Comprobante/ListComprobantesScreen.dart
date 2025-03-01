@@ -2,6 +2,7 @@ import 'package:bannet_movil_t/src/Controllers/Login/Login_Controller.dart';
 import 'package:bannet_movil_t/src/Controllers/Recibo/Recibo_Controller.dart';
 import 'package:bannet_movil_t/src/Controllers/comprobante_controller.dart';
 import 'package:bannet_movil_t/src/Controllers/comprobanteimpresion_controller.dart';
+import 'package:bannet_movil_t/src/Controllers/pdfDescargas_controller.dart';
 import 'package:bannet_movil_t/src/Models/comprobanteImpresion_model.dart';
 import 'package:bannet_movil_t/src/Services/comprobanteImpresion_service.dart';
 import 'package:bannet_movil_t/src/Services/pdfComprobante_service.dart';
@@ -39,9 +40,9 @@ class _ListcomprobantesscreenState extends State<Listcomprobantesscreen> {
     await _loadUserData();
     // WidgetsBinding.instance.addPostFrameCallback((_) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final comprobanteController =
-          Provider.of<ComprobanteController>(context, listen: false);
-      comprobanteController.fetchComprobantes(idPersona);
+      // final comprobanteController =
+      //     Provider.of<ComprobanteController>(context, listen: false);
+      // comprobanteController.fetchComprobantes(idPersona);
     });
   }
 
@@ -118,7 +119,7 @@ class _ListcomprobantesscreenState extends State<Listcomprobantesscreen> {
                               color: AppColors.verdeLima,
                               isCompleted: false,
                               expandedContent:
-                                  _buildMiRecibo(comprobante.idDocVenta),
+                                  _buildMiRecibo(comprobante.idDocVenta ?? 0),
                             );
                           },
                         ),
@@ -181,10 +182,10 @@ class _ListcomprobantesscreenState extends State<Listcomprobantesscreen> {
     bool conBorde,
     int idDocVenta,
   ) {
+    PdfdescargasController pdfdescargasController = PdfdescargasController();
     ComprobanteImpresionController _comprobanteImpresionController =
         ComprobanteImpresionController();
-    PdfcomprobanteService pdfcomprobanteService = PdfcomprobanteService();
-    _comprobanteImpresionController.fetchComprobantesPendientes(idDocVenta);
+    PdfDescargarService pdfDescargarService = PdfDescargarService();
     return Builder(
       builder: (BuildContext context) {
         return TextButton(
@@ -200,19 +201,34 @@ class _ListcomprobantesscreenState extends State<Listcomprobantesscreen> {
             ),
           ),
           onPressed: () async {
+            // Obtener los comprobantes pendientes
+            await _comprobanteImpresionController
+                .fetchComprobantesPendientes(idDocVenta);
+
+            // Lista de comprobantes obtenida del controlador
             List<ComprobanteImpresionModel> lista =
                 _comprobanteImpresionController.comprobantes;
+
+            // Verificar si la lista está vacía
+            if (lista.isEmpty) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text("No hay comprobantes pendientes")),
+              );
+              return; // Detener la ejecución si la lista está vacía
+            }
+
             // Descargar el PDF y obtener la ruta del archivo
             final List<String?> filePath =
-                await pdfcomprobanteService.DescargarPdfComprobante(lista);
+                await pdfdescargasController.descargarPDF(lista, idPersona);
 
-            if (filePath != null && filePath.isNotEmpty) {
+            if (filePath.isNotEmpty) {
               // Navegar a la pantalla del recibo solo si la ruta es válida
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => Comprobantescreen(
-                        filePath.whereType<String>().toList())),
+                  builder: (context) =>
+                      Comprobantescreen(filePath.whereType<String>().toList()),
+                ),
               );
             } else {
               // Mostrar un mensaje de error si la descarga falla
@@ -221,7 +237,6 @@ class _ListcomprobantesscreenState extends State<Listcomprobantesscreen> {
               );
             }
           },
-
           child: Text(
             texto,
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),

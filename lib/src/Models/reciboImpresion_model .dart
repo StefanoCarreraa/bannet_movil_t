@@ -1,11 +1,11 @@
 class ReciboimpresionModel {
-  final int idDocCobrar;
-  final int cantidad;
+  final String idDocCobrar;
+  final String cantidad;
   final String descripcion;
   final String numDocumento;
-  final int anio;
+  final String anio;
   final String nroContrato;
-  final int mesNum;
+  final String mesNum;
   final String mes;
   final String? fechaEmision;
   final String? fechaEmision_name;
@@ -16,7 +16,7 @@ class ReciboimpresionModel {
   final String periodo;
   final String entregado;
   final String extrajudicial;
-  final int idPersona;
+  final String idPersona;
   final String persona;
   final String documento;
   final String dni;
@@ -25,12 +25,12 @@ class ReciboimpresionModel {
   final String direccion;
   final String tipoDocId;
   final String? itemDescripcion;
-  final int idMoneda;
+  final String idMoneda;
   final String nombreMoneda;
   final String glosa;
-  final double importe;
-  final double amortizado;
-  final double saldo;
+  final String importe;
+  final String amortizado;
+  final String saldo;
   final String estadoLetras;
   final String estadoInmueble;
   final String usuario;
@@ -89,47 +89,47 @@ class ReciboimpresionModel {
 
   factory ReciboimpresionModel.fromJson(Map<String, dynamic> json) {
     return ReciboimpresionModel(
-      idDocCobrar: json["ID_DOC_COBRAR"],
-      cantidad: json["CANTIDAD"],
-      descripcion: json["DESCRIPCION"],
-      numDocumento: json["NUM_DOCUMENTO"],
-      anio: json["AÑO"],
-      nroContrato: json["NRO_CONTRATO"],
-      mesNum: json["MES_NUM"],
-      mes: json["MES"],
-      fechaEmision: json["PFECHA_P_EMISION"],
-      fechaEmision_name: json["FECHA_EMISION_NAME"],
-      fechaVencimiento: json["PFECHA_P_VENCIMIENTO"],
-      fechaVencimiento_1: json["PFECHA_P_VENCIMIENTO_1"],
-      periodo: json["PERIODO"],
-      entregado: json["ENTREGADO"],
-      extrajudicial: json["EXTRAJUDICIAL"],
-      idPersona: json["ID_PERSONA"],
-      persona: json["PERSONA"],
-      documento: json["DOCUMENTO"],
-      dni: json["DNI"],
-      email: json["EMAIL"],
-      telefono: json["TELEFONO"],
-      direccion: json["DIRECCION"],
-      tipoDocId: json["TIPO_DOC_ID"],
-      itemDescripcion: json["ITEM_DESCRIPCION"],
-      idMoneda: json["ID_MONEDA"],
-      nombreMoneda: json["NOMBRE"],
-      glosa: json["GLOSA"],
-      importe: (json["IMPORTE"] as num).toDouble(),
-      amortizado: (json["AMORTIZADO"] as num).toDouble(),
-      saldo: (json["SALDO"] as num).toDouble(),
-      estadoLetras: json["ESTADO_LETRAS"],
-      estadoInmueble: json["ESTADO_INMUEBLE"],
-      usuario: json["USUARIO"],
-      fechaIngreso: json["FECHA_INGRESO"],
-      tiinNombre: json["TIIN_NOMBRE"],
-      numeroLetras: json["NUMERO_LETRAS"],
-      simboloMoneda: json["SIMBOLO_MONEDA"],
-      rucEmpresa: json["RUC_EMPRESA"],
-      webEmpresa: json["WEB_EMPRESA"],
-      direccionEmpresa: json["DIRECCION_EMPRESA"],
-      telefonoEmpresa: json["TELEFONO_EMPRESA"],
+      idDocCobrar: json["ID_DOC_COBRAR"].toString(),
+      cantidad: json["CANTIDAD"].toString(),
+      descripcion: json["DESCRIPCION"].toString(),
+      numDocumento: json["NUM_DOCUMENTO"].toString(),
+      anio: json["AÑO"].toString(),
+      nroContrato: json["NRO_CONTRATO"].toString(),
+      mesNum: json["MES_NUM"].toString(),
+      mes: json["MES"].toString(),
+      fechaEmision: json["PFECHA_P_EMISION"].toString(),
+      fechaEmision_name: json["FECHA_EMISION_NAME"].toString(),
+      fechaVencimiento: json["PFECHA_P_VENCIMIENTO"].toString(),
+      fechaVencimiento_1: json["PFECHA_P_VENCIMIENTO_1"].toString(),
+      periodo: json["PERIODO"].toString(),
+      entregado: json["ENTREGADO"].toString(),
+      extrajudicial: json["EXTRAJUDICIAL"].toString(),
+      idPersona: json["ID_PERSONA"].toString(),
+      persona: json["PERSONA"].toString(),
+      documento: json["DOCUMENTO"].toString(),
+      dni: json["DNI"].toString(),
+      email: json["EMAIL"].toString(),
+      telefono: json["TELEFONO"].toString(),
+      direccion: json["DIRECCION"].toString(),
+      tipoDocId: json["TIPO_DOC_ID"].toString(),
+      itemDescripcion: json["ITEM_DESCRIPCION"].toString(),
+      idMoneda: json["ID_MONEDA"].toString(),
+      nombreMoneda: json["NOMBRE"].toString(),
+      glosa: json["GLOSA"].toString(),
+      importe: json["IMPORTE"].toString(),
+      amortizado: json["AMORTIZADO"].toString(),
+      saldo: json["SALDO"].toString(),
+      estadoLetras: json["ESTADO_LETRAS"].toString(),
+      estadoInmueble: json["ESTADO_INMUEBLE"].toString(),
+      usuario: json["USUARIO"].toString(),
+      fechaIngreso: json["FECHA_INGRESO"].toString(),
+      tiinNombre: json["TIIN_NOMBRE"].toString(),
+      numeroLetras: json["NUMERO_LETRAS"].toString(),
+      simboloMoneda: json["SIMBOLO_MONEDA"].toString(),
+      rucEmpresa: json["RUC_EMPRESA"].toString(),
+      webEmpresa: json["WEB_EMPRESA"].toString(),
+      direccionEmpresa: json["DIRECCION_EMPRESA"].toString(),
+      telefonoEmpresa: json["TELEFONO_EMPRESA"].toString(),
     );
   }
   Map<String, dynamic> toJson() {
