@@ -15,12 +15,13 @@ class ComprobanteController extends ChangeNotifier {
   Future<void> fetchComprobantes(int idPersona) async {
     isLoading = true;
     _errorMessage = null;
+    notifyListeners();
+
     try {
       _comprobantes = await _comprobanteService.listarComprobantes(idPersona);
     } catch (e) {
       _errorMessage = e.toString();
-            print(comprobantes);
-
+      print(comprobantes);
     } finally {
       isLoading = false;
       notifyListeners();

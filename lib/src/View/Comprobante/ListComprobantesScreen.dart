@@ -1,11 +1,8 @@
 import 'package:bannet_movil_t/src/Controllers/Login/Login_Controller.dart';
-import 'package:bannet_movil_t/src/Controllers/Recibo/Recibo_Controller.dart';
 import 'package:bannet_movil_t/src/Controllers/comprobante_controller.dart';
 import 'package:bannet_movil_t/src/Controllers/comprobanteimpresion_controller.dart';
 import 'package:bannet_movil_t/src/Controllers/pdfDescargas_controller.dart';
 import 'package:bannet_movil_t/src/Models/comprobanteImpresion_model.dart';
-import 'package:bannet_movil_t/src/Services/comprobanteImpresion_service.dart';
-import 'package:bannet_movil_t/src/Services/pdfComprobante_service.dart';
 import 'package:bannet_movil_t/src/View/Comprobante/ComprobanteScreen.dart';
 import 'package:bannet_movil_t/src/utils/constants/app_colors.dart';
 import 'package:bannet_movil_t/src/widget/TaskCardWidget.dart';
@@ -40,9 +37,9 @@ class _ListcomprobantesscreenState extends State<Listcomprobantesscreen> {
     await _loadUserData();
     // WidgetsBinding.instance.addPostFrameCallback((_) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      // final comprobanteController =
-      //     Provider.of<ComprobanteController>(context, listen: false);
-      // comprobanteController.fetchComprobantes(idPersona);
+      final comprobanteController =
+          Provider.of<ComprobanteController>(context, listen: false);
+      comprobanteController.fetchComprobantes(idPersona);
     });
   }
 
@@ -65,7 +62,6 @@ class _ListcomprobantesscreenState extends State<Listcomprobantesscreen> {
       body: Container(
         constraints:
             BoxConstraints.expand(), // Ocupa todo el espacio disponible
-
         decoration: BoxDecoration(
           image: DecorationImage(
             image: AssetImage(
@@ -74,62 +70,82 @@ class _ListcomprobantesscreenState extends State<Listcomprobantesscreen> {
           ),
           color: Color(0xFF000000),
         ),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(
-                height: 20,
-              ),
-              Center(
-                child: Text(
-                  "Comprobantes",
-                  style: TextStyle(
+        child: Stack(
+          children: [
+            RefreshIndicator(
+              onRefresh: () async {
+                print("refresh");
+                final comprobanteController =
+                    Provider.of<ComprobanteController>(context, listen: false);
+                comprobanteController.fetchComprobantes(idPersona);
+              },
+              child: SingleChildScrollView(
+                physics:
+                    AlwaysScrollableScrollPhysics(), // Permite el scroll aunque no haya contenido suficiente
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(height: 20),
+                    Center(
+                      child: Text(
+                        "Comprobantes",
+                        style: TextStyle(
+                            color: AppColors.verdeLima,
+                            fontSize: 30,
+                            fontWeight: FontWeight.w700),
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                    comprobanteController.comprobantes.isEmpty
+                        ? Center(
+                            child: Text(
+                              "No hay Comprobantes disponibles.",
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 18),
+                            ),
+                          )
+                        : ListView.builder(
+                            shrinkWrap:
+                                true, // Hace que ListView ocupe solo el espacio necesario
+                            physics:
+                                NeverScrollableScrollPhysics(), // Evita conflicto con el scroll padre
+                            itemCount:
+                                comprobanteController.comprobantes.length,
+                            itemBuilder: (context, index) {
+                              final comprobante =
+                                  comprobanteController.comprobantes[index];
+                              return TaskCardWidget(
+                                titulo:
+                                    'Nro. Comprobante: ${comprobante.nroComprobante}',
+                                subtitulo: 'Fecha: ${comprobante.fecha}',
+                                periodo: 'Importe: ${comprobante.total}',
+                                color: AppColors.verdeLima,
+                                isCompleted: false,
+                                expandedContent:
+                                    _buildMiRecibo(comprobante.idDocVenta ?? 0),
+                              );
+                            },
+                          ),
+                    SizedBox(height: 30),
+                    Divider(
                       color: AppColors.verdeLima,
-                      fontSize: 30,
-                      fontWeight: FontWeight.w700),
+                      thickness: 1,
+                    ),
+                  ],
                 ),
               ),
-              SizedBox(
-                height: 20,
+            ),
+            if (comprobanteController.isLoading)
+              Positioned.fill(
+                child: Container(
+                  color:
+                      Colors.black.withOpacity(0.5), // Fondo semi-transparente
+                  child: Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                ),
               ),
-              comprobanteController.isLoading
-                  ? Center(child: CircularProgressIndicator())
-                  : comprobanteController.comprobantes.isEmpty
-                      ? Center(
-                          child: Text(
-                            "No hay recibos disponibles.",
-                            style: TextStyle(color: Colors.white, fontSize: 18),
-                          ),
-                        )
-                      : ListView.builder(
-                          shrinkWrap:
-                              true, // Hace que ListView ocupe solo el espacio necesario
-                          itemCount: comprobanteController.comprobantes.length,
-                          itemBuilder: (context, index) {
-                            final comprobante =
-                                comprobanteController.comprobantes[index];
-                            return TaskCardWidget(
-                              titulo:
-                                  'Nro. Recibo: ${comprobante.nroComprobante}',
-                              subtitulo: 'fecha: ${comprobante.fecha}',
-                              periodo: 'importe: ${comprobante.total}',
-                              // precio: 'Monto: ${comprobante.importe}',
-                              // estado: 'Estado: ${comprobante.nombreEstadoRecibo}',
-                              color: AppColors.verdeLima,
-                              isCompleted: false,
-                              expandedContent:
-                                  _buildMiRecibo(comprobante.idDocVenta ?? 0),
-                            );
-                          },
-                        ),
-              SizedBox(height: 30),
-              Divider(
-                color: AppColors.verdeLima,
-                thickness: 1,
-              ),
-            ],
-          ),
+          ],
         ),
       ),
     );
@@ -182,10 +198,11 @@ class _ListcomprobantesscreenState extends State<Listcomprobantesscreen> {
     bool conBorde,
     int idDocVenta,
   ) {
-    PdfdescargasController pdfdescargasController = PdfdescargasController();
-    ComprobanteImpresionController _comprobanteImpresionController =
+    ComprobanteImpresionController comprobanteImpresionController =
         ComprobanteImpresionController();
-    PdfDescargarService pdfDescargarService = PdfDescargarService();
+    PdfdescargasController pdfdescargasController = PdfdescargasController();
+
+    // PdfDescargarService pdfDescargarService = PdfDescargarService();
     return Builder(
       builder: (BuildContext context) {
         return TextButton(
@@ -202,12 +219,12 @@ class _ListcomprobantesscreenState extends State<Listcomprobantesscreen> {
           ),
           onPressed: () async {
             // Obtener los comprobantes pendientes
-            await _comprobanteImpresionController
-                .fetchComprobantesPendientes(idDocVenta);
+            await comprobanteImpresionController
+                .fetchComprobantesPendientesImpresion(idDocVenta);
 
             // Lista de comprobantes obtenida del controlador
             List<ComprobanteImpresionModel> lista =
-                _comprobanteImpresionController.comprobantes;
+                comprobanteImpresionController.comprobantes;
 
             // Verificar si la lista está vacía
             if (lista.isEmpty) {

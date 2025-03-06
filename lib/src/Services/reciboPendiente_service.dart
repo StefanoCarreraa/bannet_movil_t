@@ -16,6 +16,7 @@ class ReciboService {
         final Map<String, dynamic> data = json.decode(response.body);
         if (data['status'] == 'success') {
           final List recibos = data['data'];
+          print("lista de recibos acrtualizada");
           return recibos
               .map((recibo) => ReciboPendienteModel.fromJson(recibo))
               .toList();

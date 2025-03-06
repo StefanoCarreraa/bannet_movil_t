@@ -1,9 +1,13 @@
 import 'dart:ui';
 import 'package:bannet_movil_t/src/Controllers/Login/Login_Controller.dart';
 import 'package:bannet_movil_t/src/Controllers/Recibo/Recibo_Controller.dart';
+import 'package:bannet_movil_t/src/Controllers/reciboimpresion_controller.dart';
+import 'package:bannet_movil_t/src/Models/reciboImpresion_model%20.dart';
+import 'package:bannet_movil_t/src/Services/pdfRecibo_service.dart';
 import 'package:bannet_movil_t/src/View/Comprobante/ListComprobantesScreen.dart';
 import 'package:bannet_movil_t/src/View/Profile/profileScreen.dart';
 import 'package:bannet_movil_t/src/View/Recibo/ListRecibosScreen.dart';
+import 'package:bannet_movil_t/src/View/Recibo/ReciboScreen.dart';
 import 'package:bannet_movil_t/src/View/ZonaGamer/ZonaGamerScreen.dart';
 import 'package:bannet_movil_t/src/utils/constants/app_colors.dart';
 import 'package:bannet_movil_t/src/widget/DrawerSectionCustom.dart';
@@ -298,70 +302,64 @@ class _IndexscreenState extends State<Indexscreen> {
               ),
               color: Color(0xFF000000),
             ),
-            child: Column(
-              children: [
-                _buildBannerUsuario(),
-                SizedBox(height: 5),
-                //
-                Expanded(
-                  child: ListView(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-                        child: Text(
-                          "Planes",
-                          style: TextStyle(
-                              color: AppColors.verdeLima,
-                              fontSize: 26,
-                              fontWeight: FontWeight.w700),
+            child: RefreshIndicator(
+              onRefresh: () async {
+                final reciboController =
+                    Provider.of<ReciboController>(context, listen: false);
+                reciboController.fetchRecibosPendientes(idPersona);
+              },
+              child: Column(
+                children: [
+                  _buildBannerUsuario(),
+                  SizedBox(height: 5),
+                  //
+                  Expanded(
+                    child: ListView(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                          child: Text(
+                            "Planes",
+                            style: TextStyle(
+                                color: AppColors.verdeLima,
+                                fontSize: 26,
+                                fontWeight: FontWeight.w700),
+                          ),
                         ),
-                      ),
-                      reciboController.isLoading
-                          ? Center(child: CircularProgressIndicator())
-                          : reciboController.recibos.isEmpty
-                              ? Center(
-                                  child: Text(
-                                    "No hay recibos disponibles.",
-                                    style: TextStyle(
-                                        color: Colors.white, fontSize: 18),
-                                  ),
-                                )
-                              : Column(
-                                  children:
-                                      reciboController.recibos.map((recibo) {
-                                    return TaskCardWidget(
-                                      titulo:
-                                          'Nro. Recibo: ${recibo.numeroRecibo}',
-                                      subtitulo:
-                                          'Plan: ${recibo.nombreServicio}',
-                                      periodo: 'Periodo: ${recibo.periodo}',
-                                      precio: 'Monto: ${recibo.importe}',
-                                      estado:
-                                          'Estado: ${recibo.nombreEstadoRecibo}',
-                                      color: AppColors.verdeLima,
-                                      isCompleted: false,
-                                    );
-                                  }).toList(),
-                                )
-
-                      // TaskCardWidget(
-                      //     titulo:
-                      //         'Plan : INTERNET 400 MBPS + 3 STREAMING PLAN FULL PRIME',
-                      //     precio: 'Monto : S/. 55.00',
-                      //     fecha: 'Inicio de facturación : 21/08/2024',
-                      //     color: verdeLima,
-                      //     isCompleted: false),
-                      // TaskCardWidget(
-                      //     titulo:
-                      //         'Plan : INTERNET 400 MBPS + 3 STREAMING PLAN FULL PRIME',
-                      //     precio: 'Monto : S/. 65.00',
-                      //     fecha: 'Inicio de facturación : 21/08/2024',
-                      //     color: verdeLima,
-                      //     isCompleted: false),
-                    ],
+                        reciboController.isLoading
+                            ? Center(child: CircularProgressIndicator())
+                            : reciboController.recibos.isEmpty
+                                ? Center(
+                                    child: Text(
+                                      "No hay recibos disponibles.",
+                                      style: TextStyle(
+                                          color: Colors.white, fontSize: 18),
+                                    ),
+                                  )
+                                : Column(
+                                    children:
+                                        reciboController.recibos.map((recibo) {
+                                      return TaskCardWidget(
+                                        titulo:
+                                            'Nro. Recibo: ${recibo.numeroRecibo}',
+                                        subtitulo:
+                                            'Plan: ${recibo.nombreServicio}',
+                                        periodo: 'Periodo: ${recibo.periodo}',
+                                        precio: 'Monto: ${recibo.importe}',
+                                        estado:
+                                            'Estado: ${recibo.nombreEstadoRecibo}',
+                                        color: AppColors.verdeLima,
+                                        isCompleted: false,
+                                        expandedContent:
+                                            _buildMiRecibo(recibo.idDocCobrar),
+                                      );
+                                    }).toList(),
+                                  )
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
           // Botón flotante encima del BottomNavigationBar
@@ -525,6 +523,113 @@ class _IndexscreenState extends State<Indexscreen> {
           ],
         ),
       ),
+    );
+  }
+
+    Widget _buildMiRecibo(int idDocCobrar) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Icon(Icons.receipt_long_outlined, color: Colors.grey),
+              SizedBox(width: 8),
+              Text(
+                '¿Qué quieres hacer hoy?',
+                style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.grey),
+              ),
+            ],
+          ),
+          SizedBox(height: 20),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _buildBoton(
+                'Descargar Recibo',
+                AppColors.blanco,
+                AppColors.negro,
+                true,
+                idDocCobrar,
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBoton(
+    String texto,
+    Color colorFondo,
+    Color colorTexto,
+    bool conBorde,
+    int idDocCobrar,
+  ) {
+    ReciboImpresionController reciboImpresionController =
+        ReciboImpresionController();
+    PdfreciboService pdfreciboService = PdfreciboService();
+    return Builder(
+      builder: (BuildContext context) {
+        return TextButton(
+          style: TextButton.styleFrom(
+            backgroundColor: colorFondo,
+            foregroundColor: colorTexto,
+            padding: EdgeInsets.symmetric(vertical: 18, horizontal: 40),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+              side: conBorde
+                  ? BorderSide(color: Colors.black12, width: 2)
+                  : BorderSide.none,
+            ),
+          ),
+          onPressed: () async {
+            await reciboImpresionController.fetchRecibosPendientes(idDocCobrar);
+
+            List<ReciboimpresionModel> lista =
+                reciboImpresionController.recibos;
+
+            // Verificar si la lista está vacía
+            if (lista.isEmpty) {
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text("No hay recibos pendientes")),
+                );
+              }
+              return;
+            }
+            // Descargar el PDF y obtener la ruta del archivo
+            final List<String?> filePath =
+                await pdfreciboService.DescargarPdfRrecibo(lista);
+
+            if (filePath.isNotEmpty) {
+              if (context.mounted) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          ReciboScreen(filePath.whereType<String>().toList())),
+                );
+              }
+            } else {
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text("Error al descargar el PDF")),
+                );
+              }
+            }
+          },
+          child: Text(
+            texto,
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          ),
+        );
+      },
     );
   }
 

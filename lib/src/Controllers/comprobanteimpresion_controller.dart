@@ -13,7 +13,7 @@ class ComprobanteImpresionController extends ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
 
-  Future<void> fetchComprobantesPendientes(int idDocVenta) async {
+  Future<void> fetchComprobantesPendientesImpresion(int idDocVenta) async {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();

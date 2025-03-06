@@ -24,6 +24,7 @@ class ReciboController extends ChangeNotifier {
   Future<void> fetchRecibosPendientes(int idPersona) async {
     _isLoading = true;
     _errorMessage = null;
+    notifyListeners(); // Notifica a la UI que hay un cambio
 
     try {
       _recibos = await _reciboService.listarRecibosPendientes(idPersona);

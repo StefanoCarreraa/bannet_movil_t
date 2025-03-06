@@ -37,9 +37,9 @@ class _ListrecibosscreenState extends State<Listrecibosscreen> {
     await _loadUserData();
     // WidgetsBinding.instance.addPostFrameCallback((_) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      // final reciboController =
-      //     Provider.of<ReciboController>(context, listen: false);
-      // reciboController.fetchRecibosPendientes(idPersona);
+      final reciboController =
+          Provider.of<ReciboController>(context, listen: false);
+      reciboController.fetchRecibosPendientes(idPersona);
     });
   }
 
@@ -48,51 +48,55 @@ class _ListrecibosscreenState extends State<Listrecibosscreen> {
     final reciboController = Provider.of<ReciboController>(context);
 
     return Scaffold(
-        backgroundColor: AppColors.negro, // Fondo blanco
-        appBar: AppBar(
-          title: Image.asset(
-            'assets/images/logo_miportal.png',
-            height: 55,
-          ),
-          toolbarHeight: 60,
-          backgroundColor: AppColors.negro,
-          centerTitle: true, // Garantiza que el título esté centrado
-          iconTheme: IconThemeData(color: AppColors.verdeLima),
+      backgroundColor: AppColors.negro, // Fondo blanco
+      appBar: AppBar(
+        title: Image.asset(
+          'assets/images/logo_miportal.png',
+          height: 55,
         ),
-        body: Container(
-          constraints:
-              BoxConstraints.expand(), // Ocupa todo el espacio disponible
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage(
-                  'assets/images/Bannet_Fond.jpg'), // Reemplaza con tu imagen
-              fit: BoxFit.cover,
-            ),
-            color: Color(0xFF000000),
+        toolbarHeight: 60,
+        backgroundColor: AppColors.negro,
+        centerTitle: true, // Garantiza que el título esté centrado
+        iconTheme: IconThemeData(color: AppColors.verdeLima),
+      ),
+      body: Container(
+        constraints:
+            BoxConstraints.expand(), // Ocupa todo el espacio disponible
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image:
+                AssetImage('assets/images/Bannet_Fond.jpg'), // Imagen de fondo
+            fit: BoxFit.cover,
           ),
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(height: 20),
-                Center(
-                  child: Text(
-                    "Mis recibos",
-                    style: TextStyle(
-                      color: AppColors.verdeLima,
-                      fontSize: 30,
-                      fontWeight: FontWeight.w700,
+          color: Color(0xFF000000),
+        ),
+        child: Stack(
+          children: [
+            RefreshIndicator(
+              onRefresh: () async {
+                print("refresh");
+                final reciboController =
+                    Provider.of<ReciboController>(context, listen: false);
+                await reciboController.fetchRecibosPendientes(idPersona);
+              },
+              child: SingleChildScrollView(
+                physics: AlwaysScrollableScrollPhysics(), // Permite arrastrar
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(height: 20),
+                    Center(
+                      child: Text(
+                        "Mis recibos",
+                        style: TextStyle(
+                          color: AppColors.verdeLima,
+                          fontSize: 30,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-                SizedBox(height: 20),
-                SizedBox(
-                  height: 20,
-                ),
-                // Verificamos si el controller está cargando o si no hay recibos
-                reciboController.isLoading
-                    ? Center(child: CircularProgressIndicator())
-                    : reciboController.recibos.isEmpty
+                    SizedBox(height: 20),
+                    reciboController.recibos.isEmpty
                         ? Center(
                             child: Text(
                               "No hay recibos disponibles.",
@@ -101,8 +105,8 @@ class _ListrecibosscreenState extends State<Listrecibosscreen> {
                             ),
                           )
                         : ListView.builder(
-                            shrinkWrap:
-                                true, // Hace que ListView ocupe solo el espacio necesario
+                            shrinkWrap: true,
+                            physics: NeverScrollableScrollPhysics(),
                             itemCount: reciboController.recibos.length,
                             itemBuilder: (context, index) {
                               final recibo = reciboController.recibos[index];
@@ -119,28 +123,38 @@ class _ListrecibosscreenState extends State<Listrecibosscreen> {
                               );
                             },
                           ),
-                SizedBox(height: 30),
-                Divider(
-                  color: AppColors.verdeLima,
-                  thickness: 1,
+                    SizedBox(height: 30),
+                    Divider(
+                      color: AppColors.verdeLima,
+                      thickness: 1,
+                    ),
+                    SizedBox(height: 20),
+                    _buildMontoPagarCard(
+                      titulo: "Monto a pagar",
+                      monto:
+                          "S/. ${reciboController.totalMontoPagar.toStringAsFixed(2)}",
+                    ),
+                    reciboController.totalMontoPagar == 0.0
+                        ? _buildGeneral()
+                        : _buildGeneral1(),
+                  ],
                 ),
-                SizedBox(height: 20),
-                // _buildMontoPagarCard(
-                //   titulo: "Monto facturado",
-                //   monto: "S/. 155.00",
-                // ),
-                _buildMontoPagarCard(
-                  titulo: "Monto a pagar",
-                  monto:
-                      "S/. ${reciboController.totalMontoPagar.toStringAsFixed(2)}",
-                ),
-                reciboController.totalMontoPagar == 0.0
-                    ? _buildGeneral()
-                    : _buildGeneral1(),
-              ],
+              ),
             ),
-          ),
-        ));
+            if (reciboController.isLoading)
+              Positioned.fill(
+                child: Container(
+                  color:
+                      Colors.black.withOpacity(0.5), // Fondo semi-transparente
+                  child: Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget _buildMiRecibo(int idDocCobrar) {
@@ -168,7 +182,7 @@ class _ListrecibosscreenState extends State<Listrecibosscreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               _buildBoton(
-                'Descargar Rsecibo',
+                'Descargar Recibo',
                 AppColors.blanco,
                 AppColors.negro,
                 true,
@@ -188,7 +202,7 @@ class _ListrecibosscreenState extends State<Listrecibosscreen> {
     bool conBorde,
     int idDocCobrar,
   ) {
-    ReciboImpresionController _reciboImpresionController =
+    ReciboImpresionController reciboImpresionController =
         ReciboImpresionController();
     PdfreciboService pdfreciboService = PdfreciboService();
     return Builder(
@@ -206,27 +220,39 @@ class _ListrecibosscreenState extends State<Listrecibosscreen> {
             ),
           ),
           onPressed: () async {
-            _reciboImpresionController.fetchRecibosPendientes(idDocCobrar);
+            await reciboImpresionController.fetchRecibosPendientes(idDocCobrar);
 
             List<ReciboimpresionModel> lista =
-                _reciboImpresionController.recibos;
+                reciboImpresionController.recibos;
+
+            // Verificar si la lista está vacía
+            if (lista.isEmpty) {
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text("No hay recibos pendientes")),
+                );
+              }
+              return;
+            }
             // Descargar el PDF y obtener la ruta del archivo
             final List<String?> filePath =
                 await pdfreciboService.DescargarPdfRrecibo(lista);
 
-            if (filePath != null && filePath.isNotEmpty) {
-              // Navegar a la pantalla del recibo solo si la ruta es válida
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) =>
-                        ReciboScreen(filePath.whereType<String>().toList())),
-              );
+            if (filePath.isNotEmpty) {
+              if (context.mounted) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          ReciboScreen(filePath.whereType<String>().toList())),
+                );
+              }
             } else {
-              // Mostrar un mensaje de error si la descarga falla
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text("Error al descargar el PDF")),
-              );
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text("Error al descargar el PDF")),
+                );
+              }
             }
           },
           child: Text(

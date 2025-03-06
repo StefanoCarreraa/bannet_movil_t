@@ -255,8 +255,8 @@ class _ReciboScreenState extends State<ReciboScreen> {
       //   titulo: 'Descarga Completa',
       //   mensaje: "Archivo guardado en: $destinationPath",
       // );
- // ✅ 6. Mostrar diálogo con opción para abrir el archivo
-    _mostrarDialogoDescargaExitosa(context, destinationPath);
+      // ✅ 6. Mostrar diálogo con opción para abrir el archivo
+      _mostrarDialogoDescargaExitosa(context, destinationPath);
 
       print("✅ Archivo copiado en: $destinationPath");
     } catch (e) {
@@ -269,33 +269,35 @@ class _ReciboScreenState extends State<ReciboScreen> {
       print("❌ Error al descargar el archivo: $e");
     }
   }
+
   // ✅ Función para mostrar el diálogo de confirmación
-void _mostrarDialogoDescargaExitosa(BuildContext context, String filePath) {
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: Text("Descarga Completa"),
-        content: Text("El archivo se ha guardado en:\n$filePath\n\n¿Desea abrirlo ahora?"),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context), // ❌ No abrir
-            child: Text("Cancelar"),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context); // Cerrar el diálogo
-              _abrirArchivo(filePath); // ✅ Abrir archivo
-            },
-            child: Text("Abrir"),
-          ),
-        ],
-      );
-    },
-  );
+  void _mostrarDialogoDescargaExitosa(BuildContext context, String filePath) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Descarga Completa"),
+          content: Text(
+              "El archivo se ha guardado en:\n$filePath\n\n¿Desea abrirlo ahora?"),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context), // ❌ No abrir
+              child: Text("Cancelar"),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context); // Cerrar el diálogo
+                _abrirArchivo(filePath); // ✅ Abrir archivo
+              },
+              child: Text("Abrir"),
+            ),
+          ],
+        );
+      },
+    );
+  }
 }
 
-}
 // ✅ Función para abrir el archivo
 void _abrirArchivo(String filePath) async {
   try {
