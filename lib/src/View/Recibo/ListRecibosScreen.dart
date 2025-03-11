@@ -18,7 +18,7 @@ class Listrecibosscreen extends StatefulWidget {
 
 class _ListrecibosscreenState extends State<Listrecibosscreen> {
   final LoginController _logincontroller = LoginController();
-
+  bool isLoading = false;
   int idPersona = 0;
   Future<void> _loadUserData() async {
     final userData = await _logincontroller.loadUserData();
@@ -35,7 +35,6 @@ class _ListrecibosscreenState extends State<Listrecibosscreen> {
 
   Future<void> _initialize() async {
     await _loadUserData();
-    // WidgetsBinding.instance.addPostFrameCallback((_) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final reciboController =
           Provider.of<ReciboController>(context, listen: false);
@@ -48,7 +47,7 @@ class _ListrecibosscreenState extends State<Listrecibosscreen> {
     final reciboController = Provider.of<ReciboController>(context);
 
     return Scaffold(
-      backgroundColor: AppColors.negro, // Fondo blanco
+      backgroundColor: AppColors.negro,
       appBar: AppBar(
         title: Image.asset(
           'assets/images/logo_miportal.png',
@@ -56,16 +55,14 @@ class _ListrecibosscreenState extends State<Listrecibosscreen> {
         ),
         toolbarHeight: 60,
         backgroundColor: AppColors.negro,
-        centerTitle: true, // Garantiza que el título esté centrado
+        centerTitle: true,
         iconTheme: IconThemeData(color: AppColors.verdeLima),
       ),
       body: Container(
-        constraints:
-            BoxConstraints.expand(), // Ocupa todo el espacio disponible
+        constraints: BoxConstraints.expand(),
         decoration: BoxDecoration(
           image: DecorationImage(
-            image:
-                AssetImage('assets/images/Bannet_Fond.jpg'), // Imagen de fondo
+            image: AssetImage('assets/images/Bannet_Fond.jpg'),
             fit: BoxFit.cover,
           ),
           color: Color(0xFF000000),
@@ -80,7 +77,7 @@ class _ListrecibosscreenState extends State<Listrecibosscreen> {
                 await reciboController.fetchRecibosPendientes(idPersona);
               },
               child: SingleChildScrollView(
-                physics: AlwaysScrollableScrollPhysics(), // Permite arrastrar
+                physics: AlwaysScrollableScrollPhysics(),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -144,8 +141,7 @@ class _ListrecibosscreenState extends State<Listrecibosscreen> {
             if (reciboController.isLoading)
               Positioned.fill(
                 child: Container(
-                  color:
-                      Colors.black.withOpacity(0.5), // Fondo semi-transparente
+                  color: Colors.black.withOpacity(0.5),
                   child: Center(
                     child: CircularProgressIndicator(),
                   ),
@@ -220,21 +216,24 @@ class _ListrecibosscreenState extends State<Listrecibosscreen> {
             ),
           ),
           onPressed: () async {
-            await reciboImpresionController.fetchRecibosPendientes(idDocCobrar);
+            if (isLoading) return;
 
+            setState(() => isLoading = true);
+
+            await reciboImpresionController.fetchRecibosPendientes(idDocCobrar);
             List<ReciboimpresionModel> lista =
                 reciboImpresionController.recibos;
 
-            // Verificar si la lista está vacía
             if (lista.isEmpty) {
               if (context.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text("No hay recibos pendientes")),
                 );
               }
+              setState(() => isLoading = false);
               return;
             }
-            // Descargar el PDF y obtener la ruta del archivo
+
             final List<String?> filePath =
                 await pdfreciboService.DescargarPdfRrecibo(lista);
 
@@ -243,8 +242,9 @@ class _ListrecibosscreenState extends State<Listrecibosscreen> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) =>
-                          ReciboScreen(filePath.whereType<String>().toList())),
+                    builder: (context) =>
+                        ReciboScreen(filePath.whereType<String>().toList()),
+                  ),
                 );
               }
             } else {
@@ -254,11 +254,15 @@ class _ListrecibosscreenState extends State<Listrecibosscreen> {
                 );
               }
             }
+
+            setState(() => isLoading = false);
           },
-          child: Text(
-            texto,
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-          ),
+          child: isLoading
+              ? CircularProgressIndicator()
+              : Text(
+                  texto,
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                ),
         );
       },
     );
@@ -311,20 +315,16 @@ class _ListrecibosscreenState extends State<Listrecibosscreen> {
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center, // Centra la columna
-            crossAxisAlignment: CrossAxisAlignment
-                .center, // Centra los elementos dentro de la columna
-            mainAxisSize: MainAxisSize
-                .min, // Hace que la columna solo ocupe el espacio necesario
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
             children: [
               Row(
-                mainAxisAlignment:
-                    MainAxisAlignment.center, // Centra el contenido de la fila
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Expanded(
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment
-                          .center, // Centra los elementos dentro de la columna
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         // Centra el título
                         Center(
@@ -334,16 +334,14 @@ class _ListrecibosscreenState extends State<Listrecibosscreen> {
                                 color: AppColors.verdeLima,
                                 fontSize: 30,
                                 fontWeight: FontWeight.bold),
-                            textAlign: TextAlign
-                                .center, // Asegura que el texto se mantenga centrado
+                            textAlign: TextAlign.center,
                           ),
                         ),
                         SizedBox(height: 14),
-                        // Centra el contenido
+
                         Center(
                           child: Column(
-                            mainAxisAlignment: MainAxisAlignment
-                                .center, // Centra el texto dentro de la columna
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
                                 "No tienes deudas.",
@@ -351,8 +349,7 @@ class _ListrecibosscreenState extends State<Listrecibosscreen> {
                                     color: Colors.white,
                                     fontSize: 25,
                                     fontWeight: FontWeight.bold),
-                                textAlign: TextAlign
-                                    .center, // Asegura que el texto se mantenga centrado
+                                textAlign: TextAlign.center,
                               ),
                               Text(
                                 "Pagaste tu último recibo",
@@ -360,8 +357,7 @@ class _ListrecibosscreenState extends State<Listrecibosscreen> {
                                     color: Colors.white,
                                     fontSize: 25,
                                     fontWeight: FontWeight.bold),
-                                textAlign: TextAlign
-                                    .center, // Asegura que el texto se mantenga centrado
+                                textAlign: TextAlign.center,
                               ),
                             ],
                           ),
@@ -390,20 +386,16 @@ class _ListrecibosscreenState extends State<Listrecibosscreen> {
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center, // Centra la columna
-            crossAxisAlignment: CrossAxisAlignment
-                .center, // Centra los elementos dentro de la columna
-            mainAxisSize: MainAxisSize
-                .min, // Hace que la columna solo ocupe el espacio necesario
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
             children: [
               Row(
-                mainAxisAlignment:
-                    MainAxisAlignment.center, // Centra el contenido de la fila
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Expanded(
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment
-                          .center, // Centra los elementos dentro de la columna
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         // Centra el título
                         Center(
@@ -413,16 +405,14 @@ class _ListrecibosscreenState extends State<Listrecibosscreen> {
                                 color: AppColors.verdeLima,
                                 fontSize: 30,
                                 fontWeight: FontWeight.bold),
-                            textAlign: TextAlign
-                                .center, // Asegura que el texto se mantenga centrado
+                            textAlign: TextAlign.center,
                           ),
                         ),
                         SizedBox(height: 14),
-                        // Centra el contenido
+
                         Center(
                           child: Column(
-                            mainAxisAlignment: MainAxisAlignment
-                                .center, // Centra el texto dentro de la columna
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
                                 "Regulariza tus pagos para seguir",
@@ -430,8 +420,7 @@ class _ListrecibosscreenState extends State<Listrecibosscreen> {
                                     color: Colors.white,
                                     fontSize: 25,
                                     fontWeight: FontWeight.bold),
-                                textAlign: TextAlign
-                                    .center, // Asegura que el texto se mantenga centrado
+                                textAlign: TextAlign.center,
                               ),
                               Text(
                                 "disfrutando de Bantel",
@@ -439,8 +428,7 @@ class _ListrecibosscreenState extends State<Listrecibosscreen> {
                                     color: Colors.white,
                                     fontSize: 25,
                                     fontWeight: FontWeight.bold),
-                                textAlign: TextAlign
-                                    .center, // Asegura que el texto se mantenga centrado
+                                textAlign: TextAlign.center,
                               ),
                             ],
                           ),

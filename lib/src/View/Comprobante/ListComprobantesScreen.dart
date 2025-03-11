@@ -18,6 +18,7 @@ class Listcomprobantesscreen extends StatefulWidget {
 
 class _ListcomprobantesscreenState extends State<Listcomprobantesscreen> {
   final LoginController _logincontroller = LoginController();
+  bool isLoading = false;
 
   int idPersona = 0;
   Future<void> _loadUserData() async {
@@ -35,7 +36,6 @@ class _ListcomprobantesscreenState extends State<Listcomprobantesscreen> {
 
   Future<void> _initialize() async {
     await _loadUserData();
-    // WidgetsBinding.instance.addPostFrameCallback((_) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final comprobanteController =
           Provider.of<ComprobanteController>(context, listen: false);
@@ -48,7 +48,7 @@ class _ListcomprobantesscreenState extends State<Listcomprobantesscreen> {
     final comprobanteController = Provider.of<ComprobanteController>(context);
 
     return Scaffold(
-      backgroundColor: AppColors.blanco, // Fondo blanco
+      backgroundColor: AppColors.blanco,
       appBar: AppBar(
         title: Image.asset(
           'assets/images/logo_miportal.png',
@@ -56,16 +56,14 @@ class _ListcomprobantesscreenState extends State<Listcomprobantesscreen> {
         ),
         toolbarHeight: 60,
         backgroundColor: AppColors.negro,
-        centerTitle: true, // Garantiza que el título esté centrado
+        centerTitle: true,
         iconTheme: IconThemeData(color: AppColors.verdeLima),
       ),
       body: Container(
-        constraints:
-            BoxConstraints.expand(), // Ocupa todo el espacio disponible
+        constraints: BoxConstraints.expand(),
         decoration: BoxDecoration(
           image: DecorationImage(
-            image: AssetImage(
-                'assets/images/Bannet_Fond.jpg'), // Reemplaza con tu imagen
+            image: AssetImage('assets/images/Bannet_Fond.jpg'),
             fit: BoxFit.cover,
           ),
           color: Color(0xFF000000),
@@ -74,14 +72,12 @@ class _ListcomprobantesscreenState extends State<Listcomprobantesscreen> {
           children: [
             RefreshIndicator(
               onRefresh: () async {
-                print("refresh");
                 final comprobanteController =
                     Provider.of<ComprobanteController>(context, listen: false);
                 comprobanteController.fetchComprobantes(idPersona);
               },
               child: SingleChildScrollView(
-                physics:
-                    AlwaysScrollableScrollPhysics(), // Permite el scroll aunque no haya contenido suficiente
+                physics: AlwaysScrollableScrollPhysics(),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -105,10 +101,8 @@ class _ListcomprobantesscreenState extends State<Listcomprobantesscreen> {
                             ),
                           )
                         : ListView.builder(
-                            shrinkWrap:
-                                true, // Hace que ListView ocupe solo el espacio necesario
-                            physics:
-                                NeverScrollableScrollPhysics(), // Evita conflicto con el scroll padre
+                            shrinkWrap: true,
+                            physics: NeverScrollableScrollPhysics(),
                             itemCount:
                                 comprobanteController.comprobantes.length,
                             itemBuilder: (context, index) {
@@ -122,7 +116,7 @@ class _ListcomprobantesscreenState extends State<Listcomprobantesscreen> {
                                 color: AppColors.verdeLima,
                                 isCompleted: false,
                                 expandedContent:
-                                    _buildMiRecibo(comprobante.idDocVenta ?? 0),
+                                    _buildMiRecibo(comprobante.idDocVenta),
                               );
                             },
                           ),
@@ -138,8 +132,7 @@ class _ListcomprobantesscreenState extends State<Listcomprobantesscreen> {
             if (comprobanteController.isLoading)
               Positioned.fill(
                 child: Container(
-                  color:
-                      Colors.black.withOpacity(0.5), // Fondo semi-transparente
+                  color: Colors.black.withOpacity(0.5),
                   child: Center(
                     child: CircularProgressIndicator(),
                   ),
@@ -182,8 +175,6 @@ class _ListcomprobantesscreenState extends State<Listcomprobantesscreen> {
                 true,
                 idDocVenta,
               ),
-              // SizedBox(width: 20),
-              // _buildBoton('Pagar', verdeLima, Colors.white, true),
             ],
           ),
         ],
@@ -202,7 +193,6 @@ class _ListcomprobantesscreenState extends State<Listcomprobantesscreen> {
         ComprobanteImpresionController();
     PdfdescargasController pdfdescargasController = PdfdescargasController();
 
-    // PdfDescargarService pdfDescargarService = PdfDescargarService();
     return Builder(
       builder: (BuildContext context) {
         return TextButton(
@@ -218,46 +208,53 @@ class _ListcomprobantesscreenState extends State<Listcomprobantesscreen> {
             ),
           ),
           onPressed: () async {
-            // Obtener los comprobantes pendientes
+            if (isLoading) return;
+
+            setState(() => isLoading = true);
+
             await comprobanteImpresionController
                 .fetchComprobantesPendientesImpresion(idDocVenta);
 
-            // Lista de comprobantes obtenida del controlador
             List<ComprobanteImpresionModel> lista =
                 comprobanteImpresionController.comprobantes;
 
-            // Verificar si la lista está vacía
             if (lista.isEmpty) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text("No hay comprobantes pendientes")),
-              );
-              return; // Detener la ejecución si la lista está vacía
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text("No hay comprobantes pendientes")),
+                );
+                return;
+              }
             }
 
-            // Descargar el PDF y obtener la ruta del archivo
             final List<String?> filePath =
                 await pdfdescargasController.descargarPDF(lista, idPersona);
 
             if (filePath.isNotEmpty) {
-              // Navegar a la pantalla del recibo solo si la ruta es válida
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) =>
-                      Comprobantescreen(filePath.whereType<String>().toList()),
-                ),
-              );
+              if (context.mounted) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => Comprobantescreen(
+                        filePath.whereType<String>().toList()),
+                  ),
+                );
+              }
             } else {
-              // Mostrar un mensaje de error si la descarga falla
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text("Error al descargar el PDF")),
-              );
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text("Error al descargar el PDF")),
+                );
+              }
             }
+            setState(() => isLoading = false);
           },
-          child: Text(
-            texto,
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-          ),
+          child: isLoading
+              ? CircularProgressIndicator()
+              : Text(
+                  texto,
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                ),
         );
       },
     );

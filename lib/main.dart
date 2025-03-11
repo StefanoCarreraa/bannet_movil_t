@@ -6,6 +6,7 @@ import 'package:bannet_movil_t/src/Controllers/baja_suspension_controller.dart';
 import 'package:bannet_movil_t/src/Controllers/comprobante_controller.dart';
 import 'package:bannet_movil_t/src/Controllers/libroreclamacion_controller.dart';
 import 'package:bannet_movil_t/src/Controllers/postventa_controller.dart';
+import 'package:bannet_movil_t/src/Controllers/user_controller.dart';
 import 'package:bannet_movil_t/src/Services/auth_service.dart';
 import 'package:bannet_movil_t/src/app.dart';
 import 'package:flutter/material.dart';
@@ -39,6 +40,7 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (_) => PostventaController()),
         ChangeNotifierProvider(create: (_) => LibroReclamacionController()),
         ChangeNotifierProvider(create: (_) => ComprobanteController()),
+        ChangeNotifierProvider(create: (_) => UserController()),
       ],
       child: MyApp(
         isLoggedIn: isLoggedIn,

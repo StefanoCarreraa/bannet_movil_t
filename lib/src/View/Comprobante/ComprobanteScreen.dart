@@ -4,6 +4,7 @@ import 'package:bannet_movil_t/src/utils/constants/app_colors.dart';
 import 'package:bannet_movil_t/src/widget/AlertshowModalBottomSheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -184,12 +185,10 @@ class _ComprobantescreenState extends State<Comprobantescreen> {
   /// Función para descargar el comprobante en la carpeta pública Descargas
   Future<void> _downloadComprobante(BuildContext context) async {
     try {
-      // Solicitar permiso de almacenamiento
       PermissionStatus status =
           await Permission.manageExternalStorage.request();
 
       if (status.isGranted) {
-        // El permiso fue concedido
       } else if (status.isDenied) {
         print("Permiso denegado");
         return;
@@ -198,36 +197,69 @@ class _ComprobantescreenState extends State<Comprobantescreen> {
         return;
       }
 
-      // Cargar el archivo desde los assets
-      final byteData = await rootBundle.load('assets/pdfs/Comprobante.pdf');
+      File sourceFile = File(filePath!);
+      if (!await sourceFile.exists()) {
+        print("❌ El archivo no existe en la ruta: $filePath");
+        return;
+      }
 
-      // Obtener la ruta de la carpeta pública de Descargas
-      final downloadsDir = Directory('/storage/emulated/0/Download');
+      Directory downloadsDir = Directory('/storage/emulated/0/Download');
 
-      // Crear la carpeta si no existe
       if (!downloadsDir.existsSync()) {
         await downloadsDir.create(recursive: true);
       }
 
-      final filePath = '${downloadsDir.path}/Comprobante.pdf';
+      String fileName = filePath!.split('/').last;
+      String destinationPath = '${downloadsDir.path}/$fileName';
 
-      // Escribir el archivo
-      final file = File(filePath);
-      await file.writeAsBytes(byteData.buffer.asUint8List());
+      await sourceFile.copy(destinationPath);
+      _mostrarDialogoDescargaExitosa(context, destinationPath);
 
-      // Mostrar notificación al usuario
-      mostrarNotificacion(
-        context: context,
-        titulo: 'Descarga Completa',
-        mensaje: "Archivo descargado en: $filePath",
-      );
+      print("✅ Archivo copiado en: $destinationPath");
     } catch (e) {
-      // Mostrar notificación al usuario
       mostrarNotificacion(
         context: context,
         titulo: 'Error de Descarga',
         mensaje: "Error al descargar el archivo: $e",
       );
+      print("❌ Error al descargar el archivo: $e");
     }
+  }
+
+  void _mostrarDialogoDescargaExitosa(BuildContext context, String filePath) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Descarga Completa"),
+          content: Text(
+              "El archivo se ha guardado en:\n$filePath\n\n¿Desea abrirlo ahora?"),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text("Cancelar"),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                _abrirArchivo(filePath);
+              },
+              child: Text("Abrir"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+void _abrirArchivo(String filePath) async {
+  try {
+    OpenResult result = await OpenFile.open(filePath);
+    if (result.type != ResultType.done) {
+      print("❌ Error al abrir el archivo: ${result.message}");
+    }
+  } catch (e) {
+    print("❌ No se pudo abrir el archivo: $e");
   }
 }

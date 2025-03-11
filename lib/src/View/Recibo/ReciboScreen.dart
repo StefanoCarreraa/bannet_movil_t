@@ -68,35 +68,6 @@ class _ReciboScreenState extends State<ReciboScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // return Scaffold(
-    //   appBar: AppBar(title: Text("Visor PDF")),
-    //   body: isLoading
-    //       ? Center(
-    //           child:
-    //               CircularProgressIndicator()) // Muestra un loader mientras busca el archivo
-    //       : pdfBytes != null
-    //           ? SfPdfViewer.memory(pdfBytes!) // Muestra el PDF si se encuentra
-    //           : Center(child: Text("Error: No se pudo cargar el PDF")),
-    // );
-
-    // if (directory == null) {
-    //   return Scaffold(
-    //     appBar: AppBar(title: Text("Cargando...")),
-    //     body: Center(
-    //         child:
-    //             CircularProgressIndicator()), // Muestra carga mientras obtiene la ruta
-    //   );
-    // }
-
-    // String filePath = '${directory!.path}/${widget.fileName[1]}';
-
-    // if (!File(filePath).existsSync()) {
-    //   return Scaffold(
-    //     appBar: AppBar(title: Text("Error")),
-    //     body: Center(child: Text("Archivo PDF no encontrado en: $filePath")),
-    //   );
-    // }
-
     return isLoading
         ? Center(child: CircularProgressIndicator())
         : Scaffold(
@@ -219,7 +190,6 @@ class _ReciboScreenState extends State<ReciboScreen> {
           await Permission.manageExternalStorage.request();
 
       if (status.isGranted) {
-        // El permiso fue concedido
       } else if (status.isDenied) {
         print("Permiso denegado");
         return;
@@ -228,39 +198,27 @@ class _ReciboScreenState extends State<ReciboScreen> {
         return;
       }
 
-      // ✅ 2. Verificar que el archivo existe
       File sourceFile = File(filePath!);
       if (!await sourceFile.exists()) {
         print("❌ El archivo no existe en la ruta: $filePath");
         return;
       }
 
-      // ✅ 3. Obtener la carpeta de Descargas
       Directory downloadsDir = Directory('/storage/emulated/0/Download');
 
       if (!downloadsDir.existsSync()) {
         await downloadsDir.create(recursive: true);
       }
 
-      // ✅ 4. Definir el nombre del archivo de destino
       String fileName = filePath!.split('/').last;
       String destinationPath = '${downloadsDir.path}/$fileName';
 
-      // ✅ 5. Copiar el archivo al directorio de Descargas
       await sourceFile.copy(destinationPath);
 
-      // ✅ 6. Mostrar notificación al usuario
-      // mostrarNotificacion(
-      //   context: context,
-      //   titulo: 'Descarga Completa',
-      //   mensaje: "Archivo guardado en: $destinationPath",
-      // );
-      // ✅ 6. Mostrar diálogo con opción para abrir el archivo
       _mostrarDialogoDescargaExitosa(context, destinationPath);
 
       print("✅ Archivo copiado en: $destinationPath");
     } catch (e) {
-      // ✅ 7. Manejo de errores
       mostrarNotificacion(
         context: context,
         titulo: 'Error de Descarga',
@@ -270,7 +228,6 @@ class _ReciboScreenState extends State<ReciboScreen> {
     }
   }
 
-  // ✅ Función para mostrar el diálogo de confirmación
   void _mostrarDialogoDescargaExitosa(BuildContext context, String filePath) {
     showDialog(
       context: context,
@@ -281,13 +238,13 @@ class _ReciboScreenState extends State<ReciboScreen> {
               "El archivo se ha guardado en:\n$filePath\n\n¿Desea abrirlo ahora?"),
           actions: [
             TextButton(
-              onPressed: () => Navigator.pop(context), // ❌ No abrir
+              onPressed: () => Navigator.pop(context),
               child: Text("Cancelar"),
             ),
             TextButton(
               onPressed: () {
-                Navigator.pop(context); // Cerrar el diálogo
-                _abrirArchivo(filePath); // ✅ Abrir archivo
+                Navigator.pop(context);
+                _abrirArchivo(filePath);
               },
               child: Text("Abrir"),
             ),
@@ -298,7 +255,6 @@ class _ReciboScreenState extends State<ReciboScreen> {
   }
 }
 
-// ✅ Función para abrir el archivo
 void _abrirArchivo(String filePath) async {
   try {
     OpenResult result = await OpenFile.open(filePath);
