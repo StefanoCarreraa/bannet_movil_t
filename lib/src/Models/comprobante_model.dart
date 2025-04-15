@@ -27,17 +27,17 @@ class ComprobanteModel {
 
   factory ComprobanteModel.fromJson(Map<String, dynamic> json) {
     return ComprobanteModel(
-      idDocVenta: json['ID_DocVenta'],
-      fecha: json['Fecha'],
-      serie: json['Serie'],
-      numero: json['Numero'],
-      nroComprobante: json['NroComprobante'],
-      neto: (json['Neto'] as num).toDouble(),
-      total: (json['Total'] as num).toDouble(),
-      idDocumento: json['ID_Documento'],
-      simboloMoneda: json['SimboloMoneda'],
-      monDescripcion: json['MonDescripcion'],
-      flagDetraccion: json['Flag_Detraccion'],
+      idDocVenta: json['ID_DocVenta'] ?? 0,
+      fecha: json['Fecha'] ?? '',
+      serie: json['Serie'] ?? '',
+      numero: json['Numero'] ?? '',
+      nroComprobante: json['NroComprobante'] ?? '',
+      neto: (json['Neto'] ?? 0).toDouble(),
+      total: (json['Total'] ?? 0).toDouble(),
+      idDocumento: json['ID_Documento'] ?? 0,
+      simboloMoneda: json['SimboloMoneda'] ?? '',
+      monDescripcion: json['MonDescripcion'] ?? '',
+      flagDetraccion: json['Flag_Detraccion'] ?? 0,
     );
   }
 }

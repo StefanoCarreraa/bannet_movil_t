@@ -5,6 +5,7 @@ import 'package:bannet_movil_t/src/Controllers/Login/Login_Controller.dart';
 import 'package:bannet_movil_t/src/Controllers/user_controller.dart';
 import 'package:bannet_movil_t/src/utils/constants/app_colors.dart';
 import 'package:bannet_movil_t/src/widget/AlertshowModalBottomSheet.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -216,28 +217,215 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void _mostrarCorreoCustomActionSheet(BuildContext context,
       UserController userController, int idUsuarioBannet) {
     TextEditingController correoController = TextEditingController();
+    bool correoValido = false;
+    bool campoVacio = true;
+
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
-      // isDismissible: false,
       builder: (BuildContext context) {
-        return Padding(
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.of(context).viewInsets.bottom,
-          ),
-          child: Container(
-            decoration: BoxDecoration(
-              color: AppColors.grisOscuro,
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(16),
-                topRight: Radius.circular(16),
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            return Padding(
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom,
               ),
-            ),
-            child: SingleChildScrollView(
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: AppColors.grisOscuro,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(16),
+                    topRight: Radius.circular(16),
+                  ),
+                ),
+                child: SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 20),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          height: 5,
+                          width: 50,
+                          margin: EdgeInsets.symmetric(vertical: 10),
+                          decoration: BoxDecoration(
+                            color: Colors.grey[700],
+                            borderRadius: BorderRadius.circular(2.5),
+                          ),
+                        ),
+                        Text(
+                          'Cambiar correo electrónico',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                          ),
+                        ),
+                        SizedBox(height: 20),
+                        TextField(
+                          controller: correoController,
+                          onChanged: (value) {
+                            final emailRegex =
+                                RegExp(r'^[\w\.-]+@[\w\.-]+\.\w{2,4}$');
+                            setModalState(() {
+                              campoVacio = value.trim().isEmpty;
+                              correoValido = emailRegex.hasMatch(value.trim());
+                            });
+                          },
+                          decoration: InputDecoration(
+                            filled: true,
+                            fillColor: Colors.grey[800],
+                            hintText: 'Ingrese su nuevo correo',
+                            hintStyle: TextStyle(color: Colors.grey[400]),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide.none,
+                            ),
+                            contentPadding: EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 12),
+                          ),
+                          style: TextStyle(color: Colors.white),
+                          keyboardType: TextInputType.emailAddress,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8),
+                          child: LinearProgressIndicator(
+                            value: campoVacio ? 0.0 : 1.0,
+                            minHeight: 6,
+                            backgroundColor: Colors.grey[700],
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              campoVacio
+                                  ? Colors.grey
+                                  : correoValido
+                                      ? Colors.green
+                                      : Colors.red,
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 20),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppColors.blanco,
+                                  padding: EdgeInsets.symmetric(vertical: 25),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    side: BorderSide(
+                                        color: Colors.white, width: 2),
+                                  ),
+                                ),
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text(
+                                  'Cancelar',
+                                  style: TextStyle(color: Colors.black),
+                                ),
+                              ),
+                            ),
+                            SizedBox(width: 16),
+                            Expanded(
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppColors.verdeLima,
+                                  padding: EdgeInsets.symmetric(vertical: 25),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    side: BorderSide(
+                                        color: Colors.white, width: 2),
+                                  ),
+                                ),
+                                onPressed: userController.isLoading
+                                    ? null
+                                    : () async {
+                                        String nuevoCorreo =
+                                            correoController.text.trim();
+
+                                        if (!correoValido) {
+                                          mostrarNotificacion(
+                                            context: context,
+                                            titulo: 'Error',
+                                            mensaje:
+                                                'Ingrese un correo válido.',
+                                          );
+                                          return;
+                                        }
+
+                                        bool resultado =
+                                            await userController.cambiarEmail(
+                                                idUsuarioBannet, nuevoCorreo);
+
+                                        if (resultado) {
+                                          if (context.mounted) {
+                                            Navigator.of(context).pop();
+                                            mostrarNotificacion(
+                                              context: context,
+                                              titulo: 'Correo actualizado',
+                                              mensaje:
+                                                  'Correo electrónico actualizado con éxito',
+                                            );
+                                          }
+                                        } else {
+                                          if (context.mounted) {
+                                            mostrarNotificacion(
+                                              context: context,
+                                              titulo: 'Error',
+                                              mensaje:
+                                                  'Error al actualizar el correo electrónico',
+                                            );
+                                          }
+                                        }
+                                      },
+                                child: Text(
+                                  'Actualizar',
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void _mostrarTelefonoCustomActionSheet(BuildContext context,
+      UserController userController, int idUsuarioBannet) {
+    TextEditingController telefonoController = TextEditingController();
+    double progresoTelefono = 0.0;
+    bool campoVacio = true;
+    bool longitudValida = false;
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            return Padding(
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom,
+              ),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: AppColors.grisOscuro,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(16),
+                    topRight: Radius.circular(16),
+                  ),
+                ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -250,288 +438,207 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         borderRadius: BorderRadius.circular(2.5),
                       ),
                     ),
-                    Text(
-                      'Cambiar correo electrónico',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                      ),
-                    ),
-                    SizedBox(height: 20),
-                    TextField(
-                      controller: correoController,
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: Colors.grey[800],
-                        hintText: 'Ingrese su nuevo correo',
-                        hintStyle: TextStyle(color: Colors.grey[400]),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: BorderSide.none,
-                        ),
-                        contentPadding:
-                            EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                      ),
-                      style: TextStyle(color: Colors.white),
-                      keyboardType: TextInputType.emailAddress,
-                    ),
-                    SizedBox(height: 20),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.blanco,
-                              padding: EdgeInsets.symmetric(vertical: 25),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                side: BorderSide(color: Colors.white, width: 2),
-                              ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 20),
+                      child: Column(
+                        children: [
+                          Text(
+                            'Cambiar número de Teléfono',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
                             ),
-                            onPressed: () {
-                              Navigator.of(context).pop();
+                          ),
+                          SizedBox(height: 20),
+                          TextField(
+                            controller: telefonoController,
+                            keyboardType: TextInputType.number,
+                            maxLength: 9,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly,
+                            ],
+                            onChanged: (value) {
+                              setModalState(() {
+                                campoVacio = value.trim().isEmpty;
+                                longitudValida = value.length == 9;
+                                progresoTelefono =
+                                    value.length.clamp(0, 9) / 9.0;
+                              });
                             },
-                            child: Text(
-                              'Cancelar',
-                              style: TextStyle(color: Colors.black),
-                            ),
-                          ),
-                        ),
-                        SizedBox(width: 16),
-                        Expanded(
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.verdeLima,
-                              padding: EdgeInsets.symmetric(vertical: 25),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                side: BorderSide(color: Colors.white, width: 2),
+                            decoration: InputDecoration(
+                              counterText: "",
+                              filled: true,
+                              fillColor: Colors.grey[800],
+                              hintText: 'Ingrese su nuevo número de Teléfono',
+                              hintStyle: TextStyle(color: Colors.grey[400]),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide.none,
                               ),
+                              contentPadding: EdgeInsets.symmetric(
+                                  horizontal: 16, vertical: 12),
                             ),
-                            onPressed: userController.isLoading
-                                ? null
-                                : () async {
-                                    String nuevoCorreo =
-                                        correoController.text.trim();
-
-                                    if (nuevoCorreo.isEmpty) {
-                                      mostrarNotificacion(
-                                        context: context,
-                                        titulo: 'Error',
-                                        mensaje:
-                                            'Los campos no pueden estar vacíos',
-                                      );
-                                      return;
-                                    }
-
-                                    bool resultado =
-                                        await userController.cambiarEmail(
-                                            idUsuarioBannet, nuevoCorreo);
-
-                                    if (resultado) {
-                                      if (context.mounted) {
-                                        Navigator.of(context).pop();
-                                        mostrarNotificacion(
-                                          context: context,
-                                          titulo: 'Correo actualizado',
-                                          mensaje:
-                                              'Correo electrónico actualizado con éxito',
-                                        );
-                                      }
-                                    } else {
-                                      if (context.mounted) {
-                                        mostrarNotificacion(
-                                          context: context,
-                                          titulo: 'Error',
-                                          mensaje:
-                                              'Error al actualizar el correo electrónico',
-                                        );
-                                      }
-                                    }
-                                  },
-                            child: Text(
-                              'Actualizar',
-                              style: TextStyle(color: Colors.white),
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          LinearProgressIndicator(
+                            value: campoVacio ? 0.0 : progresoTelefono,
+                            minHeight: 6,
+                            backgroundColor: Colors.grey[700],
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              campoVacio
+                                  ? Colors.grey
+                                  : longitudValida
+                                      ? Colors.green
+                                      : Colors.red,
                             ),
                           ),
-                        ),
-                      ],
+                          SizedBox(height: 20),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: AppColors.blanco,
+                                    padding: EdgeInsets.symmetric(vertical: 25),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                      side: BorderSide(
+                                          color: Colors.white, width: 2),
+                                    ),
+                                  ),
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: Text(
+                                    'Cancelar',
+                                    style: TextStyle(color: Colors.black),
+                                  ),
+                                ),
+                              ),
+                              SizedBox(width: 16),
+                              Expanded(
+                                child: ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: AppColors.verdeLima,
+                                    padding: EdgeInsets.symmetric(vertical: 25),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                      side: BorderSide(
+                                          color: Colors.white, width: 2),
+                                    ),
+                                  ),
+                                  onPressed: userController.isLoading
+                                      ? null
+                                      : () async {
+                                          String nuevotelefono =
+                                              telefonoController.text.trim();
+
+                                          if (nuevotelefono.length != 9) {
+                                            mostrarNotificacion(
+                                              context: context,
+                                              titulo: 'Error',
+                                              mensaje:
+                                                  'El número debe tener 9 dígitos',
+                                            );
+                                            return;
+                                          }
+
+                                          bool resultado =
+                                              await userController.cambiarEmail(
+                                                  idUsuarioBannet,
+                                                  nuevotelefono);
+
+                                          if (resultado) {
+                                            if (context.mounted) {
+                                              Navigator.of(context).pop();
+                                              mostrarNotificacion(
+                                                context: context,
+                                                titulo: 'Teléfono actualizado',
+                                                mensaje:
+                                                    'Teléfono actualizado con éxito',
+                                              );
+                                            }
+                                          } else {
+                                            if (context.mounted) {
+                                              mostrarNotificacion(
+                                                context: context,
+                                                titulo: 'Error',
+                                                mensaje:
+                                                    'Error al actualizar el Teléfono',
+                                              );
+                                            }
+                                          }
+                                        },
+                                  child: Text(
+                                    'Actualizar',
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
               ),
-            ),
-          ),
+            );
+          },
         );
       },
     );
   }
 
-  void _mostrarTelefonoCustomActionSheet(BuildContext context,
-      UserController userController, int idUsuarioBannet) {
-    TextEditingController telefonoController = TextEditingController();
-
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      isScrollControlled: true,
-      // isDismissible: false,
-      builder: (BuildContext context) {
-        return Padding(
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.of(context).viewInsets.bottom,
+  Widget _buildRequisito(String texto, bool cumplido) {
+    return Row(
+      children: [
+        Icon(
+          cumplido ? Icons.check_circle : Icons.cancel,
+          color: cumplido ? Colors.green : Colors.red,
+          size: 20,
+        ),
+        const SizedBox(width: 8),
+        Text(
+          texto,
+          style: TextStyle(
+            color: cumplido ? Colors.green : Colors.red,
+            decoration:
+                cumplido ? TextDecoration.none : TextDecoration.lineThrough,
           ),
-          child: Container(
-            decoration: BoxDecoration(
-              color: AppColors.grisOscuro,
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(16),
-                topRight: Radius.circular(16),
-              ),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  height: 5,
-                  width: 50,
-                  margin: EdgeInsets.symmetric(vertical: 10),
-                  decoration: BoxDecoration(
-                    color: Colors.grey[700],
-                    borderRadius: BorderRadius.circular(2.5),
-                  ),
-                ),
-                Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-                  child: Column(
-                    children: [
-                      Text(
-                        'Cambiar número de Teléfono',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18,
-                        ),
-                      ),
-                      SizedBox(height: 20),
-                      TextField(
-                        controller: telefonoController,
-                        obscureText: true,
-                        decoration: InputDecoration(
-                          filled: true,
-                          fillColor: Colors.grey[800],
-                          hintText: 'Ingrese su nuevo numero de Teléfono',
-                          hintStyle: TextStyle(color: Colors.grey[400]),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide.none,
-                          ),
-                          contentPadding: EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 12),
-                        ),
-                        style: TextStyle(color: Colors.white),
-                      ),
-                      SizedBox(height: 20),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.blanco,
-                                padding: EdgeInsets.symmetric(vertical: 25),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                  side:
-                                      BorderSide(color: Colors.white, width: 2),
-                                ),
-                              ),
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                              child: Text(
-                                'Cancelar',
-                                style: TextStyle(color: Colors.black),
-                              ),
-                            ),
-                          ),
-                          SizedBox(width: 16),
-                          Expanded(
-                              child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.verdeLima,
-                              padding: EdgeInsets.symmetric(vertical: 25),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                side: BorderSide(color: Colors.white, width: 2),
-                              ),
-                            ),
-                            onPressed: userController.isLoading
-                                ? null
-                                : () async {
-                                    String nuevotelefono =
-                                        telefonoController.text.trim();
-
-                                    if (nuevotelefono.isEmpty) {
-                                      mostrarNotificacion(
-                                        context: context,
-                                        titulo: 'Error',
-                                        mensaje:
-                                            'Los campos no pueden estar vacíos',
-                                      );
-
-                                      return;
-                                    }
-                                    setState(() {});
-
-                                    bool resultado =
-                                        await userController.cambiarEmail(
-                                            idUsuarioBannet, nuevotelefono);
-
-                                    if (resultado) {
-                                      if (context.mounted) {
-                                        Navigator.of(context).pop();
-                                        mostrarNotificacion(
-                                          context: context,
-                                          titulo: 'Teléfono actualizado',
-                                          mensaje:
-                                              'Teléfono actualizado con éxito',
-                                        );
-                                      }
-                                    } else {
-                                      if (context.mounted) {
-                                        mostrarNotificacion(
-                                          context: context,
-                                          titulo: 'Error',
-                                          mensaje:
-                                              'Error al actualizar el Teléfono',
-                                        );
-                                      }
-                                    }
-                                  },
-                            child: Text(
-                              'Actualizar',
-                              style: TextStyle(color: Colors.white),
-                            ),
-                          )),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
+        ),
+      ],
     );
   }
+
+  // Sección de cambiar contraseña
+  bool contrasenasCoinciden = false;
+  bool mostrarNueva = false;
+  bool mostrarConfirmar = false;
+  // Variables para mostrar requisitos de contraseña
+  bool mostrarObservaciones = false;
+  double progresoContrasena = 0.0;
+  bool tieneMinuscula = false;
+  bool tieneMayuscula = false;
+  bool tieneNumero = false;
+  bool tieneLongitud = false;
 
   void _mostrarContrasCustomActionSheet(BuildContext context,
       UserController userController, int idUsuarioBannet) {
     TextEditingController nuevaClaveController = TextEditingController();
     TextEditingController confirmarClaveController = TextEditingController();
+
+    contrasenasCoinciden = false;
+    mostrarNueva = false;
+    mostrarConfirmar = false;
+    mostrarObservaciones = false;
+    progresoContrasena = 0.0;
+    tieneMinuscula = false;
+    tieneMayuscula = false;
+    tieneNumero = false;
+    tieneLongitud = false;
 
     showModalBottomSheet(
       context: context,
@@ -540,6 +647,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
       builder: (BuildContext context) {
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setState) {
+            void calcularProgreso(String contrasena) {
+              double progreso = 0.0;
+
+              tieneMinuscula = RegExp(r'[a-z]').hasMatch(contrasena);
+              tieneMayuscula = RegExp(r'[A-Z]').hasMatch(contrasena);
+              tieneNumero = RegExp(r'\d').hasMatch(contrasena);
+              tieneLongitud = contrasena.length >= 6;
+
+              if (tieneMinuscula) progreso += 0.25;
+              if (tieneMayuscula) progreso += 0.25;
+              if (tieneNumero) progreso += 0.25;
+              if (tieneLongitud) progreso += 0.25;
+
+              setState(() {
+                progresoContrasena = progreso;
+              });
+            }
+
+            void verificarCoincidenciaContrasenas() {
+              setState(() {
+                contrasenasCoinciden = nuevaClaveController.text ==
+                        confirmarClaveController.text &&
+                    confirmarClaveController.text.isNotEmpty;
+              });
+            }
+
             return Container(
               decoration: BoxDecoration(
                 color: AppColors.grisOscuro,
@@ -577,10 +710,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               fontSize: 18,
                             ),
                           ),
+                          const SizedBox(height: 16),
+                          SwitchListTile(
+                            title: const Text(
+                              'Mostrar observaciones de contraseña',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            value: mostrarObservaciones,
+                            onChanged: (value) {
+                              setState(() {
+                                mostrarObservaciones = value;
+                              });
+                            },
+                          ),
                           SizedBox(height: 20),
                           TextField(
                             controller: nuevaClaveController,
-                            obscureText: true,
+                            obscureText: !mostrarNueva,
+                            onChanged: (value) {
+                              calcularProgreso(value);
+                              verificarCoincidenciaContrasenas();
+                            },
                             decoration: InputDecoration(
                               filled: true,
                               fillColor: Colors.grey[800],
@@ -592,13 +742,59 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               ),
                               contentPadding: EdgeInsets.symmetric(
                                   horizontal: 16, vertical: 12),
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  mostrarNueva
+                                      ? Icons.visibility_off
+                                      : Icons.visibility,
+                                  color: Colors.white,
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    mostrarNueva = !mostrarNueva;
+                                  });
+                                },
+                              ),
                             ),
                             style: TextStyle(color: Colors.white),
                           ),
                           SizedBox(height: 16),
+                          if (mostrarObservaciones)
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                _buildRequisito("Al menos una letra minúscula",
+                                    tieneMinuscula),
+                                _buildRequisito("Al menos una letra mayúscula",
+                                    tieneMayuscula),
+                                _buildRequisito(
+                                    "Al menos un número", tieneNumero),
+                                _buildRequisito(
+                                    "Mínimo 6 caracteres", tieneLongitud),
+                              ],
+                            ),
+                          const SizedBox(height: 8),
+                          LinearProgressIndicator(
+                            value: progresoContrasena,
+                            minHeight: 6,
+                            backgroundColor: Colors.grey[700],
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              progresoContrasena < 1.0
+                                  ? Colors.orange
+                                  : Colors.green,
+                            ),
+                          ),
+                          SizedBox(height: 16),
                           TextField(
                             controller: confirmarClaveController,
-                            obscureText: true,
+                            obscureText: !mostrarConfirmar,
+                            onChanged: (value) {
+                              setState(() {
+                                contrasenasCoinciden =
+                                    value == nuevaClaveController.text &&
+                                        value.isNotEmpty;
+                              });
+                            },
                             decoration: InputDecoration(
                               filled: true,
                               fillColor: Colors.grey[800],
@@ -610,9 +806,35 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               ),
                               contentPadding: EdgeInsets.symmetric(
                                   horizontal: 16, vertical: 12),
+                              suffixIcon: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  IconButton(
+                                    icon: Icon(
+                                      mostrarConfirmar
+                                          ? Icons.visibility_off
+                                          : Icons.visibility,
+                                      color: Colors.white,
+                                    ),
+                                    onPressed: () {
+                                      setState(() {
+                                        mostrarConfirmar = !mostrarConfirmar;
+                                      });
+                                    },
+                                  ),
+                                ],
+                              ),
                             ),
                             style: TextStyle(color: Colors.white),
                           ),
+                          if (confirmarClaveController.text.isNotEmpty)
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                _buildRequisito("Las Contraseñas coinciden",
+                                    contrasenasCoinciden),
+                              ],
+                            ),
                           SizedBox(height: 20),
                           Row(
                             children: [
@@ -656,6 +878,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                           String confirmarClave =
                                               confirmarClaveController.text
                                                   .trim();
+
+                                          if (!contrasenasCoinciden ||
+                                              !tieneMinuscula ||
+                                              !tieneMayuscula ||
+                                              !tieneNumero ||
+                                              !tieneLongitud ||
+                                              progresoContrasena < 1.0) {
+                                            mostrarNotificacion(
+                                              context: context,
+                                              titulo: 'Error',
+                                              mensaje:
+                                                  'La contraseña no cumple con los requisitos',
+                                            );
+                                            return;
+                                          }
 
                                           if (nuevaClave.isEmpty ||
                                               confirmarClave.isEmpty) {
@@ -853,7 +1090,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
         SizedBox(height: 10),
         Text(
-          'Stefano Carrera',
+          nombreOrganizacion,
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,

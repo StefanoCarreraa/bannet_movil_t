@@ -34,6 +34,9 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
+  - assets/images/Versión-Móvil_FONDO_Yape.png
+  - assets/images/Versión-Móvil_FONDO_BCP.png
+  - assets/images/Versión-Móvil_FONDO_BBVA.png
   - assets/images/
   - assets/pdfs/
   - assets/logo/

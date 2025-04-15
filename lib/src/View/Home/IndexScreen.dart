@@ -52,6 +52,10 @@ class _IndexscreenState extends State<Indexscreen> {
 
   Future<void> _initialize() async {
     await _loadUserData();
+    await precacheImage(
+      const AssetImage('assets/images/Versión-Móvil_FONDO_BCP.png'),
+      context,
+    );
     // WidgetsBinding.instance.addPostFrameCallback((_) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final reciboController =
@@ -526,7 +530,7 @@ class _IndexscreenState extends State<Indexscreen> {
     );
   }
 
-    Widget _buildMiRecibo(int idDocCobrar) {
+  Widget _buildMiRecibo(int idDocCobrar) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
@@ -751,32 +755,54 @@ class _IndexscreenState extends State<Indexscreen> {
     );
   }
 
-  void showYapeModal(BuildContext context) {
+  void showYapeModal(BuildContext context) async {
+    // Mostrar loader mientras se carga la imagen
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isDismissible: false,
+      isScrollControlled: true,
+      builder: (_) {
+        return const SizedBox(
+          height: 200,
+          child: Center(
+            child: CircularProgressIndicator(color: Colors.white),
+          ),
+        );
+      },
+    );
+
+    // Precargar imagen de fondo
+    final image =
+        const AssetImage('assets/images/Versión-Móvil_FONDO_Yape.png');
+    await precacheImage(image, context);
+
+    // Cerrar el loader
+    Navigator.of(context).pop();
+
+    // Mostrar modal real
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.transparent, // Fondo transparente para el modal
+      backgroundColor: Colors.transparent,
       builder: (BuildContext context) {
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0),
           child: Container(
             decoration: BoxDecoration(
-              color: Colors.white, // Borde blanco detrás del contenido
-              borderRadius: BorderRadius.circular(
-                  20.0), // Bordes redondeados para el modal
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20.0),
               border: Border.all(
-                color: Colors.white, // Borde blanco
+                color: Colors.white,
                 width: 2.0,
               ),
             ),
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(
-                  18.0), // Bordes internos ligeramente más pequeños
+              borderRadius: BorderRadius.circular(18.0),
               child: Container(
                 decoration: BoxDecoration(
                   image: DecorationImage(
-                    image: AssetImage(
-                        'assets/images/Versión-Móvil_FONDO_Yape.png'), // Reemplaza con tu imagen
+                    image: image,
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -784,13 +810,12 @@ class _IndexscreenState extends State<Indexscreen> {
                   length: 3,
                   child: Wrap(
                     children: [
-                      // Icono de cierre
                       Padding(
                         padding: const EdgeInsets.only(top: 10, right: 10),
                         child: Align(
                           alignment: Alignment.topRight,
                           child: IconButton(
-                            icon: FaIcon(
+                            icon: const FaIcon(
                               FontAwesomeIcons.circleXmark,
                               color: Colors.white,
                               size: 40,
@@ -799,31 +824,27 @@ class _IndexscreenState extends State<Indexscreen> {
                           ),
                         ),
                       ),
-                      // Contenido del modal
                       Center(
                         child: Padding(
                           padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              // Logo de Yape
                               Image.asset(
-                                'assets/logo/Versión-Móvil_Yape-Blanco.png', // Reemplaza con la ruta de tu logo
+                                'assets/logo/Versión-Móvil_Yape-Blanco.png',
                                 height: 80,
                               ),
                               const SizedBox(height: 20),
-                              // Título
                               const Text(
                                 'PAGA TU RECIBO POR YAPE',
                                 style: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.white, // Texto blanco
+                                  color: Colors.white,
                                 ),
                                 textAlign: TextAlign.center,
                               ),
                               const SizedBox(height: 20),
-                              // Instrucciones
                               Column(
                                 children: [
                                   _buildStep(
@@ -868,7 +889,27 @@ class _IndexscreenState extends State<Indexscreen> {
     );
   }
 
-  void showBCPModal(BuildContext context) {
+  void showBCPModal(BuildContext context) async {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isDismissible: false,
+      isScrollControlled: true,
+      builder: (_) {
+        return const SizedBox(
+          height: 200,
+          child: Center(
+            child: CircularProgressIndicator(color: Colors.white),
+          ),
+        );
+      },
+    );
+
+    final image = AssetImage('assets/images/Versión-Móvil_FONDO_BCP.png');
+    await precacheImage(image, context);
+
+    Navigator.of(context).pop();
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -880,18 +921,14 @@ class _IndexscreenState extends State<Indexscreen> {
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(20.0),
-              border: Border.all(
-                color: Colors.white,
-                width: 2.0,
-              ),
+              border: Border.all(color: Colors.white, width: 2.0),
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(18.0),
               child: Container(
                 decoration: BoxDecoration(
                   image: DecorationImage(
-                    image:
-                        AssetImage('assets/images/Versión-Móvil_FONDO_BCP.png'),
+                    image: image,
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -899,14 +936,13 @@ class _IndexscreenState extends State<Indexscreen> {
                   length: 3,
                   child: Wrap(
                     children: [
-                      // Icono de cierre
                       Padding(
                         padding: const EdgeInsets.only(top: 10, right: 10),
                         child: Align(
                           alignment: Alignment.topRight,
                           child: IconButton(
-                            icon: FaIcon(
-                              FontAwesomeIcons.circleXmark,
+                            icon: const Icon(
+                              Icons.cancel_rounded,
                               color: Colors.white,
                               size: 40,
                             ),
@@ -914,7 +950,6 @@ class _IndexscreenState extends State<Indexscreen> {
                           ),
                         ),
                       ),
-                      // Logo y título
                       Center(
                         child: Padding(
                           padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
@@ -939,23 +974,18 @@ class _IndexscreenState extends State<Indexscreen> {
                           ),
                         ),
                       ),
-                      // TabBar
                       TabBar(
                         labelColor: Colors.white,
                         unselectedLabelColor: Colors.grey[400],
                         indicatorColor: Colors.white,
-                        labelPadding: EdgeInsets.symmetric(
-                            horizontal: 16.0), // Ajusta el padding aquí
                         tabs: const [
                           Tab(text: 'Agente BCP'),
                           Tab(text: 'App BCP'),
                           Tab(text: 'Banca por Internet'),
                         ],
                       ),
-                      // Contenido de las pestañas
                       SizedBox(
-                        height: MediaQuery.of(context).size.height *
-                            0.5, // Máximo 50% de la pantalla
+                        height: MediaQuery.of(context).size.height * 0.5,
                         child: TabBarView(
                           children: [
                             _buildStepsSection([
@@ -991,7 +1021,32 @@ class _IndexscreenState extends State<Indexscreen> {
     );
   }
 
-  void showBBVAModal(BuildContext context) {
+  void showBBVAModal(BuildContext context) async {
+    // Mostrar loader mientras se precarga la imagen
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isDismissible: false,
+      isScrollControlled: true,
+      builder: (_) {
+        return const SizedBox(
+          height: 200,
+          child: Center(
+            child: CircularProgressIndicator(color: Colors.white),
+          ),
+        );
+      },
+    );
+
+    // Precargar imagen de fondo
+    final image =
+        const AssetImage('assets/images/Versión-Móvil_FONDO_BBVA.png');
+    await precacheImage(image, context);
+
+    // Cerrar loader
+    Navigator.of(context).pop();
+
+    // Mostrar el modal real con la imagen ya cargada
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -1013,8 +1068,7 @@ class _IndexscreenState extends State<Indexscreen> {
               child: Container(
                 decoration: BoxDecoration(
                   image: DecorationImage(
-                    image: AssetImage(
-                        'assets/images/Versión-Móvil_FONDO_BBVA.png'),
+                    image: image,
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -1022,13 +1076,12 @@ class _IndexscreenState extends State<Indexscreen> {
                   length: 3,
                   child: Wrap(
                     children: [
-                      // Icono de cierre
                       Padding(
                         padding: const EdgeInsets.only(top: 10, right: 10),
                         child: Align(
                           alignment: Alignment.topRight,
                           child: IconButton(
-                            icon: FaIcon(
+                            icon: const FaIcon(
                               FontAwesomeIcons.circleXmark,
                               color: Colors.white,
                               size: 40,
@@ -1037,7 +1090,6 @@ class _IndexscreenState extends State<Indexscreen> {
                           ),
                         ),
                       ),
-                      // Logo y título
                       Center(
                         child: Padding(
                           padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
@@ -1062,7 +1114,6 @@ class _IndexscreenState extends State<Indexscreen> {
                           ),
                         ),
                       ),
-                      // TabBar
                       TabBar(
                         labelColor: Colors.white,
                         unselectedLabelColor: Colors.grey[400],
@@ -1073,10 +1124,8 @@ class _IndexscreenState extends State<Indexscreen> {
                           Tab(text: 'Banca por Internet'),
                         ],
                       ),
-                      // Contenido de las pestañas
                       SizedBox(
-                        height: MediaQuery.of(context).size.height *
-                            0.5, // Máximo 50% de la pantalla
+                        height: MediaQuery.of(context).size.height * 0.5,
                         child: TabBarView(
                           children: [
                             _buildStepsSection([

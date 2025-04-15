@@ -26,7 +26,7 @@ class PdfdescargasController extends ChangeNotifier {
       } else if (item[0].idDocumento == "307" || item[0].idDocumento == "315") {
         nota = item[0].idDocumento == "307" ? 'CRÉDITO' : 'DÉBITO';
         filePaths = [
-          (await pdfCreddebi([item[0]], nota)).first
+          ...await pdfCreddebi([item[0]], nota)
         ];
       }
     } catch (error) {
