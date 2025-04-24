@@ -1,4 +1,4 @@
-package com.example.bannet_movil_t
+package com.bantel.miportal
 
 import io.flutter.embedding.android.FlutterActivity
 
